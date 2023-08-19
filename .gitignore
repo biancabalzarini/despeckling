@@ -1,3 +1,7 @@
+# Data
 .csv
 .jpeg
 .png
+
+# Jupyter Notebook
+.ipynb_checkpoints
