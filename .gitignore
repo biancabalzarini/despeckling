@@ -2,6 +2,8 @@
 .csv
 .jpeg
 .png
+.gz
+notebooks/data/MNIST/raw/**
 
 # Jupyter Notebook
 .ipynb_checkpoints
