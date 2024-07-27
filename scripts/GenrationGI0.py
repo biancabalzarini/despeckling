@@ -1,13 +1,28 @@
-### Sampling from the GI0 distribution
-# n: cantidad de muestras
-# p_alpha: el valor del parámetro alpha
-# p_gamma: el valor del parámetro gamma
-# p_Looks: la cantidad de Looks
-
 def rGI0(
-  n,
-  p_alpha,
-  p_gamma,
-  p_Looks
-):
-  return np.random.gamma(p_Looks, 1/p_Looks, n) / np.random.gamma(-p_alpha, 1/p_gamma, n)
+  n: int,
+  p_alpha: float,
+  p_gamma: float,
+  p_Looks: int,
+) -> numpy.ndarray:
+  """Samplea de la distribución GI0.
+
+  Parameters
+  ----------
+  n: int
+      Cantidad de muestras.
+  p_alpha: float
+      El valor del parámetro alpha.
+  p_gamma: float
+      El valor del parámetro gamma.
+  p_Looks: int
+      Cantidad de Looks.
+
+  Returns
+  -------
+  gI0: numpy.ndarray
+      Sampleo de tamaño n de la distribución GI0.
+  """
+
+  gI0 = np.random.gamma(p_Looks, 1/p_Looks, n) / np.random.gamma(-p_alpha, 1/p_gamma, n)
+  
+  return gI0
