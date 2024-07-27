@@ -1,9 +1,11 @@
+import numpy as np
+
 def rGI0(
   n: int,
   p_alpha: float,
   p_gamma: float,
   p_Looks: int,
-) -> numpy.ndarray:
+) -> np.ndarray:
   """Samplea de la distribución GI0.
 
   Parameters
@@ -19,7 +21,7 @@ def rGI0(
 
   Returns
   -------
-  gI0: numpy.ndarray
+  gI0: np.ndarray
       Sampleo de tamaño n de la distribución GI0.
   """
 
