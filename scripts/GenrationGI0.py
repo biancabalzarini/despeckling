@@ -13,7 +13,7 @@ def rGI0(
   n: int
       Cantidad de muestras.
   p_alpha: float
-      El valor del parámetro alpha. Solo se aceptan valores negativos.
+      El valor del parámetro alpha.
   p_gamma: float
       El valor del parámetro gamma.
   p_Looks: int
@@ -21,10 +21,15 @@ def rGI0(
 
   Returns
   -------
+  g: np.ndarray
+      Sampleo de tamaño n de la distribución gamma.
+  gi: np.ndarray
+      Sampleo de tamaño n de la distribución gamma inversa.
   gI0: np.ndarray
-      Sampleo de tamaño n de la distribución GI0.
+      Sampleo de tamaño n de la distribución GI0. Es el producto entre g y gi.
   """
-
-  gI0 = np.random.gamma(p_Looks, 1/p_Looks, n) / np.random.gamma(-p_alpha, 1/p_gamma, n)
+  g = np.random.gamma(p_Looks, 1/p_Looks, n)
+  gi = 1 / np.random.gamma(-p_alpha, 1/p_gamma, n)
+  gI0 = g * gi
   
-  return gI0
+  return g, gi, gI0
