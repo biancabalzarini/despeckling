@@ -13,7 +13,7 @@ def rGI0(
   n: int
       Cantidad de muestras.
   p_alpha: float
-      El valor del parámetro alpha.
+      El valor del parámetro alpha. Solo se aceptan valores negativos.
   p_gamma: float
       El valor del parámetro gamma.
   p_Looks: int
