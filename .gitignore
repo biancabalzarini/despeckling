@@ -4,6 +4,7 @@
 .png
 .gz
 notebooks/data/MNIST/raw/**
+scripts/__pycache__/**
 
 # Jupyter Notebook
 .ipynb_checkpoints
