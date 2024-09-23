@@ -88,20 +88,20 @@ plt.title('Imagen particionada - Imagen + ruido speckle ~ GI0')
 # ---
 # ### Genero un dataset para entrenar
 
-# In[31]:
+# In[2]:
 
 
 n = 1000
 train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image)
 
 
-# In[33]:
+# In[3]:
 
 
 batch_size = 32
 
 
-# In[34]:
+# In[19]:
 
 
 transform = transforms.Compose([
@@ -109,25 +109,26 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-train_entrada = InMemoryImageDataset(train_gI0, transform=transform)
-entrada_loader = DataLoader(train_entrada, batch_size=batch_size, shuffle=True)
-
-train_salida = InMemoryImageDataset(train_gi, transform=transform)
-salida_loader = DataLoader(train_salida, batch_size=batch_size, shuffle=True)
+dataset_train = InMemoryImageDataset(train_gI0, train_gi, transform=transform)
+train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 
 
-# In[40]:
+# In[20]:
 
 
-image = train_entrada[5]
-plt.imshow(image[0,:,:])
+entrada_red, salida_red = dataset_train[21]
 
 
-# In[43]:
+# In[21]:
 
 
-image = train_salida[5]
-plt.imshow(image[0,:,:])
+plt.imshow(entrada_red[0,:,:])
+
+
+# In[18]:
+
+
+plt.imshow(salida_red[0,:,:])
 
 
 # ---
