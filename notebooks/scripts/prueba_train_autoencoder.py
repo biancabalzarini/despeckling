@@ -10,6 +10,9 @@ from scripts.GenrationGI0 import rGI0, partitioned_gi0_image
 import matplotlib.pyplot as plt
 
 
+# ---
+# ### Empiezo graficando algunos ejemplos de imagenes
+
 # In[2]:
 
 
@@ -76,8 +79,16 @@ plt.imshow(imagen_gI0)
 plt.title('Imagen particionada - Imagen + ruido speckle ~ GI0')
 
 
+# ---
+# ### Genero un dataset para entrenar
+
 # In[ ]:
 
 
 
 
+
+# ---
+# ### Entreno
+
+# 
