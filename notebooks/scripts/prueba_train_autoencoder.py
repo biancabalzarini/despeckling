@@ -6,7 +6,7 @@
 
 import sys
 sys.path.append('..')
-from scripts.GenrationGI0 import rGI0
+from scripts.GenrationGI0 import rGI0, partitioned_gi0_image
 import matplotlib.pyplot as plt
 
 
@@ -24,23 +24,60 @@ gi = gi.reshape(100, 100)
 gI0 = gI0.reshape(100, 100)
 
 
-# In[4]:
+# In[17]:
 
 
-plt.imshow(g, cmap='gray')
+plt.imshow(g)
 plt.title('Ruido speckle ~ Gamma')
 
 
-# In[5]:
+# In[16]:
 
 
-plt.imshow(gi, cmap='gray')
+plt.imshow(gi)
 plt.title('Backscatter ~ Gamma inversa')
 
 
-# In[6]:
+# In[22]:
 
 
-plt.imshow(gI0, cmap='gray')
-plt.title('Imágen + ruido speckle ~ GI0')
+plt.imshow(gI0)
+plt.title('Imagen + ruido speckle ~ GI0')
+
+
+# In[12]:
+
+
+imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
+    p_alphas=[-1.5,-1.6,-1.7,-1.55],
+    p_gammas=[1,2,3,4],
+    p_looks=[1,2,3,4]
+)
+
+
+# In[18]:
+
+
+plt.imshow(imagen_g)
+plt.title('Imagen particionada - Ruido speckle ~ Gamma')
+
+
+# In[20]:
+
+
+plt.imshow(imagen_gi)
+plt.title('Imagen particionada - Backscatter ~ Gamma inversa')
+
+
+# In[21]:
+
+
+plt.imshow(imagen_gI0)
+plt.title('Imagen particionada - Imagen + ruido speckle ~ GI0')
+
+
+# In[ ]:
+
+
+
 
