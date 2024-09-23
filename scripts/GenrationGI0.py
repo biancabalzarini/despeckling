@@ -42,7 +42,7 @@ def partitioned_gi0_image(
     p_looks: List[int]
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Genera una imagen de 100x100 dividida en 4 cuadrados de 25x25 usando la distribución GI0.
+    Genera una imagen de 100x100 dividida en 4 cuadrados de 50x50 usando la distribución GI0.
     Cada cuadrado tiene sus propios parámetros de alpha, gamma y número de looks.
 
     Parameters
@@ -69,17 +69,17 @@ def partitioned_gi0_image(
     imagen_g = np.zeros((100, 100))
     imagen_gi = np.zeros((100, 100))
     imagen_gI0 = np.zeros((100, 100))
-    n = 25
+    n = 50
 
-    ### La parte del idx de estos dos fors parece que solo funcionaría para la imagen
-    ### partida en 4 partes. Si lo llego a generalizar, rechequearlo.
+    count = 0
     for i in range(2):
         for j in range(2):
-            idx = i * 2 + j
-            g, gi, gI0 = rGI0(n**2, p_alphas[idx], p_gammas[idx], p_looks[idx])
+            g, gi, gI0 = rGI0(n**2, p_alphas[count], p_gammas[count], p_looks[count])
             
             imagen_g[i*n:(i+1)*n, j*n:(j+1)*n] = g.reshape(n, n)
             imagen_gi[i*n:(i+1)*n, j*n:(j+1)*n] = gi.reshape(n, n)
             imagen_gI0[i*n:(i+1)*n, j*n:(j+1)*n] = gI0.reshape(n, n)
 
+            count += 1
+            
     return imagen_g, imagen_gi, imagen_gI0

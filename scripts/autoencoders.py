@@ -45,7 +45,7 @@ def generate_multiple_images(
     conjunto_g = np.zeros((n, 100, 100))
     conjunto_gi = np.zeros((n, 100, 100))
     conjunto_gI0 = np.zeros((n, 100, 100))
-
+    
     p_gammas: List[float] = [1.0, 1.0, 1.0, 1.0]
     p_looks: List[int] = [1, 1, 1, 1]
     
