@@ -113,7 +113,7 @@ train_entrada = InMemoryImageDataset(train_gI0, transform=transform)
 entrada_loader = DataLoader(train_entrada, batch_size=batch_size, shuffle=True)
 
 train_salida = InMemoryImageDataset(train_gi, transform=transform)
-entrada_salida = DataLoader(train_salida, batch_size=batch_size, shuffle=True)
+salida_loader = DataLoader(train_salida, batch_size=batch_size, shuffle=True)
 
 
 # In[40]:
