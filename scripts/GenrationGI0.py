@@ -1,12 +1,14 @@
 import numpy as np
+from typing import List, Tuple
 
 def rGI0(
   n: int,
   p_alpha: float,
   p_gamma: float,
   p_Looks: int,
-) -> np.ndarray:
-  """Samplea de la distribución GI0.
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+  """
+  Samplea de la distribución GI0.
 
   Parameters
   ----------
