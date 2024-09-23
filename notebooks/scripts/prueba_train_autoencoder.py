@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[34]:
+# In[1]:
 
 
 import sys
 sys.path.append('..')
 
 from scripts.GenrationGI0 import rGI0, partitioned_gi0_image
-from scripts.autoencoders import InMemoryImageDataset
+from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images
 
 import matplotlib.pyplot as plt
 
@@ -88,35 +88,20 @@ plt.title('Imagen particionada - Imagen + ruido speckle ~ GI0')
 # ---
 # ### Genero un dataset para entrenar
 
-# In[23]:
+# In[14]:
 
 
-imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
-    p_alphas=[-1.5,-1.6,-1.7,-1.55],
-    p_gammas=[1,2,3,4],
-    p_looks=[1,2,3,4]
-)
+n = 1000
+train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image)
 
 
-# In[26]:
-
-
-imagen_g.shape
-
-
-# In[36]:
-
-
-all_images.shape # tiene que tener shape (nr_o_imagenes, 100, 100)
-
-
-# In[ ]:
+# In[15]:
 
 
 batch_size = 32
 
 
-# In[30]:
+# In[23]:
 
 
 transform = transforms.Compose([
@@ -124,8 +109,25 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-train_dataset = InMemoryImageDataset(all_images, transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+train_entrada = InMemoryImageDataset(train_gI0, transform=transform)
+entrada_loader = DataLoader(train_entrada, batch_size=batch_size, shuffle=True)
+
+train_salida = InMemoryImageDataset(train_gi, transform=transform)
+entrada_salida = DataLoader(train_salida, batch_size=batch_size, shuffle=True)
+
+
+# In[22]:
+
+
+image = train_entrada[5]
+plt.imshow(image[0,:,:])
+
+
+# In[24]:
+
+
+image = train_salida[5]
+plt.imshow(image[0,:,:])
 
 
 # ---
