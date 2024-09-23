@@ -4,20 +4,24 @@ import random
 from typing import List, Tuple
 
 class InMemoryImageDataset(Dataset):
-    def __init__(self, images, transform=None):
-        self.images = images
+    def __init__(self, input_images, target_images, transform=None):
+        assert len(input_images) == len(target_images), "Input and target image sets must have the same length"
+        self.input_images = input_images
+        self.target_images = target_images
         self.transform = transform
 
     def __len__(self):
-        return len(self.images)
+        return len(self.input_images)
 
     def __getitem__(self, idx):
-        image = self.images[idx]
+        input_image = self.input_images[idx]
+        target_image = self.target_images[idx]
         
         if self.transform:
-            image = self.transform(image)
+            input_image = self.transform(input_image)
+            target_image = self.transform(target_image)
         
-        return image
+        return input_image, target_image
 
 def generate_multiple_images(
     n: int,
