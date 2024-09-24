@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import sys
@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 
 from torchvision import transforms
 from torch.utils.data import DataLoader
+import torch.nn as nn
+import torch.optim as optim
 
 
 # ---
@@ -101,31 +103,33 @@ train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image
 batch_size = 32
 
 
-# In[13]:
+# In[20]:
 
+
+normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
 
 transform = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
+    normalize_to_01
 ])
 
 dataset_train = InMemoryImageDataset(train_gI0, train_gi, transform=transform)
 train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 
 
-# In[14]:
+# In[21]:
 
 
 entrada_red, salida_red = dataset_train[21]
 
 
-# In[15]:
+# In[22]:
 
 
 plt.imshow(entrada_red[0,:,:])
 
 
-# In[16]:
+# In[23]:
 
 
 plt.imshow(salida_red[0,:,:])
@@ -134,14 +138,49 @@ plt.imshow(salida_red[0,:,:])
 # ---
 # ### Entreno
 
-# In[4]:
+# In[24]:
 
 
 encoding_dim = 32
+learning_rate = 1e-3
+num_epochs = 10
 
 
-# In[5]:
+# In[25]:
 
 
 autoencoder = Autoencoder(encoding_dim)
+criterion = nn.BCELoss() # Utilizamos Binary Cross Entropy Loss como loss function ya que las imágenes están normalizadas en el rango [0, 1]
+optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimizador es responsable de ajustar los pesos del modelo con el fin de minimizar la función de pérdida.
+                                                                   # Adam es un algoritmo de optimización popular y eficiente que adapta la tasa de aprendizaje de forma dinámica para cada parámetro del modelo.
+                                                                   # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
+
+
+# In[26]:
+
+
+for epoch in range(num_epochs):
+    for data in train_loader:
+        entrada, salida = data
+        entrada = entrada.view(entrada.size(0), -1).float()
+        salida = salida.view(salida.size(0), -1).float()
+
+        # Forward pass
+        outputs = autoencoder(entrada) # Se pasa a las imágenes por el autoencoder, en una pasada forward.
+        loss = criterion(outputs, salida) # Se calcula la diferencia entre el output y las imágenes sin ruido, según la función de pérdida definida.
+
+        # Backward pass y optimización
+        optimizer.zero_grad() # Se restablecen los gradientes acumulados en todos los parámetros del modelo.
+                              # Esto es necesario antes de realizar el backward pass, ya que PyTorch acumula los gradientes en cada llamada a loss.backward().
+        loss.backward() # Se realiza el backward pass para calcular los gradientes de los parámetros del autoencoder utilizando la función de pérdida.
+        optimizer.step() # Finalmente se realiza la optimización de los parámetros del modelo mediante la llamada a optimizer.step(), que actualiza los parámetros en función de los gradientes calculados.
+
+    # Imprimir la pérdida del autoencoder en cada época
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}")
+
+
+# In[ ]:
+
+
+
 
