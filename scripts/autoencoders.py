@@ -79,7 +79,7 @@ class Autoencoder(nn.Module): # La clase Autoencoder hereda de la clase nn.Modul
                                       # Toma una imagen de entrada y la comprime en una representación de dimensionalidad más baja llamada encoding_dim
 
             # Secuencia de capas del codificador:
-            nn.Linear(28 * 28, 128), # Capa lineal inicial que toma una imagen de 28x28 píxeles (784 dimensiones después de aplanarla) y la reduce a 128 dimensiones utilizando una función lineal.
+            nn.Linear(100 * 100, 128), # Capa lineal inicial que toma una imagen de 28x28 píxeles (784 dimensiones después de aplanarla) y la reduce a 128 dimensiones utilizando una función lineal.
             nn.ReLU(), # Luego se aplica una función de activación ReLU para introducir no linealidad en la representación.
             nn.Linear(128, encoding_dim), # Finalmente, otra capa lineal reduce la dimensionalidad a encoding_dim.
         )
@@ -90,7 +90,7 @@ class Autoencoder(nn.Module): # La clase Autoencoder hereda de la clase nn.Modul
             # Secuencia de capas del decodificador:
             nn.Linear(encoding_dim, 128), # Capa lineal que toma la representación de encoding_dim y la expande a 128 dimensiones.
             nn.ReLU(), # Luego, se aplica una función de activación ReLU.
-            nn.Linear(128, 28 * 28), # A continuación, otra capa lineal expande la dimensionalidad a 28x28 píxeles (784 dimensiones).
+            nn.Linear(128, 100 * 100), # A continuación, otra capa lineal expande la dimensionalidad a 28x28 píxeles (784 dimensiones).
             nn.Sigmoid(), # Finalmente se aplica una función de activación sigmoide para limitar los valores de salida entre 0 y 1.
         )
 
