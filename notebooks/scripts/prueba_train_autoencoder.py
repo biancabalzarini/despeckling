@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[30]:
+# In[59]:
 
 
 import sys
@@ -22,13 +22,13 @@ import torch.optim as optim
 # ---
 # ### Empiezo graficando algunos ejemplos de imagenes
 
-# In[31]:
+# In[60]:
 
 
 g, gi, gI0 = rGI0(n=100*100, p_alpha=-1.5, p_gamma=1, p_Looks=1)
 
 
-# In[32]:
+# In[61]:
 
 
 g = g.reshape(100, 100)
@@ -36,28 +36,28 @@ gi = gi.reshape(100, 100)
 gI0 = gI0.reshape(100, 100)
 
 
-# In[33]:
+# In[62]:
 
 
 plt.imshow(g)
 plt.title('Ruido speckle ~ Gamma')
 
 
-# In[34]:
+# In[63]:
 
 
 plt.imshow(gi)
 plt.title('Backscatter ~ Gamma inversa')
 
 
-# In[35]:
+# In[64]:
 
 
 plt.imshow(gI0)
 plt.title('Imagen + ruido speckle ~ GI0')
 
 
-# In[36]:
+# In[65]:
 
 
 imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
@@ -67,21 +67,21 @@ imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
 )
 
 
-# In[37]:
+# In[66]:
 
 
 plt.imshow(imagen_g)
 plt.title('Imagen particionada - Ruido speckle ~ Gamma')
 
 
-# In[38]:
+# In[67]:
 
 
 plt.imshow(imagen_gi)
 plt.title('Imagen particionada - Backscatter ~ Gamma inversa')
 
 
-# In[39]:
+# In[68]:
 
 
 plt.imshow(imagen_gI0)
@@ -91,20 +91,20 @@ plt.title('Imagen particionada - Imagen + ruido speckle ~ GI0')
 # ---
 # ### Genero un dataset para entrenar
 
-# In[40]:
+# In[69]:
 
 
-n = 1000
+n = 10000
 train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image)
 
 
-# In[41]:
+# In[70]:
 
 
 batch_size = 32
 
 
-# In[42]:
+# In[71]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -118,19 +118,19 @@ dataset_train = InMemoryImageDataset(train_gI0, train_gi, transform=transform)
 train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 
 
-# In[43]:
+# In[72]:
 
 
 entrada_red, salida_red = dataset_train[21]
 
 
-# In[44]:
+# In[73]:
 
 
 plt.imshow(entrada_red[0,:,:])
 
 
-# In[45]:
+# In[74]:
 
 
 plt.imshow(salida_red[0,:,:])
@@ -139,15 +139,15 @@ plt.imshow(salida_red[0,:,:])
 # ---
 # ### Entreno
 
-# In[46]:
+# In[75]:
 
 
 encoding_dim = 32
 learning_rate = 1e-3
-num_epochs = 10
+num_epochs = 40
 
 
-# In[47]:
+# In[76]:
 
 
 autoencoder = Autoencoder(encoding_dim)
@@ -157,7 +157,7 @@ optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimiza
                                                                    # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
 
 
-# In[48]:
+# In[77]:
 
 
 for epoch in range(num_epochs):
@@ -183,7 +183,7 @@ for epoch in range(num_epochs):
 # ---
 # ### Evalúo
 
-# In[49]:
+# In[78]:
 
 
 # Primero genero el dataset para evaluar
@@ -197,7 +197,7 @@ dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[50]:
+# In[79]:
 
 
 total_loss = 0
@@ -220,4 +220,46 @@ with torch.no_grad(): # Esto es para asegurarse de que no se realicen cálculos 
 average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio dividiendo la suma acumulada de las pérdidas (total_loss) entre el número de lotes en el conjunto de datos de prueba (len(test_loader)).
                                              # Esto proporciona una medida promedio de la discrepancia entre las imágenes originales y las imágenes reconstruidas por el autoencoder en el conjunto de datos de prueba.
 print(f"Average Test Loss: {average_loss:.4f}")
+
+
+# ---
+# ### Aplicación del autoencoder a un ejemplo en particular
+
+# In[81]:
+
+
+# Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
+# imagen de salida.
+
+index = 78 # Índice del ejemplo puntual que se desea seleccionar
+entrada_red, salida_red = dataset_test[index]
+
+example = entrada_red.view(1, -1).float() # Ajusta la forma de la imagen a un lote de tamaño 1
+
+reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
+
+entrada = entrada_red.view(100, 100)
+salida_esperada = salida_red.view(100, 100)
+reconstructed = reconstructed.view(100, 100)
+
+plt.subplot(1, 3, 1)
+plt.imshow(entrada, cmap='gray')
+plt.title('Entrada')
+plt.axis('off')
+
+plt.subplot(1, 3, 2)
+plt.imshow(salida_esperada, cmap='gray')
+plt.title('Salida esperada')
+plt.axis('off')
+
+plt.subplot(1, 3, 3)
+plt.imshow(reconstructed.detach(), cmap='gray')
+plt.title('Salida de la red')
+plt.axis('off')
+
+
+# In[ ]:
+
+
+
 
