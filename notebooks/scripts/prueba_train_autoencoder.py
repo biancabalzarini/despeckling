@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[30]:
 
 
 import sys
@@ -12,6 +12,7 @@ from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images,
 
 import matplotlib.pyplot as plt
 
+import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader
 import torch.nn as nn
@@ -21,13 +22,13 @@ import torch.optim as optim
 # ---
 # ### Empiezo graficando algunos ejemplos de imagenes
 
-# In[2]:
+# In[31]:
 
 
 g, gi, gI0 = rGI0(n=100*100, p_alpha=-1.5, p_gamma=1, p_Looks=1)
 
 
-# In[3]:
+# In[32]:
 
 
 g = g.reshape(100, 100)
@@ -35,28 +36,28 @@ gi = gi.reshape(100, 100)
 gI0 = gI0.reshape(100, 100)
 
 
-# In[4]:
+# In[33]:
 
 
 plt.imshow(g)
 plt.title('Ruido speckle ~ Gamma')
 
 
-# In[5]:
+# In[34]:
 
 
 plt.imshow(gi)
 plt.title('Backscatter ~ Gamma inversa')
 
 
-# In[6]:
+# In[35]:
 
 
 plt.imshow(gI0)
 plt.title('Imagen + ruido speckle ~ GI0')
 
 
-# In[7]:
+# In[36]:
 
 
 imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
@@ -66,21 +67,21 @@ imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
 )
 
 
-# In[8]:
+# In[37]:
 
 
 plt.imshow(imagen_g)
 plt.title('Imagen particionada - Ruido speckle ~ Gamma')
 
 
-# In[9]:
+# In[38]:
 
 
 plt.imshow(imagen_gi)
 plt.title('Imagen particionada - Backscatter ~ Gamma inversa')
 
 
-# In[10]:
+# In[39]:
 
 
 plt.imshow(imagen_gI0)
@@ -90,20 +91,20 @@ plt.title('Imagen particionada - Imagen + ruido speckle ~ GI0')
 # ---
 # ### Genero un dataset para entrenar
 
-# In[11]:
+# In[40]:
 
 
 n = 1000
 train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image)
 
 
-# In[12]:
+# In[41]:
 
 
 batch_size = 32
 
 
-# In[20]:
+# In[42]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -117,19 +118,19 @@ dataset_train = InMemoryImageDataset(train_gI0, train_gi, transform=transform)
 train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 
 
-# In[21]:
+# In[43]:
 
 
 entrada_red, salida_red = dataset_train[21]
 
 
-# In[22]:
+# In[44]:
 
 
 plt.imshow(entrada_red[0,:,:])
 
 
-# In[23]:
+# In[45]:
 
 
 plt.imshow(salida_red[0,:,:])
@@ -138,7 +139,7 @@ plt.imshow(salida_red[0,:,:])
 # ---
 # ### Entreno
 
-# In[24]:
+# In[46]:
 
 
 encoding_dim = 32
@@ -146,7 +147,7 @@ learning_rate = 1e-3
 num_epochs = 10
 
 
-# In[25]:
+# In[47]:
 
 
 autoencoder = Autoencoder(encoding_dim)
@@ -156,7 +157,7 @@ optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimiza
                                                                    # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
 
 
-# In[26]:
+# In[48]:
 
 
 for epoch in range(num_epochs):
@@ -179,8 +180,44 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}")
 
 
-# In[ ]:
+# ---
+# ### Evalúo
+
+# In[49]:
 
 
+# Primero genero el dataset para evaluar
 
+n = 1000
+test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image)
+
+batch_size = 32
+
+dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
+test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
+
+
+# In[50]:
+
+
+total_loss = 0
+with torch.no_grad(): # Esto es para asegurarse de que no se realicen cálculos de gradientes durante la evaluación del autoencoder.
+                      # Al entrar en este bloque, se desactiva el cálculo y almacenamiento automático de gradientes para reducir el uso de memoria y acelerar la evaluación.
+    for data in test_loader:
+        entrada, salida = data # _ se utiliza para descartar las etiquetas, ya que no son necesarias para la evaluación.
+        entrada = entrada.view(entrada.size(0), -1).float() # Se modifica la forma de las imágenes para que coincida con el formato esperado por el autoencoder.
+                                                         # En este caso, las imágenes se aplanan en un tensor unidimensional. images.size(0) se utiliza para obtener el tamaño del lote.
+        salida = salida.view(salida.size(0), -1).float()
+
+        # Forward pass
+        outputs = autoencoder(entrada) # Se realiza el forward pass del autoencoder con las imágenes de prueba.
+                                      # El autoencoder genera las imágenes reconstruidas utilizando el método forward() que definimos previamente en la clase Autoencoder.
+        loss = criterion(outputs, salida) # Se calcula la pérdida entre las imágenes reconstruidas y las imágenes originales utilizando la función de pérdida (criterion).
+                                          # Esto proporciona una medida de cuánto difieren las imágenes reconstruidas de las originales.
+        total_loss += loss.item() # La pérdida obtenida en cada iteración se suma a la variable total_loss utilizando loss.item(), que devuelve el valor escalar de la pérdida.
+                                  # Al final de la iteración, total_loss contendrá la suma acumulada de las pérdidas de todas las muestras del conjunto de datos de prueba.
+
+average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio dividiendo la suma acumulada de las pérdidas (total_loss) entre el número de lotes en el conjunto de datos de prueba (len(test_loader)).
+                                             # Esto proporciona una medida promedio de la discrepancia entre las imágenes originales y las imágenes reconstruidas por el autoencoder en el conjunto de datos de prueba.
+print(f"Average Test Loss: {average_loss:.4f}")
 
