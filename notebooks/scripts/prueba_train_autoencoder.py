@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[59]:
+# In[1]:
 
 
 import sys
@@ -22,13 +22,13 @@ import torch.optim as optim
 # ---
 # ### Empiezo graficando algunos ejemplos de imagenes
 
-# In[60]:
+# In[2]:
 
 
 g, gi, gI0 = rGI0(n=100*100, p_alpha=-1.5, p_gamma=1, p_Looks=1)
 
 
-# In[61]:
+# In[3]:
 
 
 g = g.reshape(100, 100)
@@ -36,28 +36,28 @@ gi = gi.reshape(100, 100)
 gI0 = gI0.reshape(100, 100)
 
 
-# In[62]:
+# In[4]:
 
 
 plt.imshow(g)
 plt.title('Ruido speckle ~ Gamma')
 
 
-# In[63]:
+# In[5]:
 
 
 plt.imshow(gi)
 plt.title('Backscatter ~ Gamma inversa')
 
 
-# In[64]:
+# In[6]:
 
 
 plt.imshow(gI0)
 plt.title('Imagen + ruido speckle ~ GI0')
 
 
-# In[65]:
+# In[7]:
 
 
 imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
@@ -67,21 +67,21 @@ imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(
 )
 
 
-# In[66]:
+# In[8]:
 
 
 plt.imshow(imagen_g)
 plt.title('Imagen particionada - Ruido speckle ~ Gamma')
 
 
-# In[67]:
+# In[9]:
 
 
 plt.imshow(imagen_gi)
 plt.title('Imagen particionada - Backscatter ~ Gamma inversa')
 
 
-# In[68]:
+# In[10]:
 
 
 plt.imshow(imagen_gI0)
@@ -91,20 +91,20 @@ plt.title('Imagen particionada - Imagen + ruido speckle ~ GI0')
 # ---
 # ### Genero un dataset para entrenar
 
-# In[69]:
+# In[11]:
 
 
-n = 10000
+n = 50000
 train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image)
 
 
-# In[70]:
+# In[12]:
 
 
-batch_size = 32
+batch_size = 50
 
 
-# In[71]:
+# In[13]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -118,19 +118,19 @@ dataset_train = InMemoryImageDataset(train_gI0, train_gi, transform=transform)
 train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 
 
-# In[72]:
+# In[14]:
 
 
 entrada_red, salida_red = dataset_train[21]
 
 
-# In[73]:
+# In[15]:
 
 
 plt.imshow(entrada_red[0,:,:])
 
 
-# In[74]:
+# In[16]:
 
 
 plt.imshow(salida_red[0,:,:])
@@ -139,15 +139,15 @@ plt.imshow(salida_red[0,:,:])
 # ---
 # ### Entreno
 
-# In[75]:
+# In[17]:
 
 
 encoding_dim = 32
 learning_rate = 1e-3
-num_epochs = 40
+num_epochs = 100
 
 
-# In[76]:
+# In[18]:
 
 
 autoencoder = Autoencoder(encoding_dim)
@@ -157,7 +157,7 @@ optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimiza
                                                                    # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
 
 
-# In[77]:
+# In[19]:
 
 
 for epoch in range(num_epochs):
@@ -183,7 +183,7 @@ for epoch in range(num_epochs):
 # ---
 # ### Evalúo
 
-# In[78]:
+# In[20]:
 
 
 # Primero genero el dataset para evaluar
@@ -197,7 +197,7 @@ dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[79]:
+# In[21]:
 
 
 total_loss = 0
@@ -225,13 +225,13 @@ print(f"Average Test Loss: {average_loss:.4f}")
 # ---
 # ### Aplicación del autoencoder a un ejemplo en particular
 
-# In[81]:
+# In[22]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
 # imagen de salida.
 
-index = 78 # Índice del ejemplo puntual que se desea seleccionar
+index = 749 # Índice del ejemplo puntual que se desea seleccionar
 entrada_red, salida_red = dataset_test[index]
 
 example = entrada_red.view(1, -1).float() # Ajusta la forma de la imagen a un lote de tamaño 1
