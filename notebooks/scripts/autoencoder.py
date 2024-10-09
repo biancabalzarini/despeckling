@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[ ]:
+
+
 import sys
 sys.path.append('..')
 
@@ -11,3 +17,4 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
+
