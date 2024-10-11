@@ -7,10 +7,8 @@
 import sys
 sys.path.append('..')
 
-from scripts.GenrationGI0 import rGI0, partitioned_gi0_image
+from scripts.GenrationGI0 import partitioned_gi0_image
 from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images, Autoencoder
-
-import matplotlib.pyplot as plt
 
 import torch
 from torchvision import transforms
