@@ -39,46 +39,59 @@ def rGI0(
 def partitioned_gi0_image(
     p_alphas: List[float],
     p_gammas: List[float],
-    p_looks: List[int]
+    p_looks: List[int],
+    n_cuad_lado: int,
+    pixeles_cuad: int
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Genera una imagen de 100x100 dividida en 4 cuadrados de 50x50 usando la distribución GI0.
-    Cada cuadrado tiene sus propios parámetros de alpha, gamma y número de looks.
+    Genera una imagen dividida en n_cuad_lado^2 cuadrados, cada uno de pixeles_cuad píxeles por lado,
+    usando la distribución GI0 en cada uno. Cada cuadrado tiene sus propios parámetros de alpha, gamma
+    y número de looks.
 
     Parameters
     ----------
     p_alphas: List[float]
-        Lista de 4 valores para el parámetro alpha de cada cuadrado.
+        Lista de n_cuad_lado^2 valores para el parámetro alpha de cada cuadrado.
     p_gammas: List[float]
-        Lista de 4 valores para el parámetro gamma de cada cuadrado.
+        Lista de n_cuad_lado^2 valores para el parámetro gamma de cada cuadrado.
     p_looks: List[int]
-        Lista de 4 valores para el número de Looks de cada cuadrado.
+        Lista de n_cuad_lado^2 valores para el número de Looks de cada cuadrado.
+    n_cuad_lado: int
+        Número de cuadrados por lado de la imagen.
+    pixeles_cuad: int
+        Número de píxeles por lado de cada cuadrado.
 
     Returns
     -------
     imagen_g: np.ndarray
-        Imagen de 100x100 generada a partir de la distribución gamma.
+        Imagen de n_cuad_lado*pixeles_cuad píxeles por lado, generada a partir de la distribución gamma.
     imagen_gi: np.ndarray
-        Imagen de 100x100 generada a partir de la distribución gamma inversa.
+        Imagen de n_cuad_lado*pixeles_cuad píxeles por lado, generada a partir de la distribución gamma inversa.
     imagen_gI0: np.ndarray
-        Imagen de 100x100 generada a partir de la distribución GI0.
+        Imagen de n_cuad_lado*pixeles_cuad píxeles por lado, generada a partir de la distribución GI0.
     """
-    if len(p_alphas) != 4 or len(p_gammas) != 4 or len(p_looks) != 4:
-        raise ValueError("Todas las listas de parámetros deben contener exactamente 4 valores.")
+    total_cuadrados = n_cuad_lado ** 2
+    if len(p_alphas) != total_cuadrados or len(p_gammas) != total_cuadrados or len(p_looks) != total_cuadrados:
+        raise ValueError(f"Todas las listas de parámetros deben contener exactamente {total_cuadrados} valores.")
 
-    imagen_g = np.zeros((100, 100))
-    imagen_gi = np.zeros((100, 100))
-    imagen_gI0 = np.zeros((100, 100))
-    n = 50
+    tam_imagen = n_cuad_lado * pixeles_cuad
+    imagen_g = np.zeros((tam_imagen, tam_imagen))
+    imagen_gi = np.zeros((tam_imagen, tam_imagen))
+    imagen_gI0 = np.zeros((tam_imagen, tam_imagen))
 
     count = 0
-    for i in range(2):
-        for j in range(2):
-            g, gi, gI0 = rGI0(n**2, p_alphas[count], p_gammas[count], p_looks[count])
+    for i in range(n_cuad_lado):
+        for j in range(n_cuad_lado):
+            g, gi, gI0 = rGI0(pixeles_cuad**2, p_alphas[count], p_gammas[count], p_looks[count])
             
-            imagen_g[i*n:(i+1)*n, j*n:(j+1)*n] = g.reshape(n, n)
-            imagen_gi[i*n:(i+1)*n, j*n:(j+1)*n] = gi.reshape(n, n)
-            imagen_gI0[i*n:(i+1)*n, j*n:(j+1)*n] = gI0.reshape(n, n)
+            inicio_i = i * pixeles_cuad
+            fin_i = (i + 1) * pixeles_cuad
+            inicio_j = j * pixeles_cuad
+            fin_j = (j + 1) * pixeles_cuad
+            
+            imagen_g[inicio_i:fin_i, inicio_j:fin_j] = g.reshape(pixeles_cuad, pixeles_cuad)
+            imagen_gi[inicio_i:fin_i, inicio_j:fin_j] = gi.reshape(pixeles_cuad, pixeles_cuad)
+            imagen_gI0[inicio_i:fin_i, inicio_j:fin_j] = gI0.reshape(pixeles_cuad, pixeles_cuad)
 
             count += 1
             
