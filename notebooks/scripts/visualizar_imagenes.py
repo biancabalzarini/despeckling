@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[42]:
+# In[1]:
 
 
 import sys
@@ -16,46 +16,63 @@ import matplotlib.pyplot as plt
 
 # Genero imágenes para visualizar cómo quedan con las funciones que diseñé
 
-# In[74]:
+# In[2]:
 
 
 # Cantidad de imágenes a generar
 n = 500
 # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
-n_cuad_lado = 4
+n_cuad_lado = 3
 # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
-pixeles_cuad = 25
+pixeles_cuad = 20
 
 
-# In[75]:
+# In[3]:
 
 
 train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[76]:
+# In[4]:
 
 
 index = int(n*np.random.random())
 
 
-# In[77]:
+# In[5]:
 
 
 plt.imshow(train_g[index,:,:], cmap='gray')
 plt.title('Distribución Gamma')
 
 
-# In[78]:
+# In[6]:
 
 
 plt.imshow(train_gi[index,:,:], cmap='gray')
 plt.title('Distribución Gamma Inversa')
 
 
-# In[79]:
+# In[7]:
 
 
 plt.imshow(train_gI0[index,:,:], cmap='gray')
 plt.title('Distribución GI0')
+
+
+# In[8]:
+
+
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
+
+im1 = ax1.imshow(train_g[index,:,:], cmap='gray')
+ax1.set_title('Distribución Gamma')
+
+im2 = ax2.imshow(train_gi[index,:,:], cmap='gray')
+ax2.set_title('Distribución Gamma Inversa')
+
+im3 = ax3.imshow(train_gI0[index,:,:], cmap='gray')
+ax3.set_title('Distribución GI0')
+
+plt.tight_layout()
 
