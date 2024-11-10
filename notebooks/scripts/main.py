@@ -27,6 +27,10 @@ import torch.optim as optim
 
 # Cantidad de imágenes a generar
 n = 50000
+# Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
+n_cuad_lado = 2
+# Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
+pixeles_cuad = 25
 # Tamaños de los batches
 batch_size = 50
 
@@ -34,7 +38,7 @@ batch_size = 50
 # In[ ]:
 
 
-train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image)
+train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
 # In[ ]:
@@ -70,7 +74,7 @@ num_epochs = 100
 # In[ ]:
 
 
-autoencoder = Autoencoder(encoding_dim)
+autoencoder = Autoencoder(image_size=n_cuad_lado*pixeles_cuad, encoding_dim=encoding_dim)
 criterion = nn.BCELoss() # Utilizamos Binary Cross Entropy Loss como loss function ya que las imágenes están normalizadas en el rango [0, 1]
 optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimizador es responsable de ajustar los pesos del modelo con el fin de minimizar la función de pérdida.
                                                                    # Adam es un algoritmo de optimización popular y eficiente que adapta la tasa de aprendizaje de forma dinámica para cada parámetro del modelo.
@@ -117,7 +121,7 @@ batch_size = 32
 # In[ ]:
 
 
-test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image)
+test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
 # In[ ]:
