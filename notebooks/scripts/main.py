@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import sys
@@ -15,12 +15,15 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
 
 
 # ---
 # # Creación del dataset para entrenar
 
-# In[ ]:
+# In[2]:
 
 
 ## PARÁMETROS
@@ -35,13 +38,13 @@ pixeles_cuad = 25
 batch_size = 50
 
 
-# In[ ]:
+# In[3]:
 
 
 train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[ ]:
+# In[4]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -58,7 +61,7 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[ ]:
+# In[5]:
 
 
 # PARÁMETROS
@@ -68,10 +71,10 @@ encoding_dim = 32
 # Learning rate
 learning_rate = 1e-3
 # Cantidad de épocas
-num_epochs = 100
+num_epochs = 10
 
 
-# In[ ]:
+# In[6]:
 
 
 autoencoder = Autoencoder(image_size=n_cuad_lado*pixeles_cuad, encoding_dim=encoding_dim)
@@ -81,7 +84,7 @@ optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimiza
                                                                    # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
 
 
-# In[ ]:
+# In[7]:
 
 
 for epoch in range(num_epochs):
@@ -107,7 +110,7 @@ for epoch in range(num_epochs):
 # ---
 # # Evaluación
 
-# In[ ]:
+# In[8]:
 
 
 # PARÁMETROS
@@ -118,20 +121,20 @@ n = 1000
 batch_size = 32
 
 
-# In[ ]:
+# In[9]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[ ]:
+# In[10]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[ ]:
+# In[11]:
 
 
 total_loss = 0
@@ -154,4 +157,44 @@ with torch.no_grad(): # Esto es para asegurarse de que no se realicen cálculos 
 average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio dividiendo la suma acumulada de las pérdidas (total_loss) entre el número de lotes en el conjunto de datos de prueba (len(test_loader)).
                                              # Esto proporciona una medida promedio de la discrepancia entre las imágenes originales y las imágenes reconstruidas por el autoencoder en el conjunto de datos de prueba.
 print(f"Average Test Loss: {average_loss:.4f}")
+
+
+# In[12]:
+
+
+# Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
+# imagen de salida.
+
+ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
+
+###
+
+index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
+entrada_red, salida_red = dataset_test[index]
+
+example = entrada_red.view(1, -1).float() # Ajusta la forma de la imagen a un lote de tamaño 1
+
+reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
+
+tamanio = n_cuad_lado*pixeles_cuad
+
+entrada = entrada_red.view(tamanio, tamanio)
+salida_esperada = salida_red.view(tamanio, tamanio)
+reconstructed = reconstructed.view(tamanio, tamanio)
+
+imagenes = [entrada, salida_esperada, reconstructed.detach()]
+titulos = ['Entrada', 'Salida esperada', 'Salida de la red']
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+for ax, imagen, titulo in zip(axes, imagenes, titulos):
+    if ecualizar_hist:
+        im = imagen.cpu().numpy()
+        im = ((im - im.min()) * 255) / (im.max() - im.min())
+        imagen = cv2.equalizeHist(im.astype(np.uint8))
+        titulo += '\n(ecualizada)'
+    
+    ax.imshow(imagen, cmap='gray')
+    ax.set_title(titulo)
+
+plt.tight_layout()
 
