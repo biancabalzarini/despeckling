@@ -91,33 +91,19 @@ plt.title(titulo)
 # In[8]:
 
 
-ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
+ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
+imagenes = [train_g, train_gi, train_gI0]
+titulos = ['Distribución Gamma', 'Distribución Gamma Inversa', 'Distribución GI0']
 
-imagen = train_g[index,:,:]
-titulo = 'Distribución Gamma'
-if ecualizar_hist == 1:
-    imagen = cv2.equalizeHist(imagen.astype(np.uint8))
-    titulo = titulo + '\n(ecualizada)'
-im1 = ax1.imshow(imagen, cmap='gray')
-ax1.set_title(titulo)
-
-imagen = train_gi[index,:,:]
-titulo = 'Distribución Gamma Inversa'
-if ecualizar_hist == 1:
-    imagen = cv2.equalizeHist(imagen.astype(np.uint8))
-    titulo = titulo + '\n(ecualizada)'
-im2 = ax2.imshow(imagen, cmap='gray')
-ax2.set_title(titulo)
-
-imagen = train_gI0[index,:,:]
-titulo = 'Distribución GI0'
-if ecualizar_hist == 1:
-    imagen = cv2.equalizeHist(imagen.astype(np.uint8))
-    titulo = titulo + '\n(ecualizada)'
-im3 = ax3.imshow(imagen, cmap='gray')
-ax3.set_title(titulo)
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+for ax, imagen, titulo in zip(axes, imagenes, titulos):
+    if ecualizar_hist:
+        imagen = cv2.equalizeHist(imagen[index, :, :].astype(np.uint8))
+        titulo += '\n(ecualizada)'
+    
+    ax.imshow(imagen, cmap='gray')
+    ax.set_title(titulo)
 
 plt.tight_layout()
 
