@@ -43,7 +43,7 @@ index = int(n*np.random.random())
 # In[5]:
 
 
-ecualizar_hist = 1 # 1 si queremos ecualizar el histograma de la imagen
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
 
 imagen = train_g[index,:,:]
 titulo = 'Distribución Gamma'
@@ -59,7 +59,7 @@ plt.title(titulo)
 # In[6]:
 
 
-ecualizar_hist = 1 # 1 si queremos ecualizar el histograma de la imagen
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
 
 imagen = train_gi[index,:,:]
 titulo = 'Distribución Gamma Inversa'
@@ -75,7 +75,7 @@ plt.title(titulo)
 # In[7]:
 
 
-ecualizar_hist = 1 # 1 si queremos ecualizar el histograma de la imagen
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
 
 imagen = train_gI0[index,:,:]
 titulo = 'Distribución GI0'
@@ -91,7 +91,7 @@ plt.title(titulo)
 # In[8]:
 
 
-ecualizar_hist = 1 # 1 si queremos ecualizar el histograma de la imagen
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
 
 fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
 
