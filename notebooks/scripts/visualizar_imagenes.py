@@ -12,6 +12,7 @@ from scripts.autoencoders import generate_multiple_images
 
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 
 
 # Genero imágenes para visualizar cómo quedan con las funciones que diseñé
@@ -42,37 +43,67 @@ index = int(n*np.random.random())
 # In[5]:
 
 
-plt.imshow(train_g[index,:,:], cmap='gray')
-plt.title('Distribución Gamma')
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
+
+imagen = train_g[index,:,:]
+titulo = 'Distribución Gamma'
+
+if ecualizar_hist == 1:
+    imagen = cv2.equalizeHist(imagen.astype(np.uint8))
+    titulo = titulo + '\n(ecualizada)'
+    
+plt.imshow(imagen, cmap='gray')
+plt.title(titulo)
 
 
 # In[6]:
 
 
-plt.imshow(train_gi[index,:,:], cmap='gray')
-plt.title('Distribución Gamma Inversa')
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
+
+imagen = train_gi[index,:,:]
+titulo = 'Distribución Gamma Inversa'
+
+if ecualizar_hist == 1:
+    imagen = cv2.equalizeHist(imagen.astype(np.uint8))
+    titulo = titulo + '\n(ecualizada)'
+    
+plt.imshow(imagen, cmap='gray')
+plt.title(titulo)
 
 
 # In[7]:
 
 
-plt.imshow(train_gI0[index,:,:], cmap='gray')
-plt.title('Distribución GI0')
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma de la imagen
+
+imagen = train_gI0[index,:,:]
+titulo = 'Distribución GI0'
+
+if ecualizar_hist == 1:
+    imagen = cv2.equalizeHist(imagen.astype(np.uint8))
+    titulo = titulo + '\n(ecualizada)'
+    
+plt.imshow(imagen, cmap='gray')
+plt.title(titulo)
 
 
 # In[8]:
 
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 5))
+ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
 
-im1 = ax1.imshow(train_g[index,:,:], cmap='gray')
-ax1.set_title('Distribución Gamma')
+imagenes = [train_g, train_gi, train_gI0]
+titulos = ['Distribución Gamma', 'Distribución Gamma Inversa', 'Distribución GI0']
 
-im2 = ax2.imshow(train_gi[index,:,:], cmap='gray')
-ax2.set_title('Distribución Gamma Inversa')
-
-im3 = ax3.imshow(train_gI0[index,:,:], cmap='gray')
-ax3.set_title('Distribución GI0')
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+for ax, imagen, titulo in zip(axes, imagenes, titulos):
+    if ecualizar_hist:
+        imagen = cv2.equalizeHist(imagen[index, :, :].astype(np.uint8))
+        titulo += '\n(ecualizada)'
+    
+    ax.imshow(imagen, cmap='gray')
+    ax.set_title(titulo)
 
 plt.tight_layout()
 
