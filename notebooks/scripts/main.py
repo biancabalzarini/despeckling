@@ -87,7 +87,11 @@ optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimiza
 # In[7]:
 
 
+training_losses = []
+
 for epoch in range(num_epochs):
+    epoch_losses = []
+    
     for data in train_loader:
         entrada, salida = data
         entrada = entrada.view(entrada.size(0), -1).float()
@@ -103,14 +107,30 @@ for epoch in range(num_epochs):
         loss.backward() # Se realiza el backward pass para calcular los gradientes de los parámetros del autoencoder utilizando la función de pérdida.
         optimizer.step() # Finalmente se realiza la optimización de los parámetros del modelo mediante la llamada a optimizer.step(), que actualiza los parámetros en función de los gradientes calculados.
 
+        epoch_losses.append(loss.item())
+        
+    avg_loss = np.mean(epoch_losses)
+    training_losses.append(avg_loss)
+    
     # Imprimir la pérdida del autoencoder en cada época
-    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}")
+    print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+
+# In[8]:
+
+
+plt.figure(figsize=(5, 3))
+plt.plot(range(1, num_epochs + 1), training_losses, '.-')
+plt.title('Error de entrenamiento por épocas')
+plt.xlabel('Época')
+plt.ylabel('Error')
+plt.grid()
 
 
 # ---
 # # Evaluación
 
-# In[8]:
+# In[9]:
 
 
 # PARÁMETROS
@@ -121,20 +141,20 @@ n = 1000
 batch_size = 32
 
 
-# In[9]:
+# In[10]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[10]:
+# In[11]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[11]:
+# In[12]:
 
 
 total_loss = 0
@@ -159,7 +179,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[12]:
+# In[13]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
