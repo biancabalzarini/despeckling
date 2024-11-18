@@ -1,0 +1,35 @@
+# Parámetros del entrenamiento
+training:
+  n: 50000              # Cantidad de imágenes a generar para entrenar
+  n_cuad_lado: 2        # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
+  pixeles_cuad: 25      # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
+  num_epochs: 10        # Cantidad de épocas
+  batch_size: 64        # Cantidad de imágenes en cada batch
+  learning_rate: 0.001  # Learning rate
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 32      # Dimensión del espacio latente
+  loss_function: "mse"  # Opciones: "mse", "bce"
+  optimizer: "adam"     # Opciones: "adam", "sgd"
+
+# Arquitectura del encoder
+encoder:
+  layers:
+    - dim: 128
+      activation: "relu"
+    - dim: "${model.encoding_dim}"
+      activation: "none"
+
+# Arquitectura del decoder
+decoder:
+  layers:
+    - dim: 128
+      activation: "relu"
+    - dim: "${eval:'(${training.n_cuad_lado} * ${training.pixeles_cuad})**2'}"
+      activation: "sigmoid"
+
+# Parámetros de la evaluación
+testing:
+  n: 1000         # Cantidad de imágenes a generar para evaluar
+  batch_size: 32  # Cantidad de imágenes en cada batch
