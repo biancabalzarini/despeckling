@@ -85,10 +85,24 @@ autoencoder
 # In[8]:
 
 
-criterion = nn.BCELoss() # Utilizamos Binary Cross Entropy Loss como loss function ya que las imágenes están normalizadas en el rango [0, 1]
-optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimizador es responsable de ajustar los pesos del modelo con el fin de minimizar la función de pérdida.
-                                                                   # Adam es un algoritmo de optimización popular y eficiente que adapta la tasa de aprendizaje de forma dinámica para cada parámetro del modelo.
-                                                                   # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
+loss = config['model']['loss_function'].lower()
+opt = config['model']['optimizer'].lower()
+
+if loss == 'mse':
+    criterion = nn.MSELoss()
+elif loss == 'bce':
+    criterion = nn.BCELoss()
+
+if opt == 'adam':
+    optimizer = optim.Adam(
+        autoencoder.parameters(), 
+        lr=learning_rate
+    )
+elif optim == 'sgd':
+    optimizer = optim.SGD(
+        autoencoder.parameters(), 
+        lr=learning_rate
+    )
 
 
 # In[9]:
