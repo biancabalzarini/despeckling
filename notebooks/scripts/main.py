@@ -8,7 +8,7 @@ import sys
 sys.path.append('..')
 
 from scripts.GenrationGI0 import partitioned_gi0_image
-from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images, Autoencoder
+from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images, ConfigurableAutoencoder
 
 import torch
 from torchvision import transforms
@@ -18,33 +18,40 @@ import torch.optim as optim
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+from omegaconf import OmegaConf
+OmegaConf.register_new_resolver("eval", eval)
+
+
+# Elegir el archivo de configuración correspondiente:
+
+# In[2]:
+
+
+config_path = 'configs/config_base.yaml'
+
+config = OmegaConf.load(config_path)
+config
 
 
 # ---
 # # Creación del dataset para entrenar
 
-# In[2]:
-
-
-## PARÁMETROS
-
-# Cantidad de imágenes a generar
-n = 50000
-# Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
-n_cuad_lado = 2
-# Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
-pixeles_cuad = 25
-# Tamaños de los batches
-batch_size = 50
-
-
 # In[3]:
+
+
+n = config['training']['n']
+n_cuad_lado = config['training']['n_cuad_lado']
+pixeles_cuad = config['training']['pixeles_cuad']
+batch_size = config['training']['batch_size']
+
+
+# In[4]:
 
 
 train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[4]:
+# In[5]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -61,30 +68,44 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[5]:
-
-
-# PARÁMETROS
-
-# Dimensión de la capa más interna del autoencoder
-encoding_dim = 32
-# Learning rate
-learning_rate = 1e-3
-# Cantidad de épocas
-num_epochs = 10
-
-
 # In[6]:
 
 
-autoencoder = Autoencoder(image_size=n_cuad_lado*pixeles_cuad, encoding_dim=encoding_dim)
-criterion = nn.BCELoss() # Utilizamos Binary Cross Entropy Loss como loss function ya que las imágenes están normalizadas en el rango [0, 1]
-optimizer = optim.Adam(autoencoder.parameters(), lr=learning_rate) # El optimizador es responsable de ajustar los pesos del modelo con el fin de minimizar la función de pérdida.
-                                                                   # Adam es un algoritmo de optimización popular y eficiente que adapta la tasa de aprendizaje de forma dinámica para cada parámetro del modelo.
-                                                                   # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
+learning_rate = config['training']['learning_rate']
+num_epochs = config['training']['num_epochs']
 
 
 # In[7]:
+
+
+autoencoder = ConfigurableAutoencoder(config=config)
+autoencoder
+
+
+# In[8]:
+
+
+loss = config['model']['loss_function'].lower()
+opt = config['model']['optimizer'].lower()
+
+if loss == 'mse':
+    criterion = nn.MSELoss()
+elif loss == 'bce':
+    criterion = nn.BCELoss()
+
+if opt == 'adam':
+    optimizer = optim.Adam(
+        autoencoder.parameters(), 
+        lr=learning_rate
+    )
+elif optim == 'sgd':
+    optimizer = optim.SGD(
+        autoencoder.parameters(), 
+        lr=learning_rate
+    )
+
+
+# In[9]:
 
 
 training_losses = []
@@ -116,7 +137,7 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[8]:
+# In[10]:
 
 
 plt.figure(figsize=(5, 3))
@@ -130,31 +151,27 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[9]:
+# In[11]:
 
 
-# PARÁMETROS
-
-# Cantidad de imágenes a generar para evaluar
-n = 1000
-# Tamaños de los batches
-batch_size = 32
+n = config['testing']['n']
+batch_size = config['testing']['batch_size']
 
 
-# In[10]:
+# In[12]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[11]:
+# In[13]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[12]:
+# In[14]:
 
 
 total_loss = 0
@@ -179,7 +196,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[13]:
+# In[15]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
