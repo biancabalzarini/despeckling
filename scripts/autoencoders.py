@@ -82,9 +82,7 @@ def generate_multiple_images(
     
     return conjunto_g, conjunto_gi, conjunto_gI0
 
-class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la clase nn.Module, que es una clase base para todos los modelos en PyTorch.
-                                          # Esto permite que nuestra clase Autoencoder tenga todas las funcionalidades necesarias para ser un modelo de aprendizaje profundo en PyTorch.
-                                          
+class ConfigurableAutoencoder(nn.Module):
     def __init__(self, config: dict):
         super(ConfigurableAutoencoder, self).__init__()
         
@@ -92,10 +90,10 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         self.image_size = self.config['training']['n_cuad_lado'] * self.config['training']['pixeles_cuad']
         self.flat_size = self.image_size * self.image_size
         self.encoding_dim = self.config['model']['encoding_dim']
-        
-        first_layer_size = self.config['encoder']['layers'][0]['dim']
-        assert self.flat_size > first_layer_size, \
-            f"El tamaño flat de la imagen ({self.flat_size}) debe ser mayor que el tamaño de la primera capa del encoder ({first_layer_size})"
+
+        # Agregamos una capa Flatten para convertir imágenes en vectores
+        self.flatten = nn.Flatten()
+        self.unflatten = nn.Unflatten(1, (1, self.image_size, self.image_size))
         
         self.encoder = self._build('encoder')
         self.decoder = self._build('decoder')
@@ -122,6 +120,10 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         return nn.Sequential(*layers)
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Flatten solo en la primera pasada
+        x = self.flatten(x)  
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
+        # Reconstruir la imagen a su shape original
+        decoded = self.unflatten(decoded)
         return decoded

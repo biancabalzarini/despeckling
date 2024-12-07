@@ -115,8 +115,8 @@ for epoch in range(num_epochs):
     
     for data in train_loader:
         entrada, salida = data
-        entrada = entrada.view(entrada.size(0), -1).float()
-        salida = salida.view(salida.size(0), -1).float()
+        entrada = entrada.float()
+        salida = salida.float()
 
         # Forward pass
         outputs = autoencoder(entrada) # Se pasa a las imágenes por el autoencoder, en una pasada forward.
@@ -171,7 +171,7 @@ dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[14]:
+# In[15]:
 
 
 total_loss = 0
@@ -179,9 +179,9 @@ with torch.no_grad(): # Esto es para asegurarse de que no se realicen cálculos 
                       # Al entrar en este bloque, se desactiva el cálculo y almacenamiento automático de gradientes para reducir el uso de memoria y acelerar la evaluación.
     for data in test_loader:
         entrada, salida = data
-        entrada = entrada.view(entrada.size(0), -1).float() # Se modifica la forma de las imágenes para que coincida con el formato esperado por el autoencoder.
+        entrada = entrada.float() # Se modifica la forma de las imágenes para que coincida con el formato esperado por el autoencoder.
                                                             # En este caso, las imágenes se aplanan en un tensor unidimensional. images.size(0) se utiliza para obtener el tamaño del lote.
-        salida = salida.view(salida.size(0), -1).float()
+        salida = salida.float()
 
         # Forward pass
         outputs = autoencoder(entrada) # Se realiza el forward pass del autoencoder con las imágenes de prueba.
@@ -196,7 +196,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[15]:
+# In[16]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
