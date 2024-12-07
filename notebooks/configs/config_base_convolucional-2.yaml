@@ -1,0 +1,57 @@
+# Parámetros del entrenamiento
+training:
+  n: 50000              # Cantidad de imágenes a generar para entrenar
+  n_cuad_lado: 2        # Cantidad de cuadrados por lado que van a tener las imágenes
+  pixeles_cuad: 25      # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
+  num_epochs: 20        # Cantidad de épocas
+  batch_size: 64        # Cantidad de imágenes en cada batch
+  learning_rate: 0.0005 # Learning rate
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 32      # Dimensión del espacio latente
+  loss_function: "bce"  # Binary Cross Entropy Loss
+  optimizer: "adam"     # Optimizador Adam
+
+# Arquitectura del encoder
+encoder:
+  layers:
+    - type: conv2d      # Primera capa convolucional
+      filters: 16       # Número de filtros
+      kernel_size: 3    # Tamaño del kernel
+      stride: 1         # Stride
+      padding: 1        # Padding para mantener dimensiones
+      activation: "relu"
+    - type: maxpool2d   # Añadir una capa de max pooling para reducir las dimensiones
+      pool_size: 2
+      stride: 2
+    - type: flatten     # Añadir una capa para aplanar la salida de la capa convolucional
+    - type: dense       # Capa de codificación final
+      dim: "${model.encoding_dim}"
+      activation: "none"
+
+# Arquitectura del decoder
+decoder:
+  layers:
+    - type: dense       # Capa densa inicial
+      dim: 128
+      activation: "relu"
+    - type: reshape     # Añadir una capa de reshape para volver a las dimensiones de la imagen
+      shape: [16, 50, 50]  # Ajustar según las dimensiones de tu imagen
+    - type: conv2d_transpose  # Añadir capas convolucionales transpuestas para reconstruir la imagen
+      filters: 16
+      kernel_size: 3
+      stride: 1
+      padding: 1
+      activation: "relu"
+    - type: conv2d_transpose
+      filters: 1  # Canal único para imágenes en escala de grises
+      kernel_size: 3
+      stride: 1
+      padding: 1
+      activation: "sigmoid"
+
+# Parámetros de la evaluación
+testing:
+  n: 1000         # Cantidad de imágenes a generar para evaluar
+  batch_size: 32  # Cantidad de imágenes en cada batch

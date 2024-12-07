@@ -20,6 +20,7 @@ model:
 # Arquitectura del encoder
 encoder:
   layers:
+    - type: flatten
     - dim: 128
       activation: "relu"
     - dim: "${model.encoding_dim}"

@@ -92,36 +92,127 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         self.image_size = self.config['training']['n_cuad_lado'] * self.config['training']['pixeles_cuad']
         self.flat_size = self.image_size * self.image_size
         self.encoding_dim = self.config['model']['encoding_dim']
+        self.is_conv = any(
+            layer.get('type', 'dense') == 'conv2d' for layer in self.config['encoder']['layers']
+        )
         
-        first_layer_size = self.config['encoder']['layers'][0]['dim']
-        assert self.flat_size > first_layer_size, \
-            f"El tamaño flat de la imagen ({self.flat_size}) debe ser mayor que el tamaño de la primera capa del encoder ({first_layer_size})"
-        
+        if not self.is_conv:
+            first_layer_size = self.config['encoder']['layers'][0]['dim']
+            assert self.flat_size > first_layer_size, \
+                f"El tamaño flat de la imagen ({self.flat_size}) debe ser mayor que el tamaño de la primera capa del encoder ({first_layer_size})"
+
         self.encoder = self._build('encoder')
         self.decoder = self._build('decoder')
         
+    def _get_last_output_dim(self, layers):
+        """Obtiene la dimensión de salida de la última capa que tiene dimensiones (Lineal o Conv2d)"""
+        for layer in reversed(layers):
+            if isinstance(layer, nn.Linear):
+                return layer.out_features
+            elif isinstance(layer, nn.Conv2d):
+                return layer.out_channels
+            elif isinstance(layer, nn.ConvTranspose2d):
+                return layer.out_channels
+        return None
+        
     def _build(self, component: str) -> nn.Sequential:
-        layers = []
-        if component == 'encoder':
-            input_dim = self.flat_size
-            component_layers = self.config['encoder']['layers']
-        elif component == 'decoder':
-            input_dim = self.encoding_dim
-            component_layers = self.config['decoder']['layers']
-        else:
+        if component not in ['encoder', 'decoder']:
             raise ValueError(f"El parámetro component solo puede ser 'encoder' o 'decoder', se recibió: {component}")
         
+        component_layers = self.config[component]['layers']
+        
+        layers = []
         for layer in component_layers:
-            layers.append(nn.Linear(input_dim, layer['dim']))
-            if layer['activation'].lower() == 'relu':
-                layers.append(nn.ReLU())
-            elif layer['activation'].lower() == 'sigmoid':
-                layers.append(nn.Sigmoid())
-            input_dim = layer['dim']
+            # Si no se especifica tipo, asumimos que es una capa densa
+            layer_type = layer.get('type', 'dense').lower()
             
+            if layer_type == 'dense':
+                # Determinar input_dim para capas densas
+                if len(layers) == 0:
+                    if component == 'encoder':
+                        input_dim = self.flat_size
+                    else:  # decoder
+                        input_dim = self.encoding_dim
+                else:
+                    last_dim = self._get_last_output_dim(layers)
+                    if last_dim is None:
+                        raise ValueError("No se pudo determinar la dimensión de salida de la capa anterior")
+                    input_dim = last_dim
+                layers.append(nn.Linear(input_dim, layer['dim']))
+            
+            elif layer_type == 'conv2d':
+                in_channels = layer.get('in_channels', 
+                    1 if len(layers) == 0 else self._get_last_output_dim(layers))
+                layers.append(nn.Conv2d(
+                    in_channels=in_channels,
+                    out_channels=layer['filters'],
+                    kernel_size=layer['kernel_size'],
+                    stride=layer.get('stride', 1),
+                    padding=layer.get('padding', 0)
+                ))
+                
+            elif layer_type == 'conv2d_transpose':
+                in_channels = layer.get('in_channels', self._get_last_output_dim(layers))
+                layers.append(nn.ConvTranspose2d(
+                    in_channels=in_channels,
+                    out_channels=layer['filters'],
+                    kernel_size=layer['kernel_size'],
+                    stride=layer.get('stride', 1),
+                    padding=layer.get('padding', 0)
+                ))
+            
+            elif layer_type == 'maxpool2d':
+                layers.append(nn.MaxPool2d(
+                    kernel_size=layer['pool_size'],
+                    stride=layer.get('stride', None),
+                    padding=layer.get('padding', 0)
+                ))
+            
+            elif layer_type == 'flatten':
+                layers.append(nn.Flatten())
+                
+            elif layer_type == 'reshape':
+                shape = layer['shape']
+                layers.append(lambda x: x.view(x.size(0), *shape))
+                
+            elif layer_type == 'batchnorm':
+                if isinstance(layers[-1], nn.Conv2d) or isinstance(layers[-1], nn.ConvTranspose2d):
+                    layers.append(nn.BatchNorm2d(layers[-1].out_channels))
+                else:
+                    layers.append(nn.BatchNorm1d(layers[-1].out_features))
+            
+            activation = layer.get('activation', '').lower()
+            if activation == 'relu':
+                layers.append(nn.ReLU())
+            elif activation == 'leaky_relu':
+                layers.append(nn.LeakyReLU())
+            elif activation == 'sigmoid':
+                layers.append(nn.Sigmoid())
+            elif activation == 'tanh':
+                layers.append(nn.Tanh())
+            elif activation == 'elu':
+                layers.append(nn.ELU())
+            
+            if 'dropout' in layer:
+                layers.append(nn.Dropout(layer['dropout']))
+                
         return nn.Sequential(*layers)
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Si es convolucional y la entrada está aplanada, la reshapeamos
+        if self.is_conv and x.dim() == 2:
+            x = x.view(x.size(0), 1, self.image_size, self.image_size)
+        # Si es lineal y la entrada está en 2D, la aplanamos
+        elif not self.is_conv and x.dim() == 4:
+            x = x.view(x.size(0), -1)
+        
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
+        
+        # Asegurarnos de que la salida tenga la forma correcta
+        if self.is_conv and decoded.dim() == 2:
+            decoded = decoded.view(decoded.size(0), 1, self.image_size, self.image_size)
+        elif not self.is_conv and decoded.dim() == 4:
+            decoded = decoded.view(decoded.size(0), -1)
+        
         return decoded
