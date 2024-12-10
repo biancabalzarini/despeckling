@@ -20,17 +20,21 @@ model:
 # Arquitectura del encoder
 encoder:
   layers:
-    - dim: 128
+    - type: "dense"
+      dim: 128
       activation: "relu"
-    - dim: "${model.encoding_dim}"
+    - type: "dense"
+      dim: "${model.encoding_dim}"
       activation: "none"
 
 # Arquitectura del decoder
 decoder:
   layers:
-    - dim: 128
+    - type: "dense"
+      dim: 128
       activation: "relu"
-    - dim: "${eval:'(${training.n_cuad_lado} * ${training.pixeles_cuad})**2'}"
+    - type: "dense"
+      dim: "${eval:'(${training.n_cuad_lado} * ${training.pixeles_cuad})**2'}"
       activation: "sigmoid"
 
 # Parámetros de la evaluación

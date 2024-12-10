@@ -84,6 +84,7 @@ def generate_multiple_images(
 
 class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la clase nn.Module, que es una clase base para todos los modelos en PyTorch.
                                           # Esto permite que nuestra clase Autoencoder tenga todas las funcionalidades necesarias para ser un modelo de aprendizaje profundo en PyTorch.
+    
     def __init__(self, config: dict):
         super(ConfigurableAutoencoder, self).__init__()
         
