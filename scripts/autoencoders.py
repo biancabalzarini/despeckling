@@ -131,6 +131,8 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                     stride=layer.get('stride', 1),
                     padding=layer.get('padding', 0)
                 ))
+                if layer.activation.lower() == 'sigmoid':
+                    layers.append(nn.Sigmoid())
             
         return nn.Sequential(*layers)
     

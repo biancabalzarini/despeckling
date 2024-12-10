@@ -25,6 +25,7 @@ encoder:
       kernel_size: 3
       stride: 1
       padding: "same"
+      activation: "sigmoid"
     - type: "flatten"
     - type: "dense"
       dim: 128
