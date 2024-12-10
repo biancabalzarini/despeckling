@@ -92,8 +92,6 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         self.image_size = self.config['training']['n_cuad_lado'] * self.config['training']['pixeles_cuad']
         self.flat_size = self.image_size * self.image_size
         self.encoding_dim = self.config['model']['encoding_dim']
-
-        self.unflatten = nn.Unflatten(1, (1, self.image_size, self.image_size))
         
         self.encoder = self._build('encoder')
         self.decoder = self._build('decoder')
@@ -120,12 +118,12 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 elif layer['activation'].lower() == 'sigmoid':
                     layers.append(nn.Sigmoid())
                 input_dim = layer['dim']
+            elif layer.type == "unflatten":
+                layers.append(nn.Unflatten(1, (1, self.image_size, self.image_size)))
             
         return nn.Sequential(*layers)
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
-        # Reconstruir la imagen a su shape original
-        decoded = self.unflatten(decoded)
         return decoded
