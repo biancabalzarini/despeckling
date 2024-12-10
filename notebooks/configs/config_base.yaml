@@ -20,6 +20,11 @@ model:
 # Arquitectura del encoder
 encoder:
   layers:
+    - type: "conv2d"
+      filters: 1
+      kernel_size: 3
+      stride: 1
+      padding: "same"
     - type: "flatten"
     - type: "dense"
       dim: 128

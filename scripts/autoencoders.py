@@ -111,6 +111,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
             
             if layer.type == "flatten":
                 layers.append(nn.Flatten())
+                
             elif layer.type == "dense":
                 layers.append(nn.Linear(input_dim, layer['dim']))
                 if layer['activation'].lower() == 'relu':
@@ -118,8 +119,18 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 elif layer['activation'].lower() == 'sigmoid':
                     layers.append(nn.Sigmoid())
                 input_dim = layer['dim']
+                
             elif layer.type == "unflatten":
                 layers.append(nn.Unflatten(1, (1, self.image_size, self.image_size)))
+                
+            elif layer.type == 'conv2d':
+                layers.append(nn.Conv2d(
+                    in_channels=layer.get('in_channels', layers[-1].out_channels if layers else 1),
+                    out_channels=layer['filters'],
+                    kernel_size=layer['kernel_size'],
+                    stride=layer.get('stride', 1),
+                    padding=layer.get('padding', 0)
+                ))
             
         return nn.Sequential(*layers)
     
