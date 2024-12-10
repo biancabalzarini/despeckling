@@ -93,8 +93,6 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         self.flat_size = self.image_size * self.image_size
         self.encoding_dim = self.config['model']['encoding_dim']
 
-        # Agregamos una capa Flatten para convertir imágenes en vectores
-        self.flatten = nn.Flatten()
         self.unflatten = nn.Unflatten(1, (1, self.image_size, self.image_size))
         
         self.encoder = self._build('encoder')
@@ -112,18 +110,20 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
             raise ValueError(f"El parámetro component solo puede ser 'encoder' o 'decoder', se recibió: {component}")
         
         for layer in component_layers:
-            layers.append(nn.Linear(input_dim, layer['dim']))
-            if layer['activation'].lower() == 'relu':
-                layers.append(nn.ReLU())
-            elif layer['activation'].lower() == 'sigmoid':
-                layers.append(nn.Sigmoid())
-            input_dim = layer['dim']
+            
+            if layer.type == "flatten":
+                layers.append(nn.Flatten())
+            elif layer.type == "dense":
+                layers.append(nn.Linear(input_dim, layer['dim']))
+                if layer['activation'].lower() == 'relu':
+                    layers.append(nn.ReLU())
+                elif layer['activation'].lower() == 'sigmoid':
+                    layers.append(nn.Sigmoid())
+                input_dim = layer['dim']
             
         return nn.Sequential(*layers)
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # Flatten solo en la primera pasada
-        x = self.flatten(x)  
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
         # Reconstruir la imagen a su shape original

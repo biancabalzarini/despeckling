@@ -20,6 +20,7 @@ model:
 # Arquitectura del encoder
 encoder:
   layers:
+    - type: "flatten"
     - type: "dense"
       dim: 128
       activation: "relu"
