@@ -32,7 +32,6 @@ encoder:
       activation: "relu"
     - type: "dense"
       dim: "${model.encoding_dim}"
-      activation: "none"
 
 # Arquitectura del decoder
 decoder:
