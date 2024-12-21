@@ -171,7 +171,7 @@ dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[15]:
+# In[14]:
 
 
 total_loss = 0
@@ -179,8 +179,7 @@ with torch.no_grad(): # Esto es para asegurarse de que no se realicen cálculos 
                       # Al entrar en este bloque, se desactiva el cálculo y almacenamiento automático de gradientes para reducir el uso de memoria y acelerar la evaluación.
     for data in test_loader:
         entrada, salida = data
-        entrada = entrada.float() # Se modifica la forma de las imágenes para que coincida con el formato esperado por el autoencoder.
-                                                            # En este caso, las imágenes se aplanan en un tensor unidimensional. images.size(0) se utiliza para obtener el tamaño del lote.
+        entrada = entrada.float()
         salida = salida.float()
 
         # Forward pass
@@ -196,7 +195,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[16]:
+# In[15]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -209,7 +208,7 @@ ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
 index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
 entrada_red, salida_red = dataset_test[index]
 
-example = entrada_red.view(1, -1).float() # Ajusta la forma de la imagen a un lote de tamaño 1
+example = entrada_red.float()
 
 reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
 

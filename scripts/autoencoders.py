@@ -98,6 +98,8 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         
     def _build(self, component: str) -> nn.Sequential:
         layers = []
+        last_out_channels = 1
+        
         if component == 'encoder':
             input_dim = self.flat_size
             component_layers = self.config['encoder']['layers']
@@ -121,12 +123,13 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 
             elif layer.type == 'conv2d':
                 layers.append(nn.Conv2d(
-                    in_channels=layer.get('in_channels', layers[-1].out_channels if layers else 1),
+                    in_channels=layer.get('in_channels', last_out_channels),
                     out_channels=layer['filters'],
                     kernel_size=layer['kernel_size'],
                     stride=layer.get('stride', 1),
                     padding=layer.get('padding', 0)
                 ))
+                last_out_channels = layer['filters']
 
             activation = layer.get('activation', '').lower()
             if activation == 'relu':
