@@ -119,7 +119,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 input_dim = layer['dim']
                 
             elif layer.type == "unflatten":
-                layers.append(nn.Unflatten(1, (1, self.image_size, self.image_size)))
+                layers.append(nn.Unflatten(1, (1, layer['dim1'], layer['dim2'])))
                 
             elif layer.type == 'conv2d':
                 layers.append(nn.Conv2d(

@@ -43,6 +43,8 @@ decoder:
       dim: "${eval:'(${training.n_cuad_lado} * ${training.pixeles_cuad})**2'}"
       activation: "sigmoid"
     - type: "unflatten"
+      dim1: "${eval:'${training.n_cuad_lado} * ${training.pixeles_cuad}'}"
+      dim2: "${eval:'${training.n_cuad_lado} * ${training.pixeles_cuad}'}"
 
 # Parámetros de la evaluación
 testing:
