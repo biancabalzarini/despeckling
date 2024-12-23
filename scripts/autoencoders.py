@@ -143,6 +143,15 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                     padding=layer.get('padding', 0)
                 ))
                 last_out_channels = layer['filters']
+                
+            elif layer.type == 'maxpool2d':
+                pool_size = layer['pool_size']
+                layers.append(nn.MaxPool2d(
+                    kernel_size=pool_size,
+                    stride=layer.get('stride', None),
+                    padding=layer.get('padding', 0)
+                ))
+                current_size = current_size // pool_size
 
             activation = layer.get('activation', '').lower()
             if activation == 'relu':
