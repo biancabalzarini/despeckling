@@ -234,3 +234,26 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 
 plt.tight_layout()
 
+
+# In[16]:
+
+
+# Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
+
+ecualizar_hist = False  # Si se quiere o no ecualizar el histograma de la imagen
+
+###
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+for ax, imagen, titulo in zip(axes, imagenes, titulos):
+    if ecualizar_hist:
+        im = imagen.cpu().numpy()
+        im = ((im - im.min()) * 255) / (im.max() - im.min())
+        imagen = cv2.equalizeHist(im.astype(np.uint8))
+        titulo += '\n(ecualizada)'
+    
+    ax.imshow(imagen, cmap='gray')
+    ax.set_title(titulo)
+
+plt.tight_layout()
+
