@@ -99,6 +99,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
     def _build(self, component: str) -> nn.Sequential:
         layers = []
         last_out_channels = 1
+        current_size = self.image_size
         
         if component == 'encoder':
             input_dim = self.flat_size
@@ -112,6 +113,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         for layer in component_layers:
             
             if layer.type == "flatten":
+                input_dim = current_size * current_size * last_out_channels
                 layers.append(nn.Flatten())
                 
             elif layer.type == "dense":
@@ -120,6 +122,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 
             elif layer.type == "unflatten":
                 layers.append(nn.Unflatten(1, (1, layer['dim1'], layer['dim2'])))
+                current_size = layer['dim1']  # Asumiendo imágenes cuadradas
                 
             elif layer.type == 'conv2d':
                 layers.append(nn.Conv2d(
