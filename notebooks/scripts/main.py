@@ -115,8 +115,8 @@ for epoch in range(num_epochs):
     
     for data in train_loader:
         entrada, salida = data
-        entrada = entrada.view(entrada.size(0), -1).float()
-        salida = salida.view(salida.size(0), -1).float()
+        entrada = entrada.float()
+        salida = salida.float()
 
         # Forward pass
         outputs = autoencoder(entrada) # Se pasa a las imágenes por el autoencoder, en una pasada forward.
@@ -179,9 +179,8 @@ with torch.no_grad(): # Esto es para asegurarse de que no se realicen cálculos 
                       # Al entrar en este bloque, se desactiva el cálculo y almacenamiento automático de gradientes para reducir el uso de memoria y acelerar la evaluación.
     for data in test_loader:
         entrada, salida = data
-        entrada = entrada.view(entrada.size(0), -1).float() # Se modifica la forma de las imágenes para que coincida con el formato esperado por el autoencoder.
-                                                            # En este caso, las imágenes se aplanan en un tensor unidimensional. images.size(0) se utiliza para obtener el tamaño del lote.
-        salida = salida.view(salida.size(0), -1).float()
+        entrada = entrada.float()
+        salida = salida.float()
 
         # Forward pass
         outputs = autoencoder(entrada) # Se realiza el forward pass del autoencoder con las imágenes de prueba.
@@ -209,7 +208,7 @@ ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
 index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
 entrada_red, salida_red = dataset_test[index]
 
-example = entrada_red.view(1, -1).float() # Ajusta la forma de la imagen a un lote de tamaño 1
+example = entrada_red.float()
 
 reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
 
@@ -221,6 +220,29 @@ reconstructed = reconstructed.view(tamanio, tamanio)
 
 imagenes = [entrada, salida_esperada, reconstructed.detach()]
 titulos = ['Entrada', 'Salida esperada', 'Salida de la red']
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+for ax, imagen, titulo in zip(axes, imagenes, titulos):
+    if ecualizar_hist:
+        im = imagen.cpu().numpy()
+        im = ((im - im.min()) * 255) / (im.max() - im.min())
+        imagen = cv2.equalizeHist(im.astype(np.uint8))
+        titulo += '\n(ecualizada)'
+    
+    ax.imshow(imagen, cmap='gray')
+    ax.set_title(titulo)
+
+plt.tight_layout()
+
+
+# In[16]:
+
+
+# Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
+
+ecualizar_hist = False  # Si se quiere o no ecualizar el histograma de la imagen
+
+###
 
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 for ax, imagen, titulo in zip(axes, imagenes, titulos):

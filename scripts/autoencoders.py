@@ -84,7 +84,7 @@ def generate_multiple_images(
 
 class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la clase nn.Module, que es una clase base para todos los modelos en PyTorch.
                                           # Esto permite que nuestra clase Autoencoder tenga todas las funcionalidades necesarias para ser un modelo de aprendizaje profundo en PyTorch.
-                                          
+    
     def __init__(self, config: dict):
         super(ConfigurableAutoencoder, self).__init__()
         
@@ -93,15 +93,14 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         self.flat_size = self.image_size * self.image_size
         self.encoding_dim = self.config['model']['encoding_dim']
         
-        first_layer_size = self.config['encoder']['layers'][0]['dim']
-        assert self.flat_size > first_layer_size, \
-            f"El tamaño flat de la imagen ({self.flat_size}) debe ser mayor que el tamaño de la primera capa del encoder ({first_layer_size})"
-        
         self.encoder = self._build('encoder')
         self.decoder = self._build('decoder')
         
     def _build(self, component: str) -> nn.Sequential:
         layers = []
+        last_out_channels = 1
+        current_size = self.image_size
+        
         if component == 'encoder':
             input_dim = self.flat_size
             component_layers = self.config['encoder']['layers']
@@ -112,12 +111,59 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
             raise ValueError(f"El parámetro component solo puede ser 'encoder' o 'decoder', se recibió: {component}")
         
         for layer in component_layers:
-            layers.append(nn.Linear(input_dim, layer['dim']))
-            if layer['activation'].lower() == 'relu':
+            
+            if layer.type == "flatten":
+                input_dim = current_size * current_size * last_out_channels
+                layers.append(nn.Flatten())
+                
+            elif layer.type == "dense":
+                layers.append(nn.Linear(input_dim, layer['dim']))
+                input_dim = layer['dim']
+                
+            elif layer.type == "unflatten":
+                layers.append(nn.Unflatten(1, (1, layer['dim1'], layer['dim2'])))
+                current_size = layer['dim1']  # Asumiendo imágenes cuadradas
+                
+            elif layer.type == 'conv2d':
+                layers.append(nn.Conv2d(
+                    in_channels=layer.get('in_channels', last_out_channels),
+                    out_channels=layer['filters'],
+                    kernel_size=layer['kernel_size'],
+                    stride=layer.get('stride', 1),
+                    padding=layer.get('padding', 0)
+                ))
+                last_out_channels = layer['filters']
+            
+            elif layer.type == 'conv2d_transpose':
+                layers.append(nn.ConvTranspose2d(
+                    in_channels=layer.get('in_channels', last_out_channels),
+                    out_channels=layer['filters'],
+                    kernel_size=layer['kernel_size'],
+                    stride=layer.get('stride', 1),
+                    padding=layer.get('padding', 0)
+                ))
+                last_out_channels = layer['filters']
+                
+            elif layer.type == 'maxpool2d':
+                pool_size = layer['pool_size']
+                layers.append(nn.MaxPool2d(
+                    kernel_size=pool_size,
+                    stride=layer.get('stride', None),
+                    padding=layer.get('padding', 0)
+                ))
+                current_size = current_size // pool_size
+
+            activation = layer.get('activation', '').lower()
+            if activation == 'relu':
                 layers.append(nn.ReLU())
-            elif layer['activation'].lower() == 'sigmoid':
+            elif activation == 'leaky_relu':
+                layers.append(nn.LeakyReLU())
+            elif activation == 'sigmoid':
                 layers.append(nn.Sigmoid())
-            input_dim = layer['dim']
+            elif activation == 'tanh':
+                layers.append(nn.Tanh())
+            elif activation == 'elu':
+                layers.append(nn.ELU())
             
         return nn.Sequential(*layers)
     
