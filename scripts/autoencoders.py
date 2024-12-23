@@ -130,6 +130,16 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                     padding=layer.get('padding', 0)
                 ))
                 last_out_channels = layer['filters']
+            
+            elif layer.type == 'conv2d_transpose':
+                layers.append(nn.ConvTranspose2d(
+                    in_channels=layer.get('in_channels', last_out_channels),
+                    out_channels=layer['filters'],
+                    kernel_size=layer['kernel_size'],
+                    stride=layer.get('stride', 1),
+                    padding=layer.get('padding', 0)
+                ))
+                last_out_channels = layer['filters']
 
             activation = layer.get('activation', '').lower()
             if activation == 'relu':
