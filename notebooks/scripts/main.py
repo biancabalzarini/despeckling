@@ -15,6 +15,7 @@ from torchvision import transforms
 from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
+from torchsummary import summary
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -75,11 +76,17 @@ learning_rate = config['training']['learning_rate']
 num_epochs = config['training']['num_epochs']
 
 
-# In[7]:
+# In[8]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config)
 autoencoder
+
+
+# In[9]:
+
+
+summary(autoencoder, (1, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad))
 
 
 # In[8]:
