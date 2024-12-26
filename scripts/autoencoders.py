@@ -109,8 +109,10 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
             component_layers = self.config['decoder']['layers']
         else:
             raise ValueError(f"El parámetro component solo puede ser 'encoder' o 'decoder', se recibió: {component}")
+        print(f'\nComponente: {component}\n')
         
         for layer in component_layers:
+            print(layer.type)
             
             if layer.type == "flatten":
                 input_dim = current_size * current_size * last_out_channels
