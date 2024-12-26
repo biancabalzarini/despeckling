@@ -87,6 +87,7 @@ autoencoder
 
 
 summary(autoencoder, (1, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad))
+# El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
 # In[8]:
