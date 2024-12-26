@@ -86,7 +86,10 @@ autoencoder
 # In[9]:
 
 
-summary(autoencoder, (1, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad))
+summary(
+    autoencoder,
+    (1, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad) # (nro_de_canales, alto, ancho) de las imágenes de entrada
+)
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
