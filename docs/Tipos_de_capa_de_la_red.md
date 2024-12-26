@@ -62,5 +62,5 @@ Output Width = [(Input Width + 2 × Padding - Kernel Size) / Stride] + 1
 
 Output Channels = Input Channels
 
-### Requisito para que la convolución sea válida
+### Requisito para que el pooling sea válido
 Size ≥ (Kernel Size - 2×Padding - 1) × Stride + 1
