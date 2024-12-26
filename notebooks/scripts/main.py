@@ -76,14 +76,14 @@ learning_rate = config['training']['learning_rate']
 num_epochs = config['training']['num_epochs']
 
 
-# In[8]:
+# In[7]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config)
 autoencoder
 
 
-# In[9]:
+# In[8]:
 
 
 summary(
@@ -93,7 +93,7 @@ summary(
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
-# In[8]:
+# In[9]:
 
 
 loss = config['model']['loss_function'].lower()
@@ -116,7 +116,7 @@ elif optim == 'sgd':
     )
 
 
-# In[9]:
+# In[10]:
 
 
 training_losses = []
@@ -148,7 +148,7 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[10]:
+# In[11]:
 
 
 plt.figure(figsize=(5, 3))
@@ -162,27 +162,27 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[11]:
+# In[12]:
 
 
 n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[12]:
+# In[13]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[13]:
+# In[14]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[14]:
+# In[15]:
 
 
 total_loss = 0
@@ -206,7 +206,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[15]:
+# In[16]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -246,7 +246,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[16]:
+# In[17]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar

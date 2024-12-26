@@ -117,7 +117,10 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 layers.append(nn.Flatten())
                 
             elif layer.type == "dense":
-                layers.append(nn.Linear(input_dim, layer['dim']))
+                layers.append(nn.Linear(
+                    input_dim,
+                    layer['dim'],
+                    bias=layer.get('bias', True)))
                 input_dim = layer['dim']
                 
             elif layer.type == "unflatten":
