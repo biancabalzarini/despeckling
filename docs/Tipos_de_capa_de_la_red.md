@@ -7,7 +7,7 @@
     - stride=1: Se mueve pixel por pixel (default).
     - stride=2: Salta de 2 en 2 píxeles, reduciendo las dimensiones espaciales a la mitad.
     - stride>2: Reduce aún más las dimensiones, pero puede perder información.
-- *Padding*: Añade píxeles alrededor de la imagen antes de aplicar la convolución:
+- *padding*: Añade píxeles alrededor de la imagen antes de aplicar la convolución:
     - Sin padding (padding=0): La imagen resultante se reduce.
     - padding='same': Mantiene las dimensiones de entrada iguales.
     - padding=1: Añade 1 píxel de relleno en todos los bordes.
@@ -48,3 +48,19 @@ Output Channels = out_channels
 Tanto el ancho como el alto de la imágen de entrada (usemos la variable *Size*) deben cumplir lo siguiente:
 
 Size ≥ (1 + 2×Padding - Kernel Size - Output Padding) / Stride + 1
+
+## [Max Pooling](https://pytorch.org/docs/stable/generated/torch.nn.MaxPool2d.html)
+### Parámetros:
+- *kernel_size*: Tamaño de la ventana de pooling.
+- *stride*: Determina cuántos píxeles "salta" el kernel al deslizarse sobre la imagen. Por defecto es igual a kernel_size.
+- *padding*: Cantidad de padding (default 0).
+
+### La fórmula para calcular las dimensiones de salida es:
+Output Height = [(Input Height + 2 × Padding - Kernel Size) / Stride] + 1
+
+Output Width = [(Input Width + 2 × Padding - Kernel Size) / Stride] + 1
+
+Output Channels = Input Channels
+
+### Requisito para que la convolución sea válida
+Size ≥ (Kernel Size - 2×Padding - 1) × Stride + 1
