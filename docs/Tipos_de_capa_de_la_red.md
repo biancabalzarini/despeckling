@@ -31,3 +31,20 @@ Output Channels = out_channels
 Tanto el ancho como el alto de la imágen de entrada (usemos la variable *Size*) deben cumplir lo siguiente:
 
 Size ≥ (Kernel Size - 2×Padding - 1) × Stride + 1
+
+## [Convolución 2D Traspuesta](https://pytorch.org/docs/stable/generated/torch.nn.ConvTranspose2d.html)
+### Parámetros:
+Funciona de forma similar a la convolución 2D pero "al revés". Tiene los mismos parámetros, salvo que se agrega además el siguiente:
+- *output_padding*: Padding adicional para la salida.
+
+### La fórmula para calcular las dimensiones de salida es:
+Output Height = (Input Height - 1) × Stride - 2 × Padding + Kernel Size + Output Padding
+
+Output Width = (Input Width - 1) × Stride - 2 × Padding + Kernel Size + Output Padding
+
+Output Channels = out_channels
+
+### Requisito para que la convolución sea válida
+Tanto el ancho como el alto de la imágen de entrada (usemos la variable *Size*) deben cumplir lo siguiente:
+
+Size ≥ (1 + 2×Padding - Kernel Size - Output Padding) / Stride + 1
