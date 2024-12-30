@@ -57,9 +57,9 @@ Siempre disminuye el tamaño de la imagen, por lo cual no tiene sentido usarlo e
 - *padding*: Cantidad de padding (default 0).
 
 ### La fórmula para calcular las dimensiones de salida es:
-Output Height = [(Input Height + 2 × Padding - Kernel Size) / Stride] + 1
+Output Height = [(Input Height + 2 x Padding - Dilation x (Kernel Size - 1) - 1) / Stride] + 1
 
-Output Width = [(Input Width + 2 × Padding - Kernel Size) / Stride] + 1
+Output Width = [(Input Width + 2 x Padding - Dilation x (Kernel Size - 1) - 1) / Stride] + 1
 
 Output Channels = Input Channels
 
