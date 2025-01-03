@@ -28,7 +28,7 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_path = 'configs/config_base.yaml'
+config_path = 'configs/config_1.yaml'
 
 config = OmegaConf.load(config_path)
 config
