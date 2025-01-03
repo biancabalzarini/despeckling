@@ -50,15 +50,16 @@ Tanto el ancho como el alto de la imágen de entrada (usemos la variable *Size*)
 Size ≥ (1 + 2×Padding - Kernel Size - Output Padding) / Stride + 1
 
 ## [Max Pooling](https://pytorch.org/docs/stable/generated/torch.nn.MaxPool2d.html)
+Siempre disminuye el tamaño de la imagen, por lo cual no tiene sentido usarlo en el decoder.
 ### Parámetros:
 - *kernel_size*: Tamaño de la ventana de pooling.
 - *stride*: Determina cuántos píxeles "salta" el kernel al deslizarse sobre la imagen. Por defecto es igual a kernel_size.
 - *padding*: Cantidad de padding (default 0).
 
 ### La fórmula para calcular las dimensiones de salida es:
-Output Height = [(Input Height + 2 × Padding - Kernel Size) / Stride] + 1
+Output Height = [(Input Height + 2 x Padding - Dilation x (Kernel Size - 1) - 1) / Stride] + 1
 
-Output Width = [(Input Width + 2 × Padding - Kernel Size) / Stride] + 1
+Output Width = [(Input Width + 2 x Padding - Dilation x (Kernel Size - 1) - 1) / Stride] + 1
 
 Output Channels = Input Channels
 

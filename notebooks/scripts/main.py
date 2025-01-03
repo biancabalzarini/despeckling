@@ -28,7 +28,7 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_path = 'configs/config_base.yaml'
+config_path = 'configs/config_1.yaml'
 
 config = OmegaConf.load(config_path)
 config
@@ -219,7 +219,7 @@ ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
 index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
 entrada_red, salida_red = dataset_test[index]
 
-example = entrada_red.float()
+example = entrada_red.float().unsqueeze(0)
 
 reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
 
