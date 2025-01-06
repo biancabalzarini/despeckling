@@ -161,7 +161,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[11]:
+# In[17]:
 
 
 plt.figure(figsize=(5, 3))
@@ -175,27 +175,27 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[12]:
+# In[18]:
 
 
 n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[13]:
+# In[19]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[14]:
+# In[20]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[15]:
+# In[21]:
 
 
 total_loss = 0
@@ -217,6 +217,14 @@ with torch.no_grad(): # Esto es para asegurarse de que no se realicen cálculos 
 average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio dividiendo la suma acumulada de las pérdidas (total_loss) entre el número de lotes en el conjunto de datos de prueba (len(test_loader)).
                                              # Esto proporciona una medida promedio de la discrepancia entre las imágenes originales y las imágenes reconstruidas por el autoencoder en el conjunto de datos de prueba.
 print(f"Average Test Loss: {average_loss:.4f}")
+
+
+# In[23]:
+
+
+pd.DataFrame({
+    'loss': [average_loss]
+}).to_csv(f'data/test_errors/{config_name}.csv', index=False)
 
 
 # In[16]:
