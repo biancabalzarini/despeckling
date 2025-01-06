@@ -10,6 +10,7 @@ sys.path.append('..')
 from scripts.GenrationGI0 import partitioned_gi0_image
 from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images, ConfigurableAutoencoder
 
+import pandas as pd
 import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader
@@ -25,11 +26,12 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[2]:
+# In[ ]:
 
 
-config_path = 'configs/config_1.yaml'
+config_name = 'config_base' # Elegir
 
+config_path = 'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
 config
 
@@ -146,6 +148,17 @@ for epoch in range(num_epochs):
     
     # Imprimir la pérdida del autoencoder en cada época
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
+
+
+# In[16]:
+
+
+df_errors = pd.DataFrame({
+    'epoch': range(1, num_epochs + 1),
+    'loss': training_losses
+})
+
+df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
 # In[11]:
