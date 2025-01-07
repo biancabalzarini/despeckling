@@ -10,6 +10,7 @@ sys.path.append('..')
 from scripts.GenrationGI0 import partitioned_gi0_image
 from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images, ConfigurableAutoencoder
 
+import pandas as pd
 import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader
@@ -28,8 +29,9 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_path = 'configs/config_base.yaml'
+config_name = 'config_base' # Elegir
 
+config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
 config
 
@@ -151,6 +153,17 @@ for epoch in range(num_epochs):
 # In[11]:
 
 
+df_errors = pd.DataFrame({
+    'epoch': range(1, num_epochs + 1),
+    'loss': training_losses
+})
+
+df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
+
+
+# In[12]:
+
+
 plt.figure(figsize=(5, 3))
 plt.plot(range(1, num_epochs + 1), training_losses, '.-')
 plt.title('Error de entrenamiento por épocas')
@@ -162,27 +175,27 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[12]:
+# In[13]:
 
 
 n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[13]:
+# In[14]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[14]:
+# In[15]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[15]:
+# In[16]:
 
 
 total_loss = 0
@@ -206,7 +219,27 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[16]:
+# In[17]:
+
+
+test_file_path = f'data/test_errors.csv'
+
+new_result = pd.DataFrame({
+    'config_name': [config_name],
+    'loss_testing': [average_loss]
+})
+
+try:
+    existing_results = pd.read_csv(test_file_path)
+    existing_results = existing_results[existing_results['config_name'] != config_name]
+    all_results = pd.concat([existing_results, new_result], ignore_index=True)
+except FileNotFoundError:
+    all_results = new_result
+
+all_results.to_csv(test_file_path, index=False)
+
+
+# In[18]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -216,37 +249,47 @@ ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
 
 ###
 
-index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
-entrada_red, salida_red = dataset_test[index]
+def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 
-example = entrada_red.float()
+    index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
+    entrada_red, salida_red = dataset_test[index]
 
-reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
+    example = entrada_red.float().unsqueeze(0)
 
-tamanio = n_cuad_lado*pixeles_cuad
+    reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
 
-entrada = entrada_red.view(tamanio, tamanio)
-salida_esperada = salida_red.view(tamanio, tamanio)
-reconstructed = reconstructed.view(tamanio, tamanio)
+    tamanio = n_cuad_lado*pixeles_cuad
 
-imagenes = [entrada, salida_esperada, reconstructed.detach()]
-titulos = ['Entrada', 'Salida esperada', 'Salida de la red']
+    entrada = entrada_red.view(tamanio, tamanio)
+    salida_esperada = salida_red.view(tamanio, tamanio)
+    reconstructed = reconstructed.view(tamanio, tamanio)
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-for ax, imagen, titulo in zip(axes, imagenes, titulos):
-    if ecualizar_hist:
-        im = imagen.cpu().numpy()
-        im = ((im - im.min()) * 255) / (im.max() - im.min())
-        imagen = cv2.equalizeHist(im.astype(np.uint8))
-        titulo += '\n(ecualizada)'
-    
-    ax.imshow(imagen, cmap='gray')
-    ax.set_title(titulo)
+    imagenes = [entrada, salida_esperada, reconstructed.detach()]
+    titulos = ['Entrada', 'Salida esperada', 'Salida de la red']
 
-plt.tight_layout()
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    for ax, imagen, titulo in zip(axes, imagenes, titulos):
+        if ecualizar_hist:
+            im = imagen.cpu().numpy()
+            im = ((im - im.min()) * 255) / (im.max() - im.min())
+            imagen = cv2.equalizeHist(im.astype(np.uint8))
+            titulo += '\n(ecualizada)'
+        
+        ax.imshow(imagen, cmap='gray')
+        ax.set_title(titulo)
+
+    plt.tight_layout()
+    plt.savefig(f'data/images/{config_name}_{name_suffix}.png', dpi=300, bbox_inches='tight')
+
+    if not show_plot:
+        plt.close(fig)
+
+    return imagenes, titulos
+
+imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[17]:
+# In[19]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -267,4 +310,11 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
     ax.set_title(titulo)
 
 plt.tight_layout()
+
+
+# In[20]:
+
+
+# Guardo otra imagen solo para tener a modo de ejemplo
+imagenes, titulos = graph_random_image(ecualizar_hist=True, name_suffix=2, show_plot=False)
 

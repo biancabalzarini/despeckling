@@ -6,3 +6,4 @@ torchvision
 torchsummary
 opencv-python
 omegaconf>=2.3.0
+pandas
