@@ -231,6 +231,7 @@ new_result = pd.DataFrame({
 
 try:
     existing_results = pd.read_csv(test_file_path)
+    existing_results = existing_results[existing_results['config_name'] != config_name]
     all_results = pd.concat([existing_results, new_result], ignore_index=True)
 except FileNotFoundError:
     all_results = new_result
