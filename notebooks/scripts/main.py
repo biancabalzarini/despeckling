@@ -26,12 +26,12 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[ ]:
+# In[2]:
 
 
 config_name = 'config_base' # Elegir
 
-config_path = 'configs/{config_name}.yaml'
+config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
 config
 
@@ -150,7 +150,7 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[16]:
+# In[11]:
 
 
 df_errors = pd.DataFrame({
@@ -161,7 +161,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[17]:
+# In[12]:
 
 
 plt.figure(figsize=(5, 3))
@@ -175,27 +175,27 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[18]:
+# In[13]:
 
 
 n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[19]:
+# In[14]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[20]:
+# In[15]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[21]:
+# In[16]:
 
 
 total_loss = 0
@@ -219,15 +219,26 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[23]:
+# In[17]:
 
 
-pd.DataFrame({
-    'loss': [average_loss]
-}).to_csv(f'data/test_errors/{config_name}.csv', index=False)
+test_file_path = f'data/test_errors.csv'
+
+new_result = pd.DataFrame({
+    'config_name': [config_name],
+    'loss_testing': [average_loss]
+})
+
+try:
+    existing_results = pd.read_csv(test_file_path)
+    all_results = pd.concat([existing_results, new_result], ignore_index=True)
+except FileNotFoundError:
+    all_results = new_result
+
+all_results.to_csv(test_file_path, index=False)
 
 
-# In[16]:
+# In[18]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -267,7 +278,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[17]:
+# In[19]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
