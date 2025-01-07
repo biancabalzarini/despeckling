@@ -238,7 +238,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[32]:
+# In[18]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -288,7 +288,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[33]:
+# In[19]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -311,7 +311,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[37]:
+# In[20]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo
