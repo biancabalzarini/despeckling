@@ -238,7 +238,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[18]:
+# In[32]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -248,37 +248,47 @@ ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
 
 ###
 
-index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
-entrada_red, salida_red = dataset_test[index]
+def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 
-example = entrada_red.float().unsqueeze(0)
+    index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
+    entrada_red, salida_red = dataset_test[index]
 
-reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
+    example = entrada_red.float().unsqueeze(0)
 
-tamanio = n_cuad_lado*pixeles_cuad
+    reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
 
-entrada = entrada_red.view(tamanio, tamanio)
-salida_esperada = salida_red.view(tamanio, tamanio)
-reconstructed = reconstructed.view(tamanio, tamanio)
+    tamanio = n_cuad_lado*pixeles_cuad
 
-imagenes = [entrada, salida_esperada, reconstructed.detach()]
-titulos = ['Entrada', 'Salida esperada', 'Salida de la red']
+    entrada = entrada_red.view(tamanio, tamanio)
+    salida_esperada = salida_red.view(tamanio, tamanio)
+    reconstructed = reconstructed.view(tamanio, tamanio)
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-for ax, imagen, titulo in zip(axes, imagenes, titulos):
-    if ecualizar_hist:
-        im = imagen.cpu().numpy()
-        im = ((im - im.min()) * 255) / (im.max() - im.min())
-        imagen = cv2.equalizeHist(im.astype(np.uint8))
-        titulo += '\n(ecualizada)'
-    
-    ax.imshow(imagen, cmap='gray')
-    ax.set_title(titulo)
+    imagenes = [entrada, salida_esperada, reconstructed.detach()]
+    titulos = ['Entrada', 'Salida esperada', 'Salida de la red']
 
-plt.tight_layout()
+    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    for ax, imagen, titulo in zip(axes, imagenes, titulos):
+        if ecualizar_hist:
+            im = imagen.cpu().numpy()
+            im = ((im - im.min()) * 255) / (im.max() - im.min())
+            imagen = cv2.equalizeHist(im.astype(np.uint8))
+            titulo += '\n(ecualizada)'
+        
+        ax.imshow(imagen, cmap='gray')
+        ax.set_title(titulo)
+
+    plt.tight_layout()
+    plt.savefig(f'data/images/{config_name}_{name_suffix}.png', dpi=300, bbox_inches='tight')
+
+    if not show_plot:
+        plt.close(fig)
+
+    return imagenes, titulos
+
+imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[19]:
+# In[33]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -299,4 +309,11 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
     ax.set_title(titulo)
 
 plt.tight_layout()
+
+
+# In[37]:
+
+
+# Guardo otra imagen solo para tener a modo de ejemplo
+imagenes, titulos = graph_random_image(ecualizar_hist=True, name_suffix=2, show_plot=False)
 
