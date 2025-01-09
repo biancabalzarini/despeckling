@@ -1,21 +1,17 @@
 # Parámetros del entrenamiento
 training:
-  n: 50000              # Cantidad de imágenes a generar para entrenar
-  n_cuad_lado: 2        # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
-  pixeles_cuad: 25      # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
-  num_epochs: 20        # Cantidad de épocas
-  batch_size: 64        # Cantidad de imágenes en cada batch
-  learning_rate: 0.001  # Learning rate
+  n: 50000
+  n_cuad_lado: 2
+  pixeles_cuad: 25
+  num_epochs: 20
+  batch_size: 64
+  learning_rate: 0.001
 
 # Parámetros generales del modelo
 model:
-  encoding_dim: 32      # Dimensión del espacio latente
-  loss_function: "mse"  # Opciones: "mse", "bce"
-                        # Binary Cross Entropy Loss como loss function puede ser una buena idea ya que las imágenes están normalizadas en el rango [0, 1]
-  optimizer: "adam"     # Opciones: "adam", "sgd"
-                        # El optimizador es responsable de ajustar los pesos del modelo con el fin de minimizar la función de pérdida.
-                        # Adam es un algoritmo de optimización popular y eficiente que adapta la tasa de aprendizaje de forma dinámica para cada parámetro del modelo.
-                        # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
+  encoding_dim: 32
+  loss_function: "mse"
+  optimizer: "adam"
 
 # Arquitectura del encoder
 encoder:
@@ -50,5 +46,5 @@ decoder:
 
 # Parámetros de la evaluación
 testing:
-  n: 1000         # Cantidad de imágenes a generar para evaluar
-  batch_size: 32  # Cantidad de imágenes en cada batch
+  n: 1000
+  batch_size: 32
