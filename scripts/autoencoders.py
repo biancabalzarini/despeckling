@@ -127,7 +127,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 input_dim = layer['dim']
                 
             elif layer.type == "unflatten":
-                layers.append(nn.Unflatten(1, (1, layer['dim1'], layer['dim2'])))
+                layers.append(nn.Unflatten(1, (layer.get('out_channels', 1), layer['dim1'], layer['dim2'])))
                 current_size = layer['dim1']  # Asumiendo imágenes cuadradas
                 
             elif layer.type == 'conv2d':

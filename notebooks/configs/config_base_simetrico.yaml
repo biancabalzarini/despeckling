@@ -29,22 +29,24 @@ encoder:
     - type: "flatten"
     - type: "dense"
       dim: "${model.encoding_dim}"
+      activation: "relu"
 
 # Arquitectura del decoder
 decoder:
   layers:
     - type: "dense"
-      dim: 400
+      dim: 10000
       activation: "relu"
     - type: "unflatten"
-      dim1: 20
-      dim2: 20
-    - type: "conv2d_transpose"
-      filters: 1
-      kernel_size: 1
-      stride: 3
-      padding: 4
-      activation: "sigmoid"
+      dim1: 25
+      dim2: 25
+      out_channels: 16
+    #- type: "conv2d_transpose"
+    #  filters: 1
+    #  kernel_size: 1
+    #  stride: 3
+    #  padding: 4
+    #  activation: "sigmoid"
 
 # Parámetros de la evaluación
 testing:
