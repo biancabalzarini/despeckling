@@ -29,7 +29,7 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_name = 'config_base' # Elegir
+config_name = 'config_base_simetrico' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)

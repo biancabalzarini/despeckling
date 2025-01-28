@@ -1,0 +1,54 @@
+# Parámetros del entrenamiento
+training:
+  n: 50000              # Cantidad de imágenes a generar para entrenar
+  n_cuad_lado: 2        # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
+  pixeles_cuad: 25      # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
+  num_epochs: 30        # Cantidad de épocas
+  batch_size: 64        # Cantidad de imágenes en cada batch
+  learning_rate: 0.001  # Learning rate
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 32      # Dimensión del espacio latente
+  loss_function: "mse"  # Opciones: "mse", "bce"
+                        # Binary Cross Entropy Loss como loss function puede ser una buena idea ya que las imágenes están normalizadas en el rango [0, 1]
+  optimizer: "adam"     # Opciones: "adam", "sgd"
+                        # El optimizador es responsable de ajustar los pesos del modelo con el fin de minimizar la función de pérdida.
+                        # Adam es un algoritmo de optimización popular y eficiente que adapta la tasa de aprendizaje de forma dinámica para cada parámetro del modelo.
+                        # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
+
+# Arquitectura del encoder
+encoder:
+  layers:
+    - type: "conv2d"
+      filters: 16         # Número de filtros
+      kernel_size: 3      # Tamaño del kernel 3x3
+      stride: 2           # Reduce la dimensión espacial a la mitad
+      padding: 1          # Padding para mantener mejor la información de los bordes
+      activation: "relu"
+    - type: "flatten"
+    - type: "dense"
+      dim: "${model.encoding_dim}"
+      activation: "relu"
+
+# Arquitectura del decoder
+decoder:
+  layers:
+    - type: "dense"
+      dim: 10000
+      activation: "relu"
+    - type: "unflatten"
+      dim1: 25
+      dim2: 25
+      out_channels: 16
+    - type: "conv2d_transpose"
+      filters: 1
+      kernel_size: 2
+      stride: 2
+      padding: 0
+      activation: "sigmoid"
+
+# Parámetros de la evaluación
+testing:
+  n: 1000         # Cantidad de imágenes a generar para evaluar
+  batch_size: 32  # Cantidad de imágenes en cada batch

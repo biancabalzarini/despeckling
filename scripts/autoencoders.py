@@ -95,6 +95,12 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         
         self.encoder = self._build('encoder')
         self.decoder = self._build('decoder')
+    
+    def conv2d_output_size(self, input_size, kernel_size, stride, padding):
+        return ((input_size + 2 * padding - kernel_size) // stride) + 1
+    
+    def conv2d_transpose_output_size(self, input_size, kernel_size, stride, padding):
+        return (input_size - 1) * stride - 2 * padding + kernel_size
         
     def _build(self, component: str) -> nn.Sequential:
         layers = []
@@ -115,6 +121,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
             if layer.type == "flatten":
                 input_dim = current_size * current_size * last_out_channels
                 layers.append(nn.Flatten())
+                last_out_channels = 1
                 
             elif layer.type == "dense":
                 layers.append(nn.Linear(
@@ -124,8 +131,9 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 input_dim = layer['dim']
                 
             elif layer.type == "unflatten":
-                layers.append(nn.Unflatten(1, (1, layer['dim1'], layer['dim2'])))
+                layers.append(nn.Unflatten(1, (layer.get('out_channels', 1), layer['dim1'], layer['dim2'])))
                 current_size = layer['dim1']  # Asumiendo imágenes cuadradas
+                last_out_channels = layer.get('out_channels', 1)
                 
             elif layer.type == 'conv2d':
                 layers.append(nn.Conv2d(
@@ -135,6 +143,10 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                     stride=layer.get('stride', 1),
                     padding=layer.get('padding', 0)
                 ))
+                stride = layer.get('stride', 1)
+                padding = layer.get('padding', 0)
+                kernel_size = layer['kernel_size']
+                current_size = self.conv2d_output_size(current_size, kernel_size, stride, padding)
                 last_out_channels = layer['filters']
             
             elif layer.type == 'conv2d_transpose':
@@ -145,6 +157,10 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                     stride=layer.get('stride', 1),
                     padding=layer.get('padding', 0)
                 ))
+                stride = layer.get('stride', 1)
+                padding = layer.get('padding', 0)
+                kernel_size = layer['kernel_size']
+                current_size = self.conv2d_transpose_output_size(current_size, kernel_size, stride, padding)
                 last_out_channels = layer['filters']
                 
             elif layer.type == 'maxpool2d':
