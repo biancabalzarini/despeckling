@@ -118,6 +118,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
             if layer.type == "flatten":
                 input_dim = current_size * current_size * last_out_channels
                 layers.append(nn.Flatten())
+                last_out_channels = 1
                 
             elif layer.type == "dense":
                 layers.append(nn.Linear(
@@ -129,6 +130,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
             elif layer.type == "unflatten":
                 layers.append(nn.Unflatten(1, (layer.get('out_channels', 1), layer['dim1'], layer['dim2'])))
                 current_size = layer['dim1']  # Asumiendo imágenes cuadradas
+                last_out_channels = layer.get('out_channels', 1)
                 
             elif layer.type == 'conv2d':
                 layers.append(nn.Conv2d(

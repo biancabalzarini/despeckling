@@ -41,12 +41,12 @@ decoder:
       dim1: 25
       dim2: 25
       out_channels: 16
-    #- type: "conv2d_transpose"
-    #  filters: 1
-    #  kernel_size: 1
-    #  stride: 3
-    #  padding: 4
-    #  activation: "sigmoid"
+    - type: "conv2d_transpose"
+      filters: 1
+      kernel_size: 2
+      stride: 2
+      padding: 0
+      activation: "sigmoid"
 
 # Parámetros de la evaluación
 testing:
