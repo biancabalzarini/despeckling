@@ -6,6 +6,8 @@ training:
   num_epochs: 5         # Cantidad de épocas
   batch_size: 64        # Cantidad de imágenes en cada batch
   learning_rate: 0.001  # Learning rate
+  scheduler_name: None  # Opciones: "rlrop", "slr", "elr"
+                        # Scheduler para learning rate adaptativo
 
 # Parámetros generales del modelo
 model:
