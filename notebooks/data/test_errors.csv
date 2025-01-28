@@ -1,2 +1,3 @@
 config_name,loss_testing
-config_base,0.0026514586752455216
+config_base,0.0026514586752455
+config_base_simetrico,0.013325630978215486
