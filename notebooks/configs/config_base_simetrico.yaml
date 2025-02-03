@@ -8,6 +8,10 @@ training:
   learning_rate: 0.001   # Learning rate
   scheduler_name: "elr"  # Opciones: "rlrop", "slr", "elr"
                          # Scheduler para learning rate adaptativo
+  scheduler_params: {    # Dict con los parámetros del scheduler
+      gamma: 0.95        # Si es rlop, los params son: mode, factor y patience
+    }                    # Si es slr, los params son: step_size y gamma
+                         # Si es elr, los params son: gamma
 
 # Parámetros generales del modelo
 model:

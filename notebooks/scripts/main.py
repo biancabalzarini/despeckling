@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import sys
@@ -26,7 +26,7 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[2]:
+# In[3]:
 
 
 config_name = 'config_base_simetrico' # Elegir
@@ -130,24 +130,24 @@ elif scheduler_name.lower() == "rlrop":
     # ReduceLROnPlateau - reduce el lr cuando el loss deja de mejorar
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
-        mode='min',
-        factor=0.1,     # Reduce el lr por este factor
-        patience=5      # Espera estas épocas antes de reducir
+        mode=config.training.scheduler_params.get('mode','min'),
+        factor=config.training.scheduler_params.get('factor',0.1),   # Reduce el lr por este factor
+        patience=config.training.scheduler_params.get('patience',5)  # Espera estas épocas antes de reducir
     )
 
 elif scheduler_name.lower() == "slr":
     # StepLR - reduce el lr cada cierto número de épocas
     scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
-        step_size=7,    # Cada step_size épocas
-        gamma=0.1       # Reduce por este factor
+        step_size=config.training.scheduler_params.get('step_size',7),  # Cada step_size épocas
+        gamma=config.training.scheduler_params.get('gamma',0.1)         # Reduce por este factor
     )
 
 elif scheduler_name.lower() == "elr":
     # ExponentialLR - reduce el lr exponencialmente
     scheduler = torch.optim.lr_scheduler.ExponentialLR(
         optimizer,
-        gamma=0.95      # Factor de reducción por época
+        gamma=config.training.scheduler_params.get('gamma',0.95)  # Factor de reducción por época
     )
 
 
