@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import sys
@@ -26,7 +26,7 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[2]:
+# In[3]:
 
 
 config_name = 'config_base_simetrico' # Elegir
@@ -74,8 +74,9 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # In[6]:
 
 
-learning_rate = config['training']['learning_rate']
 num_epochs = config['training']['num_epochs']
+learning_rate = config['training']['learning_rate']
+scheduler_name = config['training']['scheduler_name']
 
 
 # In[7]:
@@ -114,11 +115,43 @@ if opt == 'adam':
 elif optim == 'sgd':
     optimizer = optim.SGD(
         autoencoder.parameters(), 
-        lr=learning_rate
+        lr=learning_rate,
+        momentum=0.9
     )
 
 
 # In[10]:
+
+
+if scheduler_name is None:
+    pass
+
+elif scheduler_name.lower() == "rlrop":
+    # ReduceLROnPlateau - reduce el lr cuando el loss deja de mejorar
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        mode=config.training.scheduler_params.get('mode','min'),
+        factor=config.training.scheduler_params.get('factor',0.1),   # Reduce el lr por este factor
+        patience=config.training.scheduler_params.get('patience',5)  # Espera estas épocas antes de reducir
+    )
+
+elif scheduler_name.lower() == "slr":
+    # StepLR - reduce el lr cada cierto número de épocas
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer,
+        step_size=config.training.scheduler_params.get('step_size',7),  # Cada step_size épocas
+        gamma=config.training.scheduler_params.get('gamma',0.1)         # Reduce por este factor
+    )
+
+elif scheduler_name.lower() == "elr":
+    # ExponentialLR - reduce el lr exponencialmente
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(
+        optimizer,
+        gamma=config.training.scheduler_params.get('gamma',0.95)  # Factor de reducción por época
+    )
+
+
+# In[11]:
 
 
 training_losses = []
@@ -145,12 +178,21 @@ for epoch in range(num_epochs):
         
     avg_loss = np.mean(epoch_losses)
     training_losses.append(avg_loss)
+
+    if scheduler_name is None:
+        pass
+    elif scheduler_name.lower() == "rlrop":
+        scheduler.step(avg_loss)
+        print(f"lr: {scheduler.get_last_lr()}")
+    elif scheduler_name.lower() in ["slr", "elr"]:
+        scheduler.step()
+        print(f"lr: {scheduler.get_last_lr()}")
     
     # Imprimir la pérdida del autoencoder en cada época
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[11]:
+# In[12]:
 
 
 df_errors = pd.DataFrame({
@@ -161,7 +203,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[12]:
+# In[13]:
 
 
 plt.figure(figsize=(5, 3))
@@ -175,27 +217,27 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[13]:
+# In[14]:
 
 
 n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[14]:
+# In[15]:
 
 
 test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
 
 
-# In[15]:
+# In[16]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[16]:
+# In[17]:
 
 
 total_loss = 0
@@ -219,7 +261,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[17]:
+# In[18]:
 
 
 test_file_path = f'data/test_errors.csv'
@@ -239,7 +281,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[18]:
+# In[19]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -289,7 +331,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[19]:
+# In[20]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -312,7 +354,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[20]:
+# In[21]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo

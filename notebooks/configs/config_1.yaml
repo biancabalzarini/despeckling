@@ -6,6 +6,8 @@ training:
   num_epochs: 20
   batch_size: 64
   learning_rate: 0.001
+  scheduler_name: None
+  scheduler_params: None
 
 # Parámetros generales del modelo
 model:
