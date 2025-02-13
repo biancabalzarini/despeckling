@@ -158,9 +158,9 @@ def generate_multiple_images(
 def mixed_dataset(
     n_total: int,
     generate_multiple_images: Callable,
-    conjunto_n_cuad_lado: Union[int, List[int]],
-    conjunto_pixeles_cuad: Union[int, List[int]],
-    ratios: Union[int, List[float]] = 1,
+    conjunto_n_cuad_lado: List[int],
+    conjunto_pixeles_cuad: List[int],
+    ratios: Optional[List[float]] = [1],
     alpha_values: Optional[List[float]] = None
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -174,19 +174,18 @@ def mixed_dataset(
         apenas distinta de imágenes totales.
     generate_multiple_images: function
         Función que genera conjuntos de imágenes con la misma partición.
-    conjunto_n_cuad_lado: Union[int, List[int]]
+    conjunto_n_cuad_lado: List[int]
         Lista con las diferentes cantidades de particiones (cuadrados por lado) que se quieren. Por ejemplo, si
         se quiere imágenes sin particionar, otras con 4 subcuadrados, y otras con 9, debería usarse [1,2,3]. Si se
-        quisiera un único tipo de partición, también es válido ingresar un único entero.
-    conjunto_pixeles_cuad: Union[int, List[int]]
+        quisiera un único tipo de partición se debe ingresar una lista de un único elemento.
+    conjunto_pixeles_cuad: List[int]
         Análogo a conjunto_n_cuad_lado pero con la cantidad de píxeles de cada subcuadrado de la partición. La
         múltiplicación del elemento n de conjunto_n_cuad_lado por el elemento n de conjunto_pixeles_cuad debe
         coincidir para todo n, porque eso implica que todas las imágenes serán del mismo tamaño.
-    ratios: Union[int, List[float]]
+    ratios: Optional[List[float]]
         Lista que indica el ratio de cada una de las particiones que se quiere tener en el dataset final. Cada
         elemento debe ser menor o igual a 1 (1 en el caso de que sea una única partición), y todos los elementos
-        deben sumar 1. En el caso de tener una única partición, se puede ingresar el entero 1, la lista [1], o
-        no ingresar nada.
+        deben sumar 1. En el caso de tener una única partición, se puede ingresar la lista [1] o no ingresar nada.
     alpha_values: Optional[List[float]], opcional
         Lista de valores posibles para alpha. Si no se proporciona, se usarán los valores por defecto.
     
@@ -202,19 +201,13 @@ def mixed_dataset(
         Array de forma (n_total, tamaño_imagen, tamaño_imagen) con n_total repeticiones de imagen_gI0, con diferentes
         particiones según lo indicado en los inputs.
     """
-    if isinstance(conjunto_n_cuad_lado, int):
-        conjunto_n_cuad_lado = [conjunto_n_cuad_lado]
-        conjunto_pixeles_cuad = [conjunto_pixeles_cuad]
-        ratios = [ratios]
-    else:
-        conjunto_n_cuad_lado = list(conjunto_n_cuad_lado)
-        conjunto_pixeles_cuad = list(conjunto_pixeles_cuad)
-        ratios = list(ratios)
-    
+    conjunto_n_cuad_lado = list(conjunto_n_cuad_lado)
+    conjunto_pixeles_cuad = list(conjunto_pixeles_cuad)
+    ratios = list(ratios)
+
     assert (len(conjunto_n_cuad_lado) == 1 and ratios == [1]) or \
-           (isinstance(conjunto_n_cuad_lado, list) and isinstance(conjunto_pixeles_cuad, list) and isinstance(ratios, list) and \
-           len(conjunto_n_cuad_lado) == len(conjunto_pixeles_cuad) == len(ratios)), \
-           "Los tipos deben coincidir (int o listas del mismo tamaño)"
+           (len(conjunto_n_cuad_lado) == len(conjunto_pixeles_cuad) == len(ratios)), \
+           "Los largos de las listas que indican las particiones deben coincidir y ser coherentes"
 
     assert float(sum(ratios)) == 1.0, "Los ratios tienen que sumar 1"
 

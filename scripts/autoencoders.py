@@ -30,7 +30,7 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
         super(ConfigurableAutoencoder, self).__init__()
         
         self.config = config
-        self.image_size = self.config['training']['n_cuad_lado'] * self.config['training']['pixeles_cuad']
+        self.image_size = self.config['training']['n_cuad_lado'][0] * self.config['training']['pixeles_cuad'][0]
         self.flat_size = self.image_size * self.image_size
         self.encoding_dim = self.config['model']['encoding_dim']
         
