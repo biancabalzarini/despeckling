@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple
 import random
-from typing import List, Tuple, Callable, Optional
+from typing import List, Tuple, Callable, Optional, Union
 
 def rGI0(
   n: int,
@@ -154,3 +154,85 @@ def generate_multiple_images(
         conjunto_gI0[i] = imagen_gI0
     
     return conjunto_g, conjunto_gi, conjunto_gI0
+
+def mixed_dataset(
+    n_total: int,
+    generate_multiple_images: Callable,
+    conjunto_n_cuad_lado: Union[int, List[int]],
+    conjunto_pixeles_cuad: Union[int, List[int]],
+    ratios: Union[int, List[float]] = 1,
+    alpha_values: Optional[List[float]] = None
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    Genera múltiples conjuntos de imágenes utilizando la función partitioned_gi0_image, con diferentes particiones
+    de las imágenes según se especifica en los parámetros de la función.
+    
+    Parameters:
+    -----------
+    n_total: int
+        Número de conjuntos de imágenes a generar. Por temas de redondeo es posible que se genere una cantidad
+        apenas distinta de imágenes totales.
+    generate_multiple_images: function
+        Función que genera conjuntos de imágenes con la misma partición.
+    conjunto_n_cuad_lado: Union[int, List[int]]
+        Lista con las diferentes cantidades de particiones (cuadrados por lado) que se quieren. Por ejemplo, si
+        se quiere imágenes sin particionar, otras con 4 subcuadrados, y otras con 9, debería usarse [1,2,3]. Si se
+        quisiera un único tipo de partición, también es válido ingresar un único entero.
+    conjunto_pixeles_cuad: Union[int, List[int]]
+        Análogo a conjunto_n_cuad_lado pero con la cantidad de píxeles de cada subcuadrado de la partición. La
+        múltiplicación del elemento n de conjunto_n_cuad_lado por el elemento n de conjunto_pixeles_cuad debe
+        coincidir para todo n, porque eso implica que todas las imágenes serán del mismo tamaño.
+    ratios: Union[int, List[float]]
+        Lista que indica el ratio de cada una de las particiones que se quiere tener en el dataset final. Cada
+        elemento debe ser menor o igual a 1 (1 en el caso de que sea una única partición), y todos los elementos
+        deben sumar 1. En el caso de tener una única partición, se puede ingresar el entero 1, la lista [1], o
+        no ingresar nada.
+    alpha_values: Optional[List[float]], opcional
+        Lista de valores posibles para alpha. Si no se proporciona, se usarán los valores por defecto.
+    
+    Returns:
+    --------
+    g_final : np.ndarray
+        Array de forma (n_total, tamaño_imagen, tamaño_imagen) con n_total repeticiones de imagen_g, con diferentes
+        particiones según lo indicado en los inputs.
+    gi_final : np.ndarray
+        Array de forma (n_total, tamaño_imagen, tamaño_imagen) con n_total repeticiones de imagen_gi, con diferentes
+        particiones según lo indicado en los inputs.
+    gI0_final : np.ndarray
+        Array de forma (n_total, tamaño_imagen, tamaño_imagen) con n_total repeticiones de imagen_gI0, con diferentes
+        particiones según lo indicado en los inputs.
+    """
+    assert (isinstance(conjunto_n_cuad_lado, int) and isinstance(conjunto_pixeles_cuad, int) and ratios == 1) or \
+           (isinstance(conjunto_n_cuad_lado, list) and isinstance(conjunto_pixeles_cuad, list) and isinstance(ratios, list) and \
+           len(conjunto_n_cuad_lado) == len(conjunto_pixeles_cuad) == len(ratios)), \
+           "Los tipos deben coincidir (int o listas del mismo tamaño)"
+    
+    if isinstance(conjunto_n_cuad_lado, int):
+        conjunto_n_cuad_lado = [conjunto_n_cuad_lado]
+        conjunto_pixeles_cuad = [conjunto_pixeles_cuad]
+        ratios = [ratios]
+
+    assert float(sum(ratios)) == 1.0, "Los ratios tienen que sumar 1"
+
+    tamaños_imagenes = np.array(conjunto_n_cuad_lado) * np.array(conjunto_pixeles_cuad)
+    assert np.all(tamaños_imagenes == tamaños_imagenes[0]), \
+        f"Los tamaños de las imágenes no son todos iguales: {tamaños_imagenes}"
+    
+    ns = [int(ratio * n_total) for ratio in ratios]
+
+    g_list = []
+    gi_list = []
+    gI0_list = []
+    
+    for n_cuad_lado, pixeles_cuad, n in zip(conjunto_n_cuad_lado, conjunto_pixeles_cuad, ns):
+        
+        g, gi, gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad, alpha_values)
+        g_list.append(g)
+        gi_list.append(gi)
+        gI0_list.append(gI0)
+    
+    g_final = np.concatenate(g_list, axis=0)
+    gi_final = np.concatenate(gi_list, axis=0)
+    gI0_final = np.concatenate(gI0_list, axis=0)
+    
+    return g_final, gi_final, gI0_final
