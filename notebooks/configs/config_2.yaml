@@ -8,11 +8,12 @@ training:
   learning_rate: 0.001
   scheduler_name: "rlrop"
   scheduler_params: {
+      factor: 0.8
     }
 
 # Parámetros generales del modelo
 model:
-  encoding_dim: 32
+  encoding_dim: 64
   loss_function: "mse"
   optimizer: "adam"
 
