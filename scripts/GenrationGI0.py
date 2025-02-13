@@ -202,15 +202,19 @@ def mixed_dataset(
         Array de forma (n_total, tamaño_imagen, tamaño_imagen) con n_total repeticiones de imagen_gI0, con diferentes
         particiones según lo indicado en los inputs.
     """
-    assert (isinstance(conjunto_n_cuad_lado, int) and isinstance(conjunto_pixeles_cuad, int) and ratios == 1) or \
-           (isinstance(conjunto_n_cuad_lado, list) and isinstance(conjunto_pixeles_cuad, list) and isinstance(ratios, list) and \
-           len(conjunto_n_cuad_lado) == len(conjunto_pixeles_cuad) == len(ratios)), \
-           "Los tipos deben coincidir (int o listas del mismo tamaño)"
-    
     if isinstance(conjunto_n_cuad_lado, int):
         conjunto_n_cuad_lado = [conjunto_n_cuad_lado]
         conjunto_pixeles_cuad = [conjunto_pixeles_cuad]
         ratios = [ratios]
+    else:
+        conjunto_n_cuad_lado = list(conjunto_n_cuad_lado)
+        conjunto_pixeles_cuad = list(conjunto_pixeles_cuad)
+        ratios = list(ratios)
+    
+    assert (len(conjunto_n_cuad_lado) == 1 and ratios == [1]) or \
+           (isinstance(conjunto_n_cuad_lado, list) and isinstance(conjunto_pixeles_cuad, list) and isinstance(ratios, list) and \
+           len(conjunto_n_cuad_lado) == len(conjunto_pixeles_cuad) == len(ratios)), \
+           "Los tipos deben coincidir (int o listas del mismo tamaño)"
 
     assert float(sum(ratios)) == 1.0, "Los ratios tienen que sumar 1"
 
