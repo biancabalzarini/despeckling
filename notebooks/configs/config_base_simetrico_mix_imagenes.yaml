@@ -1,9 +1,9 @@
 # Parámetros del entrenamiento
 training:
   n: 50000               # Cantidad de imágenes a generar para entrenar
-  n_cuad_lado: [1,2,3]         # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
-  pixeles_cuad: [60,30,20]       # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
-  ratio: [0.3,0.4,0.3]
+  n_cuad_lado: [1,2]         # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
+  pixeles_cuad: [50,25]       # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
+  ratio: [0.45,0.55]
   num_epochs: 30         # Cantidad de épocas
   batch_size: 64         # Cantidad de imágenes en cada batch
   learning_rate: 0.001   # Learning rate
