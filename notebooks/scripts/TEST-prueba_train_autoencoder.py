@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import sys
 sys.path.append('..')
 
-from scripts.GenrationGI0 import rGI0, partitioned_gi0_image
-from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images, Autoencoder
+from scripts.GenrationGI0 import rGI0, partitioned_gi0_image, generate_multiple_images
+from scripts.autoencoders import InMemoryImageDataset, Autoencoder
 
 import matplotlib.pyplot as plt
 

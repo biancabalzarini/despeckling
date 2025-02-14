@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import sys
 sys.path.append('..')
 
-from scripts.GenrationGI0 import partitioned_gi0_image
-from scripts.autoencoders import InMemoryImageDataset, generate_multiple_images, ConfigurableAutoencoder
+from scripts.GenrationGI0 import partitioned_gi0_image, generate_multiple_images, mixed_dataset
+from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
 
 import pandas as pd
 import torch
@@ -48,10 +48,16 @@ pixeles_cuad = config['training']['pixeles_cuad']
 batch_size = config['training']['batch_size']
 
 
-# In[4]:
+# In[ ]:
 
 
-train_g, train_gi, train_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
+train_g, train_gi, train_gI0 = mixed_dataset(
+    n_total = n,
+    generate_multiple_images = generate_multiple_images,
+    conjunto_n_cuad_lado = n_cuad_lado,
+    conjunto_pixeles_cuad = pixeles_cuad,
+    ratios = config.training.get('ratio',None),
+)
 
 
 # In[5]:
@@ -86,12 +92,19 @@ autoencoder = ConfigurableAutoencoder(config=config)
 autoencoder
 
 
-# In[8]:
+# In[ ]:
 
+
+if isinstance(n_cuad_lado, int):
+    ncl = n_cuad_lado
+    pc = pixeles_cuad
+elif isinstance(n_cuad_lado, list):
+    ncl = n_cuad_lado[0]
+    pc = pixeles_cuad[0]
 
 summary(
     autoencoder,
-    (1, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad) # (nro_de_canales, alto, ancho) de las imágenes de entrada
+    (1, ncl*pc, ncl*pc) # (nro_de_canales, alto, ancho) de las imágenes de entrada
 )
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
@@ -224,10 +237,16 @@ n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[15]:
+# In[ ]:
 
 
-test_g, test_gi, test_gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad)
+test_g, test_gi, test_gI0 = train_g, train_gi, train_gI0 = mixed_dataset(
+    n_total = n,
+    generate_multiple_images = generate_multiple_images,
+    conjunto_n_cuad_lado = n_cuad_lado,
+    conjunto_pixeles_cuad = pixeles_cuad,
+    ratios = config.training.get('ratio',None),
+)
 
 
 # In[16]:
@@ -281,7 +300,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[19]:
+# In[ ]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -300,7 +319,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 
     reconstructed = autoencoder(example) # Aplica el autoencoder al ejemplo
 
-    tamanio = n_cuad_lado*pixeles_cuad
+    tamanio = ncl*pc
 
     entrada = entrada_red.view(tamanio, tamanio)
     salida_esperada = salida_red.view(tamanio, tamanio)

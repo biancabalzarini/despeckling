@@ -1,8 +1,8 @@
 # Parámetros del entrenamiento
 training:
   n: 100000
-  n_cuad_lado: 2
-  pixeles_cuad: 25
+  n_cuad_lado: [2]
+  pixeles_cuad: [25]
   num_epochs: 100
   batch_size: 64
   learning_rate: 0.001
