@@ -7,8 +7,7 @@
 import sys
 sys.path.append('..')
 
-from scripts.GenrationGI0 import partitioned_gi0_image
-from scripts.autoencoders import generate_multiple_images
+from scripts.GenrationGI0 import partitioned_gi0_image, generate_multiple_images
 
 import numpy as np
 import matplotlib.pyplot as plt

@@ -1,8 +1,16 @@
 # Parámetros del entrenamiento
 training:
   n: 50000                # Cantidad de imágenes a generar para entrenar
-  n_cuad_lado: 2          # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
-  pixeles_cuad: 25        # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes
+  n_cuad_lado: [2]        # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
+                          # Tiene que ser una lista con las diferentes particiones de las imágenes que se quieren hacer.
+                          # Si es una única partición, entonces debe ser una lista de un único elemento.
+  pixeles_cuad: [25]      # Cantidad de píxeles por lado que tiene cada cuadrado de las imágenes.
+                          # Tiene que ser una lista con las diferentes cantidades de píxeles en cada partición.
+                          # Si es una única partición, entonces debe ser una lista de un único elemento.
+                          # La multiplicación del elemento n de n_cuad_lado por el elemento n de pixeles_cuad debe dar igual para todo n (asi todas las imagenes son del mismo tamaño).
+  ratio: [1]              # Lista con los ratios de cada tipo de partición en el dataset final. Todos los elementos deben sumar 1.
+                          # Si es una única partición, este parámetro puede ser [1] o puede no existir.
+                          # Tiene que tener la misma longitud que n_cuad_lado y que pixeles_cuad.
   num_epochs: 5           # Cantidad de épocas
   batch_size: 64          # Cantidad de imágenes en cada batch
   learning_rate: 0.001    # Learning rate
@@ -48,11 +56,11 @@ decoder:
       dim: 128
       activation: "relu"
     - type: "dense"
-      dim: "${eval:'(${training.n_cuad_lado} * ${training.pixeles_cuad})**2'}"
+      dim: "${eval:'(${training.n_cuad_lado[0]} * ${training.pixeles_cuad[0]})**2'}"
       activation: "relu"
     - type: "unflatten"
-      dim1: "${eval:'${training.n_cuad_lado} * ${training.pixeles_cuad}'}"
-      dim2: "${eval:'${training.n_cuad_lado} * ${training.pixeles_cuad}'}"
+      dim1: "${eval:'${training.n_cuad_lado[0]} * ${training.pixeles_cuad[0]}'}"
+      dim2: "${eval:'${training.n_cuad_lado[0]} * ${training.pixeles_cuad[0]}'}"
     - type: "conv2d_transpose"
       filters: 16
       kernel_size: 3

@@ -1,8 +1,9 @@
 # Parámetros del entrenamiento
 training:
   n: 100000
-  n_cuad_lado: [2]
-  pixeles_cuad: [25]
+  n_cuad_lado: [1,2,3]
+  pixeles_cuad: [60,30,20]
+  ratio: [0.3,0.4,0.3]
   num_epochs: 100
   batch_size: 64
   learning_rate: 0.001
@@ -32,12 +33,6 @@ encoder:
       stride: 2
       padding: 1
       activation: "relu"
-    - type: "conv2d"
-      filters: 128
-      kernel_size: 3
-      stride: 2
-      padding: 1
-      activation: "relu"
     - type: "flatten"
     - type: "dense"
       dim: "${model.encoding_dim}"
@@ -47,23 +42,17 @@ encoder:
 decoder:
   layers:
     - type: "dense"
-      dim: 6272
+      dim: 16384
       activation: "relu"
     - type: "unflatten"
-      dim1: 7
-      dim2: 7
-      out_channels: 128
-    - type: "conv2d_transpose"
-      filters: 64
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      activation: "relu"
+      dim1: 16
+      dim2: 16
+      out_channels: 64
     - type: "conv2d_transpose"
       filters: 32
-      kernel_size: 3
+      kernel_size: 2
       stride: 2
-      padding: 1
+      padding: 0
       activation: "relu"
     - type: "conv2d_transpose"
       filters: 1
