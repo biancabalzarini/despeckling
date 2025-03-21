@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[2]:
 
 
 import sys
@@ -26,10 +26,10 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[2]:
+# In[3]:
 
 
-config_name = 'config_3' # Elegir
+config_name = 'config_base_simetrico_longtrain' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -39,7 +39,7 @@ config
 # ---
 # # Creación del dataset para entrenar
 
-# In[3]:
+# In[4]:
 
 
 n = config['training']['n']
@@ -48,7 +48,7 @@ pixeles_cuad = config['training']['pixeles_cuad']
 batch_size = config['training']['batch_size']
 
 
-# In[ ]:
+# In[5]:
 
 
 train_g, train_gi, train_gI0 = mixed_dataset(
@@ -56,11 +56,11 @@ train_g, train_gi, train_gI0 = mixed_dataset(
     generate_multiple_images = generate_multiple_images,
     conjunto_n_cuad_lado = n_cuad_lado,
     conjunto_pixeles_cuad = pixeles_cuad,
-    ratios = config.training.get('ratio',None),
+    ratios = config.training.get('ratio',[1]),
 )
 
 
-# In[5]:
+# In[6]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -77,7 +77,7 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[6]:
+# In[7]:
 
 
 num_epochs = config['training']['num_epochs']
@@ -85,22 +85,18 @@ learning_rate = config['training']['learning_rate']
 scheduler_name = config['training']['scheduler_name']
 
 
-# In[7]:
+# In[8]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config)
 autoencoder
 
 
-# In[ ]:
+# In[9]:
 
 
-if isinstance(n_cuad_lado, int):
-    ncl = n_cuad_lado
-    pc = pixeles_cuad
-elif isinstance(n_cuad_lado, list):
-    ncl = n_cuad_lado[0]
-    pc = pixeles_cuad[0]
+ncl = n_cuad_lado[0]
+pc = pixeles_cuad[0]
 
 summary(
     autoencoder,
@@ -109,7 +105,7 @@ summary(
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
-# In[9]:
+# In[10]:
 
 
 loss = config['model']['loss_function'].lower()
@@ -133,7 +129,7 @@ elif optim == 'sgd':
     )
 
 
-# In[10]:
+# In[11]:
 
 
 if scheduler_name is None:
@@ -164,7 +160,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[11]:
+# In[12]:
 
 
 training_losses = []
@@ -205,7 +201,7 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[12]:
+# In[ ]:
 
 
 df_errors = pd.DataFrame({
@@ -216,7 +212,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[13]:
+# In[ ]:
 
 
 plt.figure(figsize=(5, 3))
@@ -230,7 +226,7 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[14]:
+# In[ ]:
 
 
 n = config['testing']['n']
@@ -249,14 +245,14 @@ test_g, test_gi, test_gI0 = train_g, train_gi, train_gI0 = mixed_dataset(
 )
 
 
-# In[16]:
+# In[ ]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[17]:
+# In[ ]:
 
 
 total_loss = 0
@@ -280,7 +276,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[18]:
+# In[ ]:
 
 
 test_file_path = f'data/test_errors.csv'
@@ -350,7 +346,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[20]:
+# In[ ]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -373,7 +369,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[21]:
+# In[ ]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo
