@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import sys
@@ -29,7 +29,7 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_name = 'config_3' # Elegir
+config_name = 'config_base_simetrico_longtrain' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -48,7 +48,7 @@ pixeles_cuad = config['training']['pixeles_cuad']
 batch_size = config['training']['batch_size']
 
 
-# In[ ]:
+# In[4]:
 
 
 train_g, train_gi, train_gI0 = mixed_dataset(
@@ -56,7 +56,7 @@ train_g, train_gi, train_gI0 = mixed_dataset(
     generate_multiple_images = generate_multiple_images,
     conjunto_n_cuad_lado = n_cuad_lado,
     conjunto_pixeles_cuad = pixeles_cuad,
-    ratios = config.training.get('ratio',None),
+    ratios = config.training.get('ratio',[1]),
 )
 
 
@@ -92,15 +92,11 @@ autoencoder = ConfigurableAutoencoder(config=config)
 autoencoder
 
 
-# In[ ]:
+# In[8]:
 
 
-if isinstance(n_cuad_lado, int):
-    ncl = n_cuad_lado
-    pc = pixeles_cuad
-elif isinstance(n_cuad_lado, list):
-    ncl = n_cuad_lado[0]
-    pc = pixeles_cuad[0]
+ncl = n_cuad_lado[0]
+pc = pixeles_cuad[0]
 
 summary(
     autoencoder,
@@ -237,7 +233,7 @@ n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[ ]:
+# In[15]:
 
 
 test_g, test_gi, test_gI0 = train_g, train_gi, train_gI0 = mixed_dataset(
@@ -300,7 +296,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[ ]:
+# In[19]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
