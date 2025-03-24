@@ -29,7 +29,7 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_name = 'config_base_simetrico_longtrain' # Elegir
+config_name = 'config_1' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -226,9 +226,10 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[14]:
+# In[ ]:
 
 
+autoencoder.eval() # Para desactivar Dropout, BatchNorm, etc.
 n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
