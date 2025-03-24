@@ -29,7 +29,7 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_name = 'config_base_simetrico_longtrain' # Elegir
+config_name = 'config_1' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -204,6 +204,28 @@ for epoch in range(num_epochs):
 # In[12]:
 
 
+# Guardo los parámetros del modelo entrenado:
+torch.save(autoencoder.state_dict(), f'data/trained_models/{config_name}.pth')
+
+
+# In[ ]:
+
+
+"""
+### Cuando quiera, en otro notebook, levantar el modelo guardado para usarlo para predecir, hay que hacer esto:
+
+# 1. Crear una instancia del modelo (debe tener la misma arquitectura)
+autoencoder_cargado = ConfigurableAutoencoder(config=config)
+# 2. Carga los parámetros
+autoencoder_cargado.load_state_dict(torch.load(f'data/trained_models/{config_name}.pth'))
+# 3. Modo evaluación (cuando lo use para inferencia)
+autoencoder_cargado.eval()
+"""
+
+
+# In[12]:
+
+
 df_errors = pd.DataFrame({
     'epoch': range(1, num_epochs + 1),
     'loss': training_losses
@@ -226,9 +248,10 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[14]:
+# In[ ]:
 
 
+autoencoder.eval() # Para desactivar Dropout, BatchNorm, etc.
 n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
