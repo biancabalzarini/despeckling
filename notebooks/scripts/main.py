@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import sys
@@ -26,10 +26,10 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[2]:
+# In[ ]:
 
 
-config_name = 'config_1' # Elegir
+config_name = 'config_base_simetrico_mix_imagenes' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -39,7 +39,7 @@ config
 # ---
 # # Creación del dataset para entrenar
 
-# In[3]:
+# In[ ]:
 
 
 n = config['training']['n']
@@ -48,7 +48,7 @@ pixeles_cuad = config['training']['pixeles_cuad']
 batch_size = config['training']['batch_size']
 
 
-# In[4]:
+# In[ ]:
 
 
 train_g, train_gi, train_gI0 = mixed_dataset(
@@ -60,7 +60,7 @@ train_g, train_gi, train_gI0 = mixed_dataset(
 )
 
 
-# In[5]:
+# In[ ]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -77,7 +77,7 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[6]:
+# In[ ]:
 
 
 num_epochs = config['training']['num_epochs']
@@ -85,14 +85,14 @@ learning_rate = config['training']['learning_rate']
 scheduler_name = config['training']['scheduler_name']
 
 
-# In[7]:
+# In[ ]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config)
 autoencoder
 
 
-# In[8]:
+# In[ ]:
 
 
 ncl = n_cuad_lado[0]
@@ -105,7 +105,7 @@ summary(
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
-# In[9]:
+# In[ ]:
 
 
 loss = config['model']['loss_function'].lower()
@@ -129,7 +129,7 @@ elif optim == 'sgd':
     )
 
 
-# In[10]:
+# In[ ]:
 
 
 if scheduler_name is None:
@@ -160,7 +160,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[11]:
+# In[ ]:
 
 
 training_losses = []
@@ -201,7 +201,7 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[12]:
+# In[ ]:
 
 
 # Guardo los parámetros del modelo entrenado:
@@ -223,7 +223,7 @@ autoencoder_cargado.eval()
 """
 
 
-# In[12]:
+# In[ ]:
 
 
 df_errors = pd.DataFrame({
@@ -234,7 +234,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[13]:
+# In[ ]:
 
 
 plt.figure(figsize=(5, 3))
@@ -256,7 +256,7 @@ n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[15]:
+# In[ ]:
 
 
 test_g, test_gi, test_gI0 = train_g, train_gi, train_gI0 = mixed_dataset(
@@ -268,14 +268,14 @@ test_g, test_gi, test_gI0 = train_g, train_gi, train_gI0 = mixed_dataset(
 )
 
 
-# In[16]:
+# In[ ]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[17]:
+# In[ ]:
 
 
 total_loss = 0
@@ -299,7 +299,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[18]:
+# In[ ]:
 
 
 test_file_path = f'data/test_errors.csv'
@@ -319,7 +319,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[19]:
+# In[ ]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -369,7 +369,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[20]:
+# In[ ]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -392,7 +392,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[21]:
+# In[ ]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo

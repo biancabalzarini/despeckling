@@ -1,6 +1,6 @@
 # Parámetros del entrenamiento
 training:
-  n: 50000               # Cantidad de imágenes a generar para entrenar
+  n: 100000              # Cantidad de imágenes a generar para entrenar
   n_cuad_lado: [1,2]     # Cantidad de cuadrados por lado que van a tener las imágenes (cada cuadrado con diferentes parámetros de la GI0)
                          # Tiene que ser una lista con las diferentes particiones de las imágenes que se quieren hacer.
                          # Si es una única partición, entonces debe ser una lista de un único elemento.  
@@ -11,7 +11,7 @@ training:
   ratio: [0.45,0.55]     # Lista con los ratios de cada tipo de partición en el dataset final. Todos los elementos deben sumar 1.
                          # Si es una única partición, este parámetro puede ser [1] o puede no existir.
                          # Tiene que tener la misma longitud que n_cuad_lado y que pixeles_cuad.
-  num_epochs: 30         # Cantidad de épocas
+  num_epochs: 500        # Cantidad de épocas
   batch_size: 64         # Cantidad de imágenes en cada batch
   learning_rate: 0.001   # Learning rate
   scheduler_name: "elr"  # Opciones: "rlrop", "slr", "elr"
