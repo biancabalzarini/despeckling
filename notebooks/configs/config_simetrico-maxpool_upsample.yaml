@@ -1,0 +1,80 @@
+# Parámetros del entrenamiento
+training:
+  n: 50000
+  n_cuad_lado: [2]
+  pixeles_cuad: [25]
+  ratio: [1]
+  num_epochs: 500
+  batch_size: 64
+  learning_rate: 0.001
+  scheduler_name: "elr"
+  scheduler_params: {
+      gamma: 0.95
+    }
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 512
+  loss_function: "mse"
+  optimizer: "adam"
+
+# Arquitectura del encoder
+encoder:
+  layers:
+    - type: "conv2d"
+      filters: 32
+      kernel_size: 3
+      stride: 1
+      padding: 0
+      activation: "relu"
+    - type: "maxpool2d"
+      pool_size: 2
+      stride: 2
+    - type: "conv2d"
+      filters: 64
+      kernel_size: 3
+      padding: 1
+      activation: "relu"
+    - type: "maxpool2d"
+      pool_size: 2
+      stride: 2
+    - type: "flatten"
+    - type: "dense"
+      dim: "${model.encoding_dim}"
+      activation: "relu"
+
+# Arquitectura del decoder
+decoder:
+  layers:
+  - type: "dense"
+    dim: 9216
+    activation: "relu"
+  - type: "unflatten"
+    dim1: 12
+    dim2: 12
+    out_channels: 64
+  - type: "upsample"
+    scale_factor: 2
+  - type: "conv2d_transpose"
+    filters: 32
+    kernel_size: 3
+    padding: 1
+    activation: "relu"
+  - type: "conv2d_transpose"
+    filters: 32
+    kernel_size: 3
+    padding: 1
+    activation: "relu"
+  - type: "upsample"
+    scale_factor: 2
+  - type: "conv2d_transpose"
+    filters: 1
+    kernel_size: 3
+    stride: 1
+    padding: 0
+    activation: "sigmoid"
+
+# Parámetros de la evaluación
+testing:
+  n: 1000         # Cantidad de imágenes a generar para evaluar
+  batch_size: 32  # Cantidad de imágenes en cada batch
