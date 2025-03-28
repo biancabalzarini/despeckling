@@ -113,6 +113,14 @@ class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la cl
                 ))
                 current_size = current_size // pool_size
 
+            elif layer.type == 'upsample':
+                scale_factor = layer['scale_factor']
+                layers.append(nn.Upsample(
+                    scale_factor=scale_factor,
+                    mode=layer.get('mode', 'nearest')
+                ))
+                current_size = current_size * scale_factor
+
             activation = layer.get('activation', '').lower()
             if activation == 'relu':
                 layers.append(nn.ReLU())
