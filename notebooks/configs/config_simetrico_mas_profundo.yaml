@@ -66,9 +66,9 @@ decoder:
       activation: "relu"
     - type: "conv2d_transpose"
       filters: 1
-      kernel_size: 3
+      kernel_size: 2
       stride: 2
-      padding: 2
+      padding: 0
       activation: "sigmoid"
 
 # Parámetros de la evaluación
