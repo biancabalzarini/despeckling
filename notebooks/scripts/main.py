@@ -26,7 +26,7 @@ OmegaConf.register_new_resolver("eval", eval)
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[ ]:
+# In[2]:
 
 
 config_name = 'config_simetrico_mas_profundo' # Elegir

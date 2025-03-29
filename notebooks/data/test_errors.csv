@@ -6,4 +6,5 @@ config_2,0.005484375240543
 config_3,0.0026259596888035
 config_4,0.0036356124172237
 config_base_simetrico_longtrain,0.0026202147655567
-config_base_simetrico_mix_imagenes,0.011211787612410262
+config_base_simetrico_mix_imagenes,0.0112117876124102
+config_simetrico_mas_profundo,0.002528096392779844
