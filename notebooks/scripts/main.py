@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import sys
@@ -21,7 +21,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from omegaconf import OmegaConf
-OmegaConf.register_new_resolver("eval", eval)
+
+
+# In[ ]:
+
+
+try:
+    OmegaConf.register_new_resolver("eval", eval)
+except ValueError:
+    pass
 
 
 # Elegir el archivo de configuración correspondiente:
@@ -29,7 +37,7 @@ OmegaConf.register_new_resolver("eval", eval)
 # In[2]:
 
 
-config_name = 'config_base_simetrico_mix_imagenes' # Elegir
+config_name = 'config_simetrico_mas_profundo' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -256,15 +264,15 @@ n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[17]:
+# In[ ]:
 
 
-test_g, test_gi, test_gI0 = train_g, train_gi, train_gI0 = mixed_dataset(
+test_g, test_gi, test_gI0 = mixed_dataset(
     n_total = n,
     generate_multiple_images = generate_multiple_images,
     conjunto_n_cuad_lado = n_cuad_lado,
     conjunto_pixeles_cuad = pixeles_cuad,
-    ratios = config.training.get('ratio',None),
+    ratios = config.training.get('ratio',[1]),
 )
 
 
