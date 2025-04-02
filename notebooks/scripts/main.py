@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import sys
@@ -21,7 +21,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from omegaconf import OmegaConf
-OmegaConf.register_new_resolver("eval", eval)
+
+
+# In[ ]:
+
+
+try:
+    OmegaConf.register_new_resolver("eval", eval)
+except ValueError:
+    pass
 
 
 # Elegir el archivo de configuración correspondiente:
