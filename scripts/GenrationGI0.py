@@ -3,6 +3,7 @@ from typing import List, Tuple
 import random
 from typing import List, Tuple, Callable, Optional, Union
 
+
 def rGI0(
   n: int,
   p_alpha: float,
