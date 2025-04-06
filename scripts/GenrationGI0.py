@@ -1,7 +1,7 @@
 import numpy as np
 from typing import List, Tuple
 import random
-from typing import List, Tuple, Callable, Optional, Union
+from typing import List, Tuple, Callable, Optional
 
 
 def rGI0(
