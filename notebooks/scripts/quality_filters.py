@@ -59,7 +59,7 @@ autoencoder_cargado.eval()
 
 # Genero dataset de testeo:
 
-# In[5]:
+# In[6]:
 
 
 n = config['testing']['n']
@@ -67,16 +67,17 @@ batch_size = config['testing']['batch_size']
 n_cuad_lado = config['training']['n_cuad_lado']
 pixeles_cuad = config['training']['pixeles_cuad']
 
-test_g, test_gi, test_gI0 = mixed_dataset(
+test_g, test_gi, test_gI0, alphas = mixed_dataset(
     n_total = n,
     generate_multiple_images = generate_multiple_images,
     conjunto_n_cuad_lado = n_cuad_lado,
     conjunto_pixeles_cuad = pixeles_cuad,
     ratios = config.training.get('ratio',[1]),
+    save_alpha_values=True
 )
 
 
-# In[6]:
+# In[15]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -92,7 +93,7 @@ test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 # Genero las imágenes procesadas por el autoencoder, y genero las imágenes de ratio (imagen original / imagen filtrada):
 
-# In[13]:
+# In[16]:
 
 
 all_inputs = []
@@ -120,7 +121,7 @@ ratios = np.squeeze(np.concatenate(all_ratios, axis=0))
 
 # Grafico un set de imágenes a modo de ejemplo:
 
-# In[21]:
+# In[17]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
