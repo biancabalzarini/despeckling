@@ -7,8 +7,9 @@
 import sys
 sys.path.append('..')
 
-from scripts.GenrationGI0 import partitioned_gi0_image, generate_multiple_images, mixed_dataset
+from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
+from scripts.measuring_quality import selecting_cuadrants
 
 import pandas as pd
 import torch
@@ -37,7 +38,7 @@ except ValueError:
 # In[3]:
 
 
-config_name = 'config_1' # Elegir
+config_name = 'config_base_simetrico_mix_imagenes' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -59,7 +60,7 @@ autoencoder_cargado.eval()
 
 # Genero dataset de testeo:
 
-# In[6]:
+# In[5]:
 
 
 n = config['testing']['n']
@@ -77,7 +78,7 @@ test_g, test_gi, test_gI0, alphas = mixed_dataset(
 )
 
 
-# In[15]:
+# In[6]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -93,7 +94,7 @@ test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 # Genero las imágenes procesadas por el autoencoder, y genero las imágenes de ratio (imagen original / imagen filtrada):
 
-# In[16]:
+# In[7]:
 
 
 all_inputs = []
@@ -121,7 +122,7 @@ ratios = np.squeeze(np.concatenate(all_ratios, axis=0))
 
 # Grafico un set de imágenes a modo de ejemplo:
 
-# In[17]:
+# In[8]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
@@ -149,6 +150,23 @@ def graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_h
     plt.tight_layout()
 
 graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
+
+
+# ---
+
+# In[9]:
+
+
+### BORRAR
+# AHORA TENGO QUE ELEGIR n (5 o 4) AREAS QUE ENTREN EN LA IMAGEN, Y QUE SEAN HOMOGENEAS (QUE NO SE CRUCEN DE CUADRANTE
+# Y QUE TENGAN ALPHA MENOR O IGUAL A -6). LAS ZONAS DE AREA 10X10 O 8X8. YO TOMARIA DE 10X10, SI NO ENTRA EN UN
+# CUADRANTE, DE 9X9. Y SI NO ENTRA, DE 8X8. y SI NO ENTRA, QUE FALLE Y DECIR QUE LA IMAGEN ES MUY POCO HOMOGENEA.
+
+
+# In[10]:
+
+
+cuadrantes = selecting_cuadrants(alphas, M=4)
 
 
 # In[ ]:
