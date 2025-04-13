@@ -22,6 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from omegaconf import OmegaConf
+import warnings
 
 
 # In[2]:
@@ -45,9 +46,21 @@ config = OmegaConf.load(config_path)
 config
 
 
+# In[4]:
+
+
+if min(config.training.pixeles_cuad) < 8:
+    warnings.warn(
+        "¡El método de primer orden va a fallar!\n"
+        "Existen imágenes con cuadrantes demasiado pequeños, "
+        "y este método necesita zonas homogéneas más grandes.",
+        category=UserWarning
+    )
+
+
 # Cargo el autoencoder ya entrenado:
 
-# In[4]:
+# In[5]:
 
 
 # 1. Crear una instancia del modelo (debe tener la misma arquitectura)
@@ -60,7 +73,7 @@ autoencoder_cargado.eval()
 
 # Genero dataset de testeo:
 
-# In[5]:
+# In[6]:
 
 
 n = config['testing']['n']
@@ -78,7 +91,7 @@ test_g, test_gi, test_gI0, alphas = mixed_dataset(
 )
 
 
-# In[6]:
+# In[7]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -94,7 +107,7 @@ test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 # Genero las imágenes procesadas por el autoencoder, y genero las imágenes de ratio (imagen original / imagen filtrada):
 
-# In[7]:
+# In[8]:
 
 
 all_inputs = []
@@ -122,7 +135,7 @@ ratios = np.squeeze(np.concatenate(all_ratios, axis=0))
 
 # Grafico un set de imágenes a modo de ejemplo:
 
-# In[8]:
+# In[9]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
@@ -154,7 +167,7 @@ graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 # ---
 
-# In[9]:
+# In[10]:
 
 
 ### BORRAR
@@ -163,7 +176,7 @@ graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 # CUADRANTE, DE 9X9. Y SI NO ENTRA, DE 8X8. y SI NO ENTRA, QUE FALLE Y DECIR QUE LA IMAGEN ES MUY POCO HOMOGENEA.
 
 
-# In[10]:
+# In[11]:
 
 
 cuadrantes = selecting_cuadrants(alphas, M=4)
