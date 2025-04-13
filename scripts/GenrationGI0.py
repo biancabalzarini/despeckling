@@ -154,7 +154,7 @@ def generate_multiple_images(
     
     for i in range(n):
         p_alphas: List[float] = random.choices(alpha_values, k=total_cuadrados)
-        alphas_imagen_individual = np.array(p_alphas).reshape(2,2)
+        alphas_imagen_individual = np.array(p_alphas).reshape(n_cuad_lado,n_cuad_lado)
         
         imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(p_alphas, p_gammas, p_looks, n_cuad_lado, pixeles_cuad)
         
