@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import cv2
 from omegaconf import OmegaConf
 import warnings
+import copy
 
 
 # In[2]:
@@ -182,8 +183,35 @@ graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 cuadrantes = selecting_cuadrants(alphas, M=4)
 
 
-# In[ ]:
+# In[12]:
 
 
+pixeles = config.training.pixeles_cuad
+partitions = [len(sublista) for sublista in alphas]
+p = [pixel for pixel, count in zip(pixeles, partitions) for _ in range(count)]
 
+cuadrantes_i = copy.deepcopy(cuadrantes)
+cuadrantes_f = copy.deepcopy(cuadrantes)
+
+for i in range(len(cuadrantes)):         # Para loopear por las imágenes
+    pi = p[i]
+    
+    for j in range(len(cuadrantes[i])):  # Para loopear por cada una de las zonas que quiero crear en un única imagen
+        cuadrante_x = cuadrantes[i][j][0]
+        cuadrante_y = cuadrantes[i][j][1]
+
+        fila_i = cuadrante_x*pi     # Fila de inicio del cuadrante
+        columna_i = cuadrante_y*pi  # Columna de inicio del cuadrante
+
+        fila_f = fila_i + pi        # Fila de fin del cuadrante
+        columna_f = columna_i + pi  # Columna de fin del cuadrantes
+        
+        cuadrantes_i[i][j] = (fila_i, columna_i)
+        cuadrantes_f[i][j] = (fila_f, columna_f)
+
+
+# In[13]:
+
+
+del cuadrantes
 
