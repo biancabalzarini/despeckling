@@ -9,7 +9,7 @@ sys.path.append('..')
 
 from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
-from scripts.measuring_quality import selecting_cuadrants
+from scripts.measuring_quality import selecting_quadrants
 
 import pandas as pd
 import torch
@@ -180,7 +180,7 @@ graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 # In[11]:
 
 
-cuadrantes = selecting_cuadrants(alphas, M=4)
+cuadrantes = selecting_quadrants(alphas, M=4)
 
 
 # In[12]:

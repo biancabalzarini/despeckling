@@ -4,7 +4,7 @@ import random
 import copy
 
 
-def selecting_cuadrants(
+def selecting_quadrants(
     alphas: List[np.ndarray],
     M: int
 ) -> List[List]:
@@ -66,7 +66,7 @@ def selecting_cuadrants(
         
     return cuadrantes
 
-def cuadrants_to_pixels(
+def quadrants_to_pixels(
     cuadrantes: List[List],
     pixeles_cuad: List,
     alphas: List[np.ndarray]
