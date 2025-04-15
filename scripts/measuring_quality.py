@@ -1,30 +1,8 @@
 import numpy as np
-from typing import List
+from typing import List, Tuple
 import random
+import copy
 
-
-def selecting_homogeneous_areas(
-    imagen: np.ndarray,
-    alphas: np.ndarray,
-    M: int
-) -> np.ndarray:
-    """
-    Genera varias areas homogéneas (al azar) dentro de una imagen.
-
-    Parameters:
-    -----------
-    imagen: np.ndarray
-        Imagen sobre la cual se van a buscar areas homogeneas.
-    alphas: np.ndarray
-        Valores de alpha de cada cuadarante de la imagen.
-    M: int
-        Número de áreas homogéneas que se quieren buscar.
-
-    Returns:
-    --------
-    areash: np.ndarray
-        Array con cada una de las areas homogéneas seleccionadas.        
-    """
 
 def selecting_cuadrants(
     alphas: List[np.ndarray],
@@ -87,3 +65,77 @@ def selecting_cuadrants(
             cuadrantes.append(lista_distribuida)
         
     return cuadrantes
+
+def cuadrants_to_pixels(
+    cuadrantes: List[List],
+    pixeles_cuad: List,
+    alphas: List[np.ndarray]
+) -> Tuple[List, List]:
+    """
+    Convierte los cuadrantes en coordenadas de píxeles dentro de la imagen. Devuelve el x,y tanto inicial
+    como final del cuadrante, medidos en píxeles.
+
+    Parameters
+    ----------
+    cuadrantes: List[List]
+        Lista de listas indicando los cuadrantes a transformar en coordenadas.
+    pixeles_cuad: List
+        Lista con la cantidad de píxeles de cada cuadrante en cada una de las distintas particiones del
+        dataset. Puede obtenerse del config, como config.training.pixeles_cuad.
+    alphas: List[np.ndarray]
+        Lista donde cada elemento es un np.ndarray con los valores de alpha de cada cuadrante de cada imagen para
+        un único tipo de partición. Las diferentes particiones van en diferentes elementos de la lista.
+
+    Returns
+    -------
+    cuadrantes_i: List[List]
+        Análogo al input cuadrantes pero con los x,y iniciales medidos en píxeles de cada cuadrante.
+    cuadrantes_f: List[List]
+        Análogo al input cuadrantes pero con los x,y finales medidos en píxeles de cada cuadrante.
+    """
+    partitions = [len(sublista) for sublista in alphas]
+    p = [pixel for pixel, count in zip(pixeles_cuad, partitions) for _ in range(count)]
+
+    cuadrantes_i = copy.deepcopy(cuadrantes)
+    cuadrantes_f = copy.deepcopy(cuadrantes)
+
+    for i in range(len(cuadrantes)):         # Para loopear por las imágenes
+        pi = p[i]
+        
+        for j in range(len(cuadrantes[i])):  # Para loopear por cada una de las zonas que quiero crear en un única imagen
+            cuadrante_x = cuadrantes[i][j][0]
+            cuadrante_y = cuadrantes[i][j][1]
+
+            fila_i = cuadrante_x*pi     # Fila de inicio del cuadrante
+            columna_i = cuadrante_y*pi  # Columna de inicio del cuadrante
+
+            fila_f = fila_i + pi        # Fila de fin del cuadrante
+            columna_f = columna_i + pi  # Columna de fin del cuadrantes
+            
+            cuadrantes_i[i][j] = (fila_i, columna_i)
+            cuadrantes_f[i][j] = (fila_f, columna_f)
+    
+    return cuadrantes_i, cuadrantes_f
+
+def selecting_homogeneous_areas(
+    imagen: np.ndarray,
+    alphas: np.ndarray,
+    M: int
+) -> np.ndarray:
+    """
+    Genera varias areas homogéneas (al azar) dentro de una imagen.
+
+    Parameters:
+    -----------
+    imagen: np.ndarray
+        Imagen sobre la cual se van a buscar areas homogeneas.
+    alphas: np.ndarray
+        Valores de alpha de cada cuadarante de la imagen.
+    M: int
+        Número de áreas homogéneas que se quieren buscar.
+
+    Returns:
+    --------
+    areash: np.ndarray
+        Array con cada una de las areas homogéneas seleccionadas.        
+    """
