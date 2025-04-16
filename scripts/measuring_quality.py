@@ -118,24 +118,39 @@ def quadrants_to_pixels(
     return cuadrantes_i, cuadrantes_f
 
 def selecting_homogeneous_areas(
-    imagen: np.ndarray,
-    alphas: np.ndarray,
-    M: int
-) -> np.ndarray:
+    coord_i: Tuple[int, int],
+    coord_f: Tuple[int, int]
+) -> Tuple[int, int, int, int]:
     """
-    Genera varias areas homogéneas (al azar) dentro de una imagen.
+    A partir de los límites en x e y de un cuadrante, genera una zona aleatoria allí dentro. El tamaño de esa
+    zona se elige según el tamaño del cuadrante. De lo posible se usa una zona de 10x10, sino de 9x9, y sino
+    de 8x8.
 
     Parameters:
     -----------
-    imagen: np.ndarray
-        Imagen sobre la cual se van a buscar areas homogeneas.
-    alphas: np.ndarray
-        Valores de alpha de cada cuadarante de la imagen.
-    M: int
-        Número de áreas homogéneas que se quieren buscar.
+    coord_i: Tuple[int, int]
+        Tupla con los valores de x e y (en píxeles) iniciales del cuadrante.
+    coord_f: Tuple[int, int]
+        Tupla con los valores de x e y (en píxeles) finales del cuadrante.
 
     Returns:
     --------
-    areash: np.ndarray
-        Array con cada una de las areas homogéneas seleccionadas.        
+    zona_xi: int
+        Valor de x inicial (en píxeles) de la zona aleatoriamente elegida.
+    zona_yi: int
+        Valor de y inicial (en píxeles) de la zona aleatoriamente elegida.
+    zona_xf: int
+        Valor de x final (en píxeles) de la zona aleatoriamente elegida.
+    zona_yf: int
+        Valor de y final (en píxeles) de la zona aleatoriamente elegida.
     """
+    M = min(10, max(8, coord_f[0] - coord_i[0]))
+    max_x = coord_f[0] - M
+    max_y = coord_f[1] - M
+
+    zona_xi = np.random.randint(coord_i[0], max_x+1)
+    zona_yi = np.random.randint(coord_i[1], max_y+1)
+    zona_xf = zona_xi + M
+    zona_yf = zona_yi + M
+
+    return zona_xi, zona_yi, zona_xf, zona_yf
