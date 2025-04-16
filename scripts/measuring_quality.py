@@ -154,3 +154,13 @@ def selecting_homogeneous_areas(
     zona_yf = zona_yi + M
 
     return zona_xi, zona_yi, zona_xf, zona_yf
+
+def processing_single_zone(
+    cuads: Tuple[int, int],
+    zona_xi: int,
+    zona_yi: int,
+    zona_xf: int,
+    zona_yf: int,
+    image: np.ndarray
+) -> :
+    
