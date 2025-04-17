@@ -126,15 +126,15 @@ def selecting_homogeneous_areas(
     zona se elige según el tamaño del cuadrante. De lo posible se usa una zona de 10x10, sino de 9x9, y sino
     de 8x8.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     coord_i: Tuple[int, int]
         Tupla con los valores de x e y (en píxeles) iniciales del cuadrante.
     coord_f: Tuple[int, int]
         Tupla con los valores de x e y (en píxeles) finales del cuadrante.
 
-    Returns:
-    --------
+    Returns
+    -------
     zona_xi: int
         Valor de x inicial (en píxeles) de la zona aleatoriamente elegida.
     zona_yi: int
@@ -155,12 +155,102 @@ def selecting_homogeneous_areas(
 
     return zona_xi, zona_yi, zona_xf, zona_yf
 
-def processing_single_zone(
-    cuads: Tuple[int, int],
-    zona_xi: int,
-    zona_yi: int,
-    zona_xf: int,
-    zona_yf: int,
-    image: np.ndarray
-) -> :
+def single_image_first_order_method(
+    cuads_i: List[Tuple[int, int]],
+    cuads_f: List[Tuple[int, int]],
+    original_image: np.ndarray,
+    ratio_image: np.ndarray
+) -> int:
+    """
+    Aplica el método de primer orden a una imagen individual para cuantificar la bondad del filtrado.
+
+    Parameters
+    ----------
+    cuads_i: List[Tuple[int, int]]
+        Lista con las coordenadas iniciales de los cuadrantes en donde se van a tomar zonas homogéneas para
+        calcular el estadístico de primer orden. Cada cuadrante se repite tantas veces como vaya a ser
+        necesario samplearlo.
+    cuads_f: List[Tuple[int, int]]
+        Lista con las coordenadas finales de los cuadrantes en donde se van a tomar zonas homogéneas para
+        calcular el estadístico de primer orden. Cada cuadrante se repite tantas veces como vaya a ser
+        necesario samplearlo.
+    original_image: np.ndarray
+        Imagen original.
+    ratio_imagen: np.ndarray
+        Imagen que contiene el ratio pixel a pixel de la imagen original a la imagen filtrada.
+
+    Returns
+    -------
+    r_ENL_mu: int
+        Resultado del estadístico de primer orden.
+    """
+    suma = 0
+    for i in range(len(cuads_i)):
+        zona_xi, zona_yi, zona_xf, zona_yf = selecting_homogeneous_areas(cuads_i[i], cuads_f[i])
+        zona_o = original_image[zona_xi:zona_xf, zona_yi:zona_yf]
+        zona_r = ratio_image[zona_xi:zona_xf, zona_yi:zona_yf]
+
+        mu_o = zona_o.mean()
+        mu_r = zona_r.mean()
+        std_o = zona_o.std()
+        std_r = zona_r.std()
+
+        ENL_o = mu_o**2 / std_o**2
+        ENL_r = mu_r**2 / std_r**2
+        r_ENL = np.abs(ENL_o - ENL_r) / ENL_o
+        r_mu = np.abs(1-mu_r)
+
+        suma += r_ENL + r_mu
+
+    r_ENL_mu = suma / (2*len(cuads_i))
+    return r_ENL_mu
+
+def first_order_method(
+    cuadrant_sizes: List[int],
+    alphas: List[np.ndarray],
+    inputs: np.ndarray,
+    ratios: np.ndarray
+) -> List[float]:
+    """
+    Aplica el método de primer orden a todas las imagenes del dataset para cuantificar la bondad del filtrado.
+
+    Parameters
+    ----------
+    cuadrant_sizes: List[int]
+        Lista con los valores únicos de los tamaños de los cuadrantes. Sale del yaml de configuración
+        como config.training.pixeles_cuad.
+    alphas: List[np.ndarray]
+        Lista donde cada elemento es un np.ndarray con los valores de alpha de cada cuadrante de cada imagen para
+        un único tipo de partición. Las diferentes particiones van en diferentes elementos de la lista.
+    inputs: np.ndarray
+        Dataset de imágenes originales.
+    ratios: np.ndarray
+        Dataset de imágenes filtradas. Debe tener la misma forma que inputs. !!!!!
+
+    Returns
+    -------
+    r_ENL_mu: List[int]
+        Lista con los resultados del estadístico de primer orden para cada imagen.
+    """
+    assert min(cuadrant_sizes) >= 8, "Existen imágenes muy poco homogéneas en su dataset. Para poder \
+    usar el filtro de primer orden se necesita que los cuadrantes de todas las imágenes sean de al menos 8x8 píxeles."
+
+    cuadrantes = selecting_quadrants(alphas, M=5)
+    cuadrantes_i, cuadrantes_f = quadrants_to_pixels(cuadrantes, cuadrant_sizes, alphas)
+
+    estadisticos_1er_orden = []
     
+    for i in range(inputs.shape[0]): # Loopeo por todas las imágenes
+        if len(cuadrantes_i[i]) == 0:
+            pass
+
+        else:
+            cuads_i = cuadrantes_i[i]
+            cuads_f = cuadrantes_f[i]
+            original_image = inputs[i]
+            ratio_image = ratios[i]
+
+            s = single_image_first_order_method(cuads_i, cuads_f, original_image, ratio_image)
+            estadisticos_1er_orden.append(s)
+
+    return np.array(estadisticos_1er_orden)
