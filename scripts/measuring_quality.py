@@ -213,6 +213,7 @@ def first_order_method(
 ) -> List[float]:
     """
     Aplica el método de primer orden a todas las imagenes del dataset para cuantificar la bondad del filtrado.
+    Si una de las imágenes no tiene cuadrantes con alpha menor o igual a -6, entonces no se la tiene en cuenta.
 
     Parameters
     ----------
@@ -225,7 +226,7 @@ def first_order_method(
     inputs: np.ndarray
         Dataset de imágenes originales.
     ratios: np.ndarray
-        Dataset de imágenes filtradas. Debe tener la misma forma que inputs. !!!!!
+        Ratio de imágenes originales a imágenes filtradas. Debe tener la misma forma que inputs.
 
     Returns
     -------
@@ -239,7 +240,7 @@ def first_order_method(
     cuadrantes_i, cuadrantes_f = quadrants_to_pixels(cuadrantes, cuadrant_sizes, alphas)
 
     estadisticos_1er_orden = []
-    
+
     for i in range(inputs.shape[0]): # Loopeo por todas las imágenes
         if len(cuadrantes_i[i]) == 0:
             pass
