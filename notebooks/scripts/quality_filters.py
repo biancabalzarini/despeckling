@@ -9,7 +9,7 @@ sys.path.append('..')
 
 from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
-from scripts.measuring_quality import selecting_quadrants
+from scripts.measuring_quality import first_order_method
 
 import pandas as pd
 import torch
@@ -23,7 +23,8 @@ import matplotlib.pyplot as plt
 import cv2
 from omegaconf import OmegaConf
 import warnings
-import copy
+import matplotlib.pyplot as plt
+from skimage.feature import graycomatrix
 
 
 # In[2]:
@@ -166,52 +167,64 @@ def graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_h
 graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 
-# ---
+# ## Filtro de primer orden
 
 # In[10]:
 
 
-### BORRAR
-# AHORA TENGO QUE ELEGIR n (5 o 4) AREAS QUE ENTREN EN LA IMAGEN, Y QUE SEAN HOMOGENEAS (QUE NO SE CRUCEN DE CUADRANTE
-# Y QUE TENGAN ALPHA MENOR O IGUAL A -6). LAS ZONAS DE AREA 10X10 O 8X8. YO TOMARIA DE 10X10, SI NO ENTRA EN UN
-# CUADRANTE, DE 9X9. Y SI NO ENTRA, DE 8X8. y SI NO ENTRA, QUE FALLE Y DECIR QUE LA IMAGEN ES MUY POCO HOMOGENEA.
+fom = first_order_method(config.training.pixeles_cuad, alphas, inputs, ratios)
 
 
 # In[11]:
 
 
-cuadrantes = selecting_quadrants(alphas, M=4)
+print(f'El filtro perfecto produciría un estadístico de primer orden igual a 0.\n')
+print(f'Media del estadístico de 1er orden sobre todas las imágenes: {np.mean(fom)}')
+print(f'Desviación estándar del estadístico de 1er orden sobre todas las imágenes: {np.std(fom)}\n')
+plt.hist(fom, bins=50)
+plt.title('Distribución del estadístico de 1er orden')
 
+
+# ## Filtro de segundo orden
 
 # In[12]:
 
 
-pixeles = config.training.pixeles_cuad
-partitions = [len(sublista) for sublista in alphas]
-p = [pixel for pixel, count in zip(pixeles, partitions) for _ in range(count)]
+image_normalizada = (outputs[0] - np.min(outputs[0])) / (np.max(outputs[0]) - np.min(outputs[0]))
+image_uint8 = (image_normalizada * 255).astype(np.uint8)
+image = (image_normalizada * 255).astype(np.uint8)
 
-cuadrantes_i = copy.deepcopy(cuadrantes)
-cuadrantes_f = copy.deepcopy(cuadrantes)
+# Configurar distancias y ángulos
+distances = [1,2,3]  # Cantidad de vecinos (distancia)
+angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]  # Ángulos en radianes
 
-for i in range(len(cuadrantes)):         # Para loopear por las imágenes
-    pi = p[i]
-    
-    for j in range(len(cuadrantes[i])):  # Para loopear por cada una de las zonas que quiero crear en un única imagen
-        cuadrante_x = cuadrantes[i][j][0]
-        cuadrante_y = cuadrantes[i][j][1]
+# Calcular GLCM para todas las combinaciones de distancia y ángulo
+glcm = graycomatrix(image, distances=distances, angles=angles, symmetric=True, normed=True)
 
-        fila_i = cuadrante_x*pi     # Fila de inicio del cuadrante
-        columna_i = cuadrante_y*pi  # Columna de inicio del cuadrante
-
-        fila_f = fila_i + pi        # Fila de fin del cuadrante
-        columna_f = columna_i + pi  # Columna de fin del cuadrantes
-        
-        cuadrantes_i[i][j] = (fila_i, columna_i)
-        cuadrantes_f[i][j] = (fila_f, columna_f)
+# Promediar la GLCM sobre todas las combinaciones de distancia y ángulo
+glcm_avg = glcm.mean(axis=(2, 3))  # Promedio sobre los ejes de ángulo y distancia
 
 
 # In[13]:
 
 
-del cuadrantes
+(outputs[883] - outputs[23]).max()
+
+
+# In[14]:
+
+
+plt.imshow(outputs[39])
+
+
+# In[15]:
+
+
+plt.imshow(glcm_avg)
+
+
+# In[ ]:
+
+
+
 
