@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[17]:
 
 
 import sys
@@ -27,7 +27,7 @@ import matplotlib.pyplot as plt
 from skimage.feature import graycomatrix
 
 
-# In[2]:
+# In[18]:
 
 
 try:
@@ -38,17 +38,17 @@ except ValueError:
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[3]:
+# In[19]:
 
 
-config_name = 'config_base_simetrico_mix_imagenes' # Elegir
+config_name = 'config_1' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
 config
 
 
-# In[4]:
+# In[20]:
 
 
 if min(config.training.pixeles_cuad) < 8:
@@ -62,7 +62,7 @@ if min(config.training.pixeles_cuad) < 8:
 
 # Cargo el autoencoder ya entrenado:
 
-# In[5]:
+# In[21]:
 
 
 # 1. Crear una instancia del modelo (debe tener la misma arquitectura)
@@ -75,7 +75,7 @@ autoencoder_cargado.eval()
 
 # Genero dataset de testeo:
 
-# In[6]:
+# In[22]:
 
 
 n = config['testing']['n']
@@ -93,7 +93,7 @@ test_g, test_gi, test_gI0, alphas = mixed_dataset(
 )
 
 
-# In[7]:
+# In[23]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -109,7 +109,7 @@ test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 # Genero las imágenes procesadas por el autoencoder, y genero las imágenes de ratio (imagen original / imagen filtrada):
 
-# In[8]:
+# In[24]:
 
 
 all_inputs = []
@@ -137,7 +137,7 @@ ratios = np.squeeze(np.concatenate(all_ratios, axis=0))
 
 # Grafico un set de imágenes a modo de ejemplo:
 
-# In[9]:
+# In[25]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
@@ -169,13 +169,13 @@ graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 # ## Filtro de primer orden
 
-# In[10]:
+# In[26]:
 
 
 fom = first_order_method(config.training.pixeles_cuad, alphas, inputs, ratios)
 
 
-# In[11]:
+# In[27]:
 
 
 print(f'El filtro perfecto produciría un estadístico de primer orden igual a 0.\n')
@@ -187,7 +187,7 @@ plt.title('Distribución del estadístico de 1er orden')
 
 # ## Filtro de segundo orden
 
-# In[12]:
+# In[28]:
 
 
 image_normalizada = (outputs[0] - np.min(outputs[0])) / (np.max(outputs[0]) - np.min(outputs[0]))
@@ -205,19 +205,19 @@ glcm = graycomatrix(image, distances=distances, angles=angles, symmetric=True, n
 glcm_avg = glcm.mean(axis=(2, 3))  # Promedio sobre los ejes de ángulo y distancia
 
 
-# In[13]:
+# In[29]:
 
 
-(outputs[883] - outputs[23]).max()
+(outputs[883] - outputs[788]).max()
 
 
-# In[14]:
+# In[30]:
 
 
 plt.imshow(outputs[39])
 
 
-# In[15]:
+# In[31]:
 
 
 plt.imshow(glcm_avg)
