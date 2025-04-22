@@ -2,6 +2,7 @@ import numpy as np
 from typing import List, Tuple
 import random
 import copy
+from skimage.feature import graycomatrix
 
 
 def selecting_quadrants(
@@ -255,3 +256,35 @@ def first_order_method(
             estadisticos_1er_orden.append(s)
 
     return np.array(estadisticos_1er_orden)
+
+def co_ocurrence_matrix(
+    image: np.ndarray
+) -> np.ndarray:
+    """
+    Calcula la matriz de co-ocurrencias de una imagen. Lo hace para diferentes distancias y ángulos, y toma
+    el promedio sobre todas esas combinaciones.
+
+    Parameters
+    ----------
+    image: np.ndarray
+        Imagen sobre la cual calcular la matriz de co-ocurrencias.
+
+    Returns
+    -------
+    glcm_avg: np.ndarray
+        Matriz de co-courrencia.
+    """
+    image_normalizada = (image - np.min(image)) / (np.max(image) - np.min(image))
+    image = (image_normalizada * 255).astype(np.uint8)
+    
+    # Configurar distancias y ángulos
+    distances = [1,2,3]  # Cantidad de vecinos (distancia)
+    angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]  # Ángulos en radianes
+    
+    # Calcular GLCM para todas las combinaciones de distancia y ángulo
+    glcm = graycomatrix(image, distances=distances, angles=angles, symmetric=True, normed=True)
+    
+    # Promediar la GLCM sobre todas las combinaciones de distancia y ángulo
+    glcm_avg = glcm.mean(axis=(2, 3))  # Promedio sobre los ejes de ángulo y distancia
+    
+    return glcm_avg

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[17]:
+# In[1]:
 
 
 import sys
@@ -9,7 +9,7 @@ sys.path.append('..')
 
 from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
-from scripts.measuring_quality import first_order_method
+from scripts.measuring_quality import first_order_method, co_ocurrence_matrix
 
 import pandas as pd
 import torch
@@ -24,10 +24,9 @@ import cv2
 from omegaconf import OmegaConf
 import warnings
 import matplotlib.pyplot as plt
-from skimage.feature import graycomatrix
 
 
-# In[18]:
+# In[2]:
 
 
 try:
@@ -38,17 +37,17 @@ except ValueError:
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[19]:
+# In[3]:
 
 
-config_name = 'config_1' # Elegir
+config_name = 'config_base_simetrico_mix_imagenes' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
 config
 
 
-# In[20]:
+# In[4]:
 
 
 if min(config.training.pixeles_cuad) < 8:
@@ -62,7 +61,7 @@ if min(config.training.pixeles_cuad) < 8:
 
 # Cargo el autoencoder ya entrenado:
 
-# In[21]:
+# In[5]:
 
 
 # 1. Crear una instancia del modelo (debe tener la misma arquitectura)
@@ -75,7 +74,7 @@ autoencoder_cargado.eval()
 
 # Genero dataset de testeo:
 
-# In[22]:
+# In[6]:
 
 
 n = config['testing']['n']
@@ -93,7 +92,7 @@ test_g, test_gi, test_gI0, alphas = mixed_dataset(
 )
 
 
-# In[23]:
+# In[7]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -109,7 +108,7 @@ test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 # Genero las imágenes procesadas por el autoencoder, y genero las imágenes de ratio (imagen original / imagen filtrada):
 
-# In[24]:
+# In[8]:
 
 
 all_inputs = []
@@ -137,7 +136,7 @@ ratios = np.squeeze(np.concatenate(all_ratios, axis=0))
 
 # Grafico un set de imágenes a modo de ejemplo:
 
-# In[25]:
+# In[9]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
@@ -169,13 +168,13 @@ graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 # ## Filtro de primer orden
 
-# In[26]:
+# In[10]:
 
 
 fom = first_order_method(config.training.pixeles_cuad, alphas, inputs, ratios)
 
 
-# In[27]:
+# In[11]:
 
 
 print(f'El filtro perfecto produciría un estadístico de primer orden igual a 0.\n')
@@ -187,37 +186,19 @@ plt.title('Distribución del estadístico de 1er orden')
 
 # ## Filtro de segundo orden
 
-# In[28]:
+# In[12]:
 
 
-image_normalizada = (outputs[0] - np.min(outputs[0])) / (np.max(outputs[0]) - np.min(outputs[0]))
-image_uint8 = (image_normalizada * 255).astype(np.uint8)
-image = (image_normalizada * 255).astype(np.uint8)
-
-# Configurar distancias y ángulos
-distances = [1,2,3]  # Cantidad de vecinos (distancia)
-angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]  # Ángulos en radianes
-
-# Calcular GLCM para todas las combinaciones de distancia y ángulo
-glcm = graycomatrix(image, distances=distances, angles=angles, symmetric=True, normed=True)
-
-# Promediar la GLCM sobre todas las combinaciones de distancia y ángulo
-glcm_avg = glcm.mean(axis=(2, 3))  # Promedio sobre los ejes de ángulo y distancia
+outputs.shape
 
 
-# In[29]:
+# In[13]:
 
 
-(outputs[883] - outputs[788]).max()
+glcm_avg = co_ocurrence_matrix(outputs[0])
 
 
-# In[30]:
-
-
-plt.imshow(outputs[39])
-
-
-# In[31]:
+# In[14]:
 
 
 plt.imshow(glcm_avg)
