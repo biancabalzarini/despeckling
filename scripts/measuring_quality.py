@@ -314,3 +314,36 @@ def h(
     
     weights = 1 / (1 + (i - j)**2)
     return np.sum(weights * p)
+
+def deltah(
+    image: np.ndarray,
+    g: int = 30
+) -> float:
+    """
+    El valor absoluto de la variación relativa de h0, en porcentaje.
+    
+    Parameters
+    ----------
+    image: np.ndarray
+        Imagen individual sobre la cual calcular el valor de delta h. Debe ser la imagen de ratio (entrada/output).
+    g: int
+        Cantidad de permutaciones a tomar en el cálculo de delta h.
+
+    Returns
+    -------
+    delta_h: float
+        Valor de delta h.
+    """
+    hsum = 0
+    for i in range(g):
+        
+        shuffled_flat = np.random.permutation(image.ravel())
+        shuffled_arr = shuffled_flat.reshape(image.shape)
+        glcm_avg_shuffled = co_ocurrence_matrix(shuffled_arr)
+        hsum += h(glcm_avg_shuffled)
+
+    havg = hsum / g
+    h0 = h(co_ocurrence_matrix(image))
+    delta_h = 100 * np.abs((h0 - havg) / h0)
+    
+    return delta_h

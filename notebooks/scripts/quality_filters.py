@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import sys
@@ -9,7 +9,7 @@ sys.path.append('..')
 
 from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
-from scripts.measuring_quality import first_order_method, co_ocurrence_matrix, h
+from scripts.measuring_quality import first_order_method, co_ocurrence_matrix, deltah
 
 import pandas as pd
 import torch
@@ -26,7 +26,7 @@ import warnings
 import matplotlib.pyplot as plt
 
 
-# In[2]:
+# In[41]:
 
 
 try:
@@ -37,7 +37,7 @@ except ValueError:
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[3]:
+# In[42]:
 
 
 config_name = 'config_base_simetrico_mix_imagenes' # Elegir
@@ -47,7 +47,7 @@ config = OmegaConf.load(config_path)
 config
 
 
-# In[4]:
+# In[43]:
 
 
 if min(config.training.pixeles_cuad) < 8:
@@ -61,7 +61,7 @@ if min(config.training.pixeles_cuad) < 8:
 
 # Cargo el autoencoder ya entrenado:
 
-# In[5]:
+# In[44]:
 
 
 # 1. Crear una instancia del modelo (debe tener la misma arquitectura)
@@ -74,7 +74,7 @@ autoencoder_cargado.eval()
 
 # Genero dataset de testeo:
 
-# In[6]:
+# In[45]:
 
 
 n = config['testing']['n']
@@ -92,7 +92,7 @@ test_g, test_gi, test_gI0, alphas = mixed_dataset(
 )
 
 
-# In[7]:
+# In[46]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -108,7 +108,7 @@ test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 # Genero las imágenes procesadas por el autoencoder, y genero las imágenes de ratio (imagen original / imagen filtrada):
 
-# In[8]:
+# In[47]:
 
 
 all_inputs = []
@@ -136,7 +136,7 @@ ratios = np.squeeze(np.concatenate(all_ratios, axis=0))
 
 # Grafico un set de imágenes a modo de ejemplo:
 
-# In[9]:
+# In[48]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
@@ -168,13 +168,13 @@ graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 # ## Filtro de primer orden
 
-# In[10]:
+# In[49]:
 
 
 fom = first_order_method(config.training.pixeles_cuad, alphas, inputs, ratios)
 
 
-# In[11]:
+# In[50]:
 
 
 print(f'El filtro perfecto produciría un estadístico de primer orden igual a 0.\n')
@@ -186,7 +186,7 @@ plt.title('Distribución del estadístico de 1er orden')
 
 # ## Filtro de segundo orden
 
-# In[12]:
+# In[51]:
 
 
 # Grafico solo a modo de ejemplo
@@ -211,32 +211,8 @@ axes[2].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio shuffleada)")
 plt.tight_layout()
 
 
-# In[13]:
+# In[55]:
 
 
-img_original = ratios[random_index]
-g = 5
-
-hsum = 0
-for i in range(g):
-    
-    shuffled_flat = np.random.permutation(img_original.ravel())
-    shuffled_arr = shuffled_flat.reshape(img_original.shape)
-    glcm_avg_shuffled = co_ocurrence_matrix(shuffled_arr)
-    hsum += h(glcm_avg_shuffled)
-
-havg = hsum / g
-
-
-# In[14]:
-
-
-h0 = h(co_ocurrence_matrix(img_original))
-
-
-# In[15]:
-
-
-deltah = 100 * np.abs((h0 - havg) / h0)
-deltah
+deltah(ratios[random_index], g=30)
 
