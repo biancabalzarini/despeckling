@@ -186,19 +186,41 @@ plt.title('Distribución del estadístico de 1er orden')
 
 # ## Filtro de segundo orden
 
-# In[ ]:
+# In[97]:
 
 
-# Grafico una matriz de co-ocurrencias a modo de ejemplo
-random_index = np.random.randint(0, outputs.shape[0] + 1)
-glcm_avg = co_ocurrence_matrix(outputs[random_index])
-plt.imshow(glcm_avg)
+# Grafico solo a modo de ejemplo
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+random_index = np.random.randint(0, ratios.shape[0])
+img_original = ratios[random_index]
+axes[0].imshow(img_original, cmap='viridis')
+axes[0].set_title("Imagen\nRatio")
+
+glcm_avg = co_ocurrence_matrix(img_original)
+axes[1].imshow(glcm_avg, cmap='viridis')
+axes[1].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio)")
+
+shuffled_flat = np.random.permutation(img_original.ravel())
+shuffled_arr = shuffled_flat.reshape(img_original.shape)
+glcm_avg_shuffled = co_ocurrence_matrix(shuffled_arr)
+axes[2].imshow(glcm_avg_shuffled, cmap='viridis')
+axes[2].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio shuffleada)")
+
+plt.tight_layout()
 
 
-# In[20]:
+# In[79]:
 
 
 h(glcm_avg)
+
+
+# In[80]:
+
+
+h(glcm_avg_shuffled)
 
 
 # In[ ]:
