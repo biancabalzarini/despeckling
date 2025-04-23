@@ -9,7 +9,7 @@ sys.path.append('..')
 
 from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
-from scripts.measuring_quality import first_order_method, co_ocurrence_matrix
+from scripts.measuring_quality import first_order_method, co_ocurrence_matrix, h
 
 import pandas as pd
 import torch
@@ -202,6 +202,12 @@ glcm_avg = co_ocurrence_matrix(outputs[0])
 
 
 plt.imshow(glcm_avg)
+
+
+# In[20]:
+
+
+h(glcm_avg)
 
 
 # In[ ]:

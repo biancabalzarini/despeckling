@@ -288,3 +288,29 @@ def co_ocurrence_matrix(
     glcm_avg = glcm.mean(axis=(2, 3))  # Promedio sobre los ejes de ángulo y distancia
     
     return glcm_avg
+
+def h(
+    p: np.ndarray
+) -> float:
+    """
+    Valor de homogeneidad de Haralick calculado a partir de la matriz de co-ocurrencias.
+    
+    Parameters
+    ----------
+    p: np.ndarray
+        Matriz de co-ocurrencias.
+
+    Returns
+    -------
+    h: float
+        Valor de homogeneidad de Haralick
+    """
+    if p.shape[0] != p.shape[1]:
+        raise ValueError("La matriz de co-ocurrencias debe ser cuadrada.")
+    
+    M = p.shape[0]
+    i = np.arange(M).reshape(-1, 1)
+    j = np.arange(M).reshape(1, -1)
+    
+    weights = 1 / (1 + (i - j)**2)
+    return np.sum(weights * p)
