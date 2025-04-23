@@ -186,21 +186,12 @@ plt.title('Distribución del estadístico de 1er orden')
 
 # ## Filtro de segundo orden
 
-# In[12]:
+# In[ ]:
 
 
-outputs.shape
-
-
-# In[13]:
-
-
-glcm_avg = co_ocurrence_matrix(outputs[0])
-
-
-# In[14]:
-
-
+# Grafico una matriz de co-ocurrencias a modo de ejemplo
+random_index = np.random.randint(0, outputs.shape[0] + 1)
+glcm_avg = co_ocurrence_matrix(outputs[random_index])
 plt.imshow(glcm_avg)
 
 
