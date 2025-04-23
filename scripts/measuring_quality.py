@@ -211,7 +211,7 @@ def first_order_method(
     alphas: List[np.ndarray],
     inputs: np.ndarray,
     ratios: np.ndarray
-) -> List[float]:
+) -> np.ndarray:
     """
     Aplica el método de primer orden a todas las imagenes del dataset para cuantificar la bondad del filtrado.
     Si una de las imágenes no tiene cuadrantes con alpha menor o igual a -6, entonces no se la tiene en cuenta.
@@ -231,8 +231,8 @@ def first_order_method(
 
     Returns
     -------
-    r_ENL_mu: List[int]
-        Lista con los resultados del estadístico de primer orden para cada imagen.
+    r_ENL_mu: np.ndarray
+        Array unidimensional con los resultados del estadístico de primer orden para cada imagen.
     """
     assert min(cuadrant_sizes) >= 8, "Existen imágenes muy poco homogéneas en su dataset. Para poder \
     usar el filtro de primer orden se necesita que los cuadrantes de todas las imágenes sean de al menos 8x8 píxeles."
@@ -347,3 +347,30 @@ def deltah(
     delta_h = 100 * np.abs((h0 - havg) / h0)
     
     return delta_h
+
+def second_order_method(
+    ratios: np.ndarray,
+    g: int = 30
+) -> np.ndarray:
+    """
+    Aplica el método de segundo orden a todas las imagenes del dataset para cuantificar la bondad del filtrado.
+
+    Parameters
+    ----------
+    ratios: np.ndarray
+        Ratio de imágenes originales a imágenes filtradas.
+    g: int
+        Cantidad de permutaciones a tomar en el cálculo de delta h para una imagen individual.
+
+    Returns
+    -------
+    deltah: np.ndarray
+        Array unidimensional con los resultados del estadístico de segundo orden para cada imagen.
+    """
+    estadisticos_2do_orden = []
+    
+    for i in range(ratios.shape[0]): # Loopeo por todas las imágenes
+        dh = deltah(ratios[i], g)
+        estadisticos_2do_orden.append(dh)
+        
+    return np.array(estadisticos_2do_orden)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import sys
@@ -9,15 +9,11 @@ sys.path.append('..')
 
 from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
-from scripts.measuring_quality import first_order_method, co_ocurrence_matrix, deltah
+from scripts.measuring_quality import first_order_method, co_ocurrence_matrix, deltah, second_order_method
 
-import pandas as pd
 import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader
-import torch.nn as nn
-import torch.optim as optim
-from torchsummary import summary
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
@@ -26,7 +22,7 @@ import warnings
 import matplotlib.pyplot as plt
 
 
-# In[41]:
+# In[2]:
 
 
 try:
@@ -37,7 +33,7 @@ except ValueError:
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[42]:
+# In[3]:
 
 
 config_name = 'config_base_simetrico_mix_imagenes' # Elegir
@@ -47,7 +43,7 @@ config = OmegaConf.load(config_path)
 config
 
 
-# In[43]:
+# In[4]:
 
 
 if min(config.training.pixeles_cuad) < 8:
@@ -61,7 +57,7 @@ if min(config.training.pixeles_cuad) < 8:
 
 # Cargo el autoencoder ya entrenado:
 
-# In[44]:
+# In[5]:
 
 
 # 1. Crear una instancia del modelo (debe tener la misma arquitectura)
@@ -74,7 +70,7 @@ autoencoder_cargado.eval()
 
 # Genero dataset de testeo:
 
-# In[45]:
+# In[6]:
 
 
 n = config['testing']['n']
@@ -92,7 +88,7 @@ test_g, test_gi, test_gI0, alphas = mixed_dataset(
 )
 
 
-# In[46]:
+# In[7]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -108,7 +104,7 @@ test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 # Genero las imágenes procesadas por el autoencoder, y genero las imágenes de ratio (imagen original / imagen filtrada):
 
-# In[47]:
+# In[8]:
 
 
 all_inputs = []
@@ -136,7 +132,7 @@ ratios = np.squeeze(np.concatenate(all_ratios, axis=0))
 
 # Grafico un set de imágenes a modo de ejemplo:
 
-# In[48]:
+# In[9]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
@@ -166,15 +162,15 @@ def graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_h
 graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 
-# ## Filtro de primer orden
+# ## Método de primer orden
 
-# In[49]:
+# In[10]:
 
 
 fom = first_order_method(config.training.pixeles_cuad, alphas, inputs, ratios)
 
 
-# In[50]:
+# In[11]:
 
 
 print(f'El filtro perfecto produciría un estadístico de primer orden igual a 0.\n')
@@ -184,9 +180,9 @@ plt.hist(fom, bins=50)
 plt.title('Distribución del estadístico de 1er orden')
 
 
-# ## Filtro de segundo orden
+# ## Método de segundo orden
 
-# In[51]:
+# In[12]:
 
 
 # Grafico solo a modo de ejemplo
@@ -211,8 +207,24 @@ axes[2].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio shuffleada)")
 plt.tight_layout()
 
 
-# In[55]:
+# In[13]:
 
 
 deltah(ratios[random_index], g=30)
+
+
+# In[14]:
+
+
+som = second_order_method(ratios, g=30)
+
+
+# In[16]:
+
+
+print(f'El filtro perfecto produciría un estadístico de segundo orden igual a 0.\n')
+print(f'Media del estadístico de 2do orden sobre todas las imágenes: {np.mean(som)}')
+print(f'Desviación estándar del estadístico de 2do orden sobre todas las imágenes: {np.std(som)}\n')
+plt.hist(som, bins=50)
+plt.title('Distribución del estadístico de 2do orden')
 
