@@ -267,7 +267,7 @@ def co_ocurrence_matrix(
     Parameters
     ----------
     image: np.ndarray
-        Imagen sobre la cual calcular la matriz de co-ocurrencias.
+        Imagen sobre la cual calcular la matriz de co-ocurrencias. Debe ser la imagen de ratio (entrada/output).
 
     Returns
     -------
