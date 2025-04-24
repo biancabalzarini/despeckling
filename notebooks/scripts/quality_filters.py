@@ -36,7 +36,7 @@ except ValueError:
 # In[3]:
 
 
-config_name = 'config_base_simetrico_mix_imagenes' # Elegir
+config_name = 'config_1' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -219,7 +219,7 @@ deltah(ratios[random_index], g=30)
 som = second_order_method(ratios, g=30)
 
 
-# In[16]:
+# In[15]:
 
 
 print(f'El filtro perfecto produciría un estadístico de segundo orden igual a 0.\n')
