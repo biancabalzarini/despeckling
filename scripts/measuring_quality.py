@@ -2,6 +2,7 @@ import numpy as np
 from typing import List, Tuple
 import random
 import copy
+from skimage.feature import graycomatrix
 
 
 def selecting_quadrants(
@@ -210,7 +211,7 @@ def first_order_method(
     alphas: List[np.ndarray],
     inputs: np.ndarray,
     ratios: np.ndarray
-) -> List[float]:
+) -> np.ndarray:
     """
     Aplica el método de primer orden a todas las imagenes del dataset para cuantificar la bondad del filtrado.
     Si una de las imágenes no tiene cuadrantes con alpha menor o igual a -6, entonces no se la tiene en cuenta.
@@ -230,8 +231,8 @@ def first_order_method(
 
     Returns
     -------
-    r_ENL_mu: List[int]
-        Lista con los resultados del estadístico de primer orden para cada imagen.
+    r_ENL_mu: np.ndarray
+        Array unidimensional con los resultados del estadístico de primer orden para cada imagen.
     """
     assert min(cuadrant_sizes) >= 8, "Existen imágenes muy poco homogéneas en su dataset. Para poder \
     usar el filtro de primer orden se necesita que los cuadrantes de todas las imágenes sean de al menos 8x8 píxeles."
@@ -255,3 +256,121 @@ def first_order_method(
             estadisticos_1er_orden.append(s)
 
     return np.array(estadisticos_1er_orden)
+
+def co_ocurrence_matrix(
+    image: np.ndarray
+) -> np.ndarray:
+    """
+    Calcula la matriz de co-ocurrencias de una imagen. Lo hace para diferentes distancias y ángulos, y toma
+    el promedio sobre todas esas combinaciones.
+
+    Parameters
+    ----------
+    image: np.ndarray
+        Imagen sobre la cual calcular la matriz de co-ocurrencias. Debe ser la imagen de ratio (entrada/output).
+
+    Returns
+    -------
+    glcm_avg: np.ndarray
+        Matriz de co-courrencia.
+    """
+    image_normalizada = (image - np.min(image)) / (np.max(image) - np.min(image))
+    image = (image_normalizada * 255).astype(np.uint8)
+    
+    # Configurar distancias y ángulos
+    distances = [1,2,3]  # Cantidad de vecinos (distancia)
+    angles = [0, np.pi/4, np.pi/2, 3*np.pi/4]  # Ángulos en radianes
+    
+    # Calcular GLCM para todas las combinaciones de distancia y ángulo
+    glcm = graycomatrix(image, distances=distances, angles=angles, symmetric=True, normed=True)
+    
+    # Promediar la GLCM sobre todas las combinaciones de distancia y ángulo
+    glcm_avg = glcm.mean(axis=(2, 3))  # Promedio sobre los ejes de ángulo y distancia
+    
+    return glcm_avg
+
+def h(
+    p: np.ndarray
+) -> float:
+    """
+    Valor de homogeneidad de Haralick calculado a partir de la matriz de co-ocurrencias.
+    
+    Parameters
+    ----------
+    p: np.ndarray
+        Matriz de co-ocurrencias.
+
+    Returns
+    -------
+    h: float
+        Valor de homogeneidad de Haralick
+    """
+    if p.shape[0] != p.shape[1]:
+        raise ValueError("La matriz de co-ocurrencias debe ser cuadrada.")
+    
+    M = p.shape[0]
+    i = np.arange(M).reshape(-1, 1)
+    j = np.arange(M).reshape(1, -1)
+    
+    weights = 1 / (1 + (i - j)**2)
+    return np.sum(weights * p)
+
+def deltah(
+    image: np.ndarray,
+    g: int = 30
+) -> float:
+    """
+    El valor absoluto de la variación relativa de h0, en porcentaje.
+    
+    Parameters
+    ----------
+    image: np.ndarray
+        Imagen individual sobre la cual calcular el valor de delta h. Debe ser la imagen de ratio (entrada/output).
+    g: int
+        Cantidad de permutaciones a tomar en el cálculo de delta h.
+
+    Returns
+    -------
+    delta_h: float
+        Valor de delta h.
+    """
+    hsum = 0
+    for i in range(g):
+        
+        shuffled_flat = np.random.permutation(image.ravel())
+        shuffled_arr = shuffled_flat.reshape(image.shape)
+        glcm_avg_shuffled = co_ocurrence_matrix(shuffled_arr)
+        hsum += h(glcm_avg_shuffled)
+
+    havg = hsum / g
+    h0 = h(co_ocurrence_matrix(image))
+    delta_h = 100 * np.abs((h0 - havg) / h0)
+    
+    return delta_h
+
+def second_order_method(
+    ratios: np.ndarray,
+    g: int = 30
+) -> np.ndarray:
+    """
+    Aplica el método de segundo orden a todas las imagenes del dataset para cuantificar la bondad del filtrado.
+
+    Parameters
+    ----------
+    ratios: np.ndarray
+        Ratio de imágenes originales a imágenes filtradas.
+    g: int
+        Cantidad de permutaciones a tomar en el cálculo de delta h para una imagen individual.
+
+    Returns
+    -------
+    deltah: np.ndarray
+        Array unidimensional con los resultados del estadístico de segundo orden para cada imagen.
+    """
+    estadisticos_2do_orden = []
+    
+    for i in range(ratios.shape[0]): # Loopeo por todas las imágenes
+        dh = deltah(ratios[i], g)
+        estadisticos_2do_orden.append(dh)
+        
+    return np.array(estadisticos_2do_orden)

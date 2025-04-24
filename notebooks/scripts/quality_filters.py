@@ -9,21 +9,17 @@ sys.path.append('..')
 
 from scripts.GenrationGI0 import generate_multiple_images, mixed_dataset
 from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
-from scripts.measuring_quality import selecting_quadrants
+from scripts.measuring_quality import first_order_method, co_ocurrence_matrix, deltah, second_order_method
 
-import pandas as pd
 import torch
 from torchvision import transforms
 from torch.utils.data import DataLoader
-import torch.nn as nn
-import torch.optim as optim
-from torchsummary import summary
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 from omegaconf import OmegaConf
 import warnings
-import copy
+import matplotlib.pyplot as plt
 
 
 # In[2]:
@@ -40,7 +36,7 @@ except ValueError:
 # In[3]:
 
 
-config_name = 'config_base_simetrico_mix_imagenes' # Elegir
+config_name = 'config_1' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -166,52 +162,69 @@ def graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_h
 graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 
-# ---
+# ## Método de primer orden
 
 # In[10]:
 
 
-### BORRAR
-# AHORA TENGO QUE ELEGIR n (5 o 4) AREAS QUE ENTREN EN LA IMAGEN, Y QUE SEAN HOMOGENEAS (QUE NO SE CRUCEN DE CUADRANTE
-# Y QUE TENGAN ALPHA MENOR O IGUAL A -6). LAS ZONAS DE AREA 10X10 O 8X8. YO TOMARIA DE 10X10, SI NO ENTRA EN UN
-# CUADRANTE, DE 9X9. Y SI NO ENTRA, DE 8X8. y SI NO ENTRA, QUE FALLE Y DECIR QUE LA IMAGEN ES MUY POCO HOMOGENEA.
+fom = first_order_method(config.training.pixeles_cuad, alphas, inputs, ratios)
 
 
 # In[11]:
 
 
-cuadrantes = selecting_quadrants(alphas, M=4)
+print(f'El filtro perfecto produciría un estadístico de primer orden igual a 0.\n')
+print(f'Media del estadístico de 1er orden sobre todas las imágenes: {np.mean(fom)}')
+print(f'Desviación estándar del estadístico de 1er orden sobre todas las imágenes: {np.std(fom)}\n')
+plt.hist(fom, bins=50)
+plt.title('Distribución del estadístico de 1er orden')
 
+
+# ## Método de segundo orden
 
 # In[12]:
 
 
-pixeles = config.training.pixeles_cuad
-partitions = [len(sublista) for sublista in alphas]
-p = [pixel for pixel, count in zip(pixeles, partitions) for _ in range(count)]
+# Grafico solo a modo de ejemplo
 
-cuadrantes_i = copy.deepcopy(cuadrantes)
-cuadrantes_f = copy.deepcopy(cuadrantes)
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
-for i in range(len(cuadrantes)):         # Para loopear por las imágenes
-    pi = p[i]
-    
-    for j in range(len(cuadrantes[i])):  # Para loopear por cada una de las zonas que quiero crear en un única imagen
-        cuadrante_x = cuadrantes[i][j][0]
-        cuadrante_y = cuadrantes[i][j][1]
+random_index = np.random.randint(0, ratios.shape[0])
+img_original = ratios[random_index]
+axes[0].imshow(img_original, cmap='viridis')
+axes[0].set_title("Imagen\nRatio")
 
-        fila_i = cuadrante_x*pi     # Fila de inicio del cuadrante
-        columna_i = cuadrante_y*pi  # Columna de inicio del cuadrante
+glcm_avg = co_ocurrence_matrix(img_original)
+axes[1].imshow(glcm_avg, cmap='viridis')
+axes[1].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio)")
 
-        fila_f = fila_i + pi        # Fila de fin del cuadrante
-        columna_f = columna_i + pi  # Columna de fin del cuadrantes
-        
-        cuadrantes_i[i][j] = (fila_i, columna_i)
-        cuadrantes_f[i][j] = (fila_f, columna_f)
+shuffled_flat = np.random.permutation(img_original.ravel())
+shuffled_arr = shuffled_flat.reshape(img_original.shape)
+glcm_avg_shuffled = co_ocurrence_matrix(shuffled_arr)
+axes[2].imshow(glcm_avg_shuffled, cmap='viridis')
+axes[2].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio shuffleada)")
+
+plt.tight_layout()
 
 
 # In[13]:
 
 
-del cuadrantes
+deltah(ratios[random_index], g=30)
+
+
+# In[14]:
+
+
+som = second_order_method(ratios, g=30)
+
+
+# In[15]:
+
+
+print(f'El filtro perfecto produciría un estadístico de segundo orden igual a 0.\n')
+print(f'Media del estadístico de 2do orden sobre todas las imágenes: {np.mean(som)}')
+print(f'Desviación estándar del estadístico de 2do orden sobre todas las imágenes: {np.std(som)}\n')
+plt.hist(som, bins=50)
+plt.title('Distribución del estadístico de 2do orden')
 
