@@ -20,6 +20,7 @@ import cv2
 from omegaconf import OmegaConf
 import warnings
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # In[2]:
@@ -36,7 +37,7 @@ except ValueError:
 # In[3]:
 
 
-config_name = 'config_1' # Elegir
+config_name = 'config_base_simetrico_mix_imagenes' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -231,4 +232,23 @@ plt.title('Distribución del estadístico de 2do orden')
 
 # ### Salvando los resultados
 
-# 
+# In[16]:
+
+
+test_file_path = f'data/quality_filter_results.csv'
+
+new_result = pd.DataFrame({
+    'config_name': [config_name],
+    'Estadístico de 1er orden': [np.mean(fom)],
+    'Estadístico de 2do orden': [np.mean(som)]
+})
+
+try:
+    existing_results = pd.read_csv(test_file_path)
+    existing_results = existing_results[existing_results['config_name'] != config_name]
+    all_results = pd.concat([existing_results, new_result], ignore_index=True)
+except FileNotFoundError:
+    all_results = new_result
+
+all_results.to_csv(test_file_path, index=False)
+
