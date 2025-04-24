@@ -37,7 +37,7 @@ except ValueError:
 # In[3]:
 
 
-config_name = 'config_base_simetrico_mix_imagenes' # Elegir
+config_name = 'config_1' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
