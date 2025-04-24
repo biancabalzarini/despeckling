@@ -228,3 +228,7 @@ print(f'Desviación estándar del estadístico de 2do orden sobre todas las imá
 plt.hist(som, bins=50)
 plt.title('Distribución del estadístico de 2do orden')
 
+
+# ### Salvando los resultados
+
+# 
