@@ -20,6 +20,7 @@ import cv2
 from omegaconf import OmegaConf
 import warnings
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
 # In[2]:
@@ -227,4 +228,27 @@ print(f'Media del estadístico de 2do orden sobre todas las imágenes: {np.mean(
 print(f'Desviación estándar del estadístico de 2do orden sobre todas las imágenes: {np.std(som)}\n')
 plt.hist(som, bins=50)
 plt.title('Distribución del estadístico de 2do orden')
+
+
+# ### Salvando los resultados
+
+# In[16]:
+
+
+test_file_path = f'data/quality_filter_results.csv'
+
+new_result = pd.DataFrame({
+    'config_name': [config_name],
+    'Estadístico de 1er orden': [np.mean(fom)],
+    'Estadístico de 2do orden': [np.mean(som)]
+})
+
+try:
+    existing_results = pd.read_csv(test_file_path)
+    existing_results = existing_results[existing_results['config_name'] != config_name]
+    all_results = pd.concat([existing_results, new_result], ignore_index=True)
+except FileNotFoundError:
+    all_results = new_result
+
+all_results.to_csv(test_file_path, index=False)
 
