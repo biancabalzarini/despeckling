@@ -9,3 +9,4 @@ omegaconf>=2.3.0
 pandas
 scikit-image
 pyreadr
+xarray

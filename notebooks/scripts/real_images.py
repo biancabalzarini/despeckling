@@ -4,7 +4,7 @@
 # In[1]:
 
 
-import pyreadr #para leer datos de tipo RData
+import pyreadr # Para leer datos de tipo RData
 import numpy as np
 import cv2 as cv2
 import matplotlib.pyplot as plt
@@ -20,7 +20,7 @@ Munich = np.array(list(imageMunich.items())[0][1])
 img1 = np.array(Munich, dtype=np.float64)
 # Normalizar:
 img2 = (img1 - np.min(img1)) * 65536/(np.max(img1) - np.min(img1))
-# Pasar a uint16
+# Pasar a entero
 img3 = np.array(img2, dtype=np.uint16)
 
 def Ecualizauint16(img):
@@ -33,4 +33,21 @@ def Ecualizauint16(img):
 
 img4 = Ecualizauint16(img3)
 plt.imshow(img4,cmap='gray'),plt.title('Imagen de Munich'), plt.axis('off')
+
+
+# In[3]:
+
+
+imageSanFran = pyreadr.read_r('data/real_SAR_images/AirSAR_SanFrancisc_Enxu.RData')
+SanFran = np.array(list(imageSanFran.items())[0][1])
+
+img1 = np.array(SanFran, dtype=np.float64) # Tiene dimensión 9
+img2 = img1[:,:,0] # Esta es la banda HH
+# Normalizar:
+img3 = (img2 - np.min(img1)) * 65536/(np.max(img1) - np.min(img1))
+# Pasar a entero
+img4 = np.array(img3, dtype=np.uint16)
+
+img5 = Ecualizauint16(img4)
+plt.imshow(img5,cmap='gray'),plt.title('Imagen de San Francisco, California, USA HH'), plt.axis('off')
 
