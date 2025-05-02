@@ -1,7 +1,8 @@
 import numpy as np
 from typing import List, Tuple
 import random
-from typing import List, Tuple, Callable, Optional, Union
+from typing import List, Tuple, Callable, Optional
+
 
 def rGI0(
   n: int,
@@ -104,7 +105,8 @@ def generate_multiple_images(
     partitioned_gi0_image: Callable,
     n_cuad_lado: int,
     pixeles_cuad: int,
-    alpha_values: Optional[List[float]] = None
+    alpha_values: Optional[List[float]] = None,
+    save_alpha_values: Optional[bool] = False
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Genera múltiples conjuntos de imágenes utilizando la función partitioned_gi0_image.
@@ -120,22 +122,28 @@ def generate_multiple_images(
     pixeles_cuad: int
         Número de píxeles por lado de cada cuadrado que forma cada imagen (ver documentación de
         partitioned_gi0_image).
-    alpha_values: Optional[List[float]], opcional
+    alpha_values: Optional[List[float]]
         Lista de valores posibles para alpha. Si no se proporciona, se usarán los valores por defecto.
+    save_alpha_values: Optional[bool]
+        Indica si se quiere o no guardar los valores de alpha usados en cada cuadrante de cada imagen.
 
     Returns:
     --------
-    conjunto_g : np.ndarray
+    conjunto_g: np.ndarray
         Array de forma (n, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad) con n repeticiones de imagen_g.
-    conjunto_gi : np.ndarray
+    conjunto_gi: np.ndarray
         Array de forma (n, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad) con n repeticiones de imagen_gi.
-    conjunto_gI0 : np.ndarray
+    conjunto_gI0: np.ndarray
         Array de forma (n, n_cuad_lado*pixeles_cuad, n_cuad_lado*pixeles_cuad) con n repeticiones de imagen_gI0.
+    alphas: Optional[np.ndarray]
+        Array de forma (n, n_cuad_lado, n_cuad_lado) con los valores alpha de cada imagen en cada cuadrante.
+        Solo se devuelve si save_alpha_values=True.
     """
     tam_imagen = n_cuad_lado * pixeles_cuad
     conjunto_g = np.zeros((n, tam_imagen, tam_imagen))
     conjunto_gi = np.zeros((n, tam_imagen, tam_imagen))
     conjunto_gI0 = np.zeros((n, tam_imagen, tam_imagen))
+    alphas = np.zeros((n, n_cuad_lado, n_cuad_lado))
     
     total_cuadrados = n_cuad_lado ** 2
     p_gammas: List[float] = [1.0] * total_cuadrados
@@ -146,14 +154,20 @@ def generate_multiple_images(
     
     for i in range(n):
         p_alphas: List[float] = random.choices(alpha_values, k=total_cuadrados)
+        alphas_imagen_individual = np.array(p_alphas).reshape(n_cuad_lado,n_cuad_lado)
         
         imagen_g, imagen_gi, imagen_gI0 = partitioned_gi0_image(p_alphas, p_gammas, p_looks, n_cuad_lado, pixeles_cuad)
         
         conjunto_g[i] = imagen_g
         conjunto_gi[i] = imagen_gi
         conjunto_gI0[i] = imagen_gI0
+        if save_alpha_values:
+            alphas[i] = alphas_imagen_individual
     
-    return conjunto_g, conjunto_gi, conjunto_gI0
+    if save_alpha_values:
+        return conjunto_g, conjunto_gi, conjunto_gI0, alphas
+    else:
+        return conjunto_g, conjunto_gi, conjunto_gI0
 
 def mixed_dataset(
     n_total: int,
@@ -161,7 +175,8 @@ def mixed_dataset(
     conjunto_n_cuad_lado: List[int],
     conjunto_pixeles_cuad: List[int],
     ratios: Optional[List[float]] = [1],
-    alpha_values: Optional[List[float]] = None
+    alpha_values: Optional[List[float]] = None,
+    save_alpha_values: Optional[bool] = False
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Genera múltiples conjuntos de imágenes utilizando la función partitioned_gi0_image, con diferentes particiones
@@ -188,6 +203,8 @@ def mixed_dataset(
         deben sumar 1. En el caso de tener una única partición, se puede ingresar la lista [1] o no ingresar nada.
     alpha_values: Optional[List[float]], opcional
         Lista de valores posibles para alpha. Si no se proporciona, se usarán los valores por defecto.
+    save_alpha_values: Optional[bool]
+        Indica si se quiere o no guardar los valores de alpha usados en cada cuadrante de cada imagen.
     
     Returns:
     --------
@@ -200,6 +217,10 @@ def mixed_dataset(
     gI0_final : np.ndarray
         Array de forma (n_total, tamaño_imagen, tamaño_imagen) con n_total repeticiones de imagen_gI0, con diferentes
         particiones según lo indicado en los inputs.
+    alphas_final: Optional[List[np.ndarray()]]
+        Lista donde cada elemento es un np.ndarray con los valores de alpha de cada cuadrante de cada imagen para
+        un único tipo de partición. Las diferentes particiones van en diferentes elementos de la lista. Solo se
+        devuelve si save_alpha_values=True.
     """
     conjunto_n_cuad_lado = list(conjunto_n_cuad_lado)
     conjunto_pixeles_cuad = list(conjunto_pixeles_cuad)
@@ -220,10 +241,15 @@ def mixed_dataset(
     g_list = []
     gi_list = []
     gI0_list = []
+    alphas_final = []
     
     for n_cuad_lado, pixeles_cuad, n in zip(conjunto_n_cuad_lado, conjunto_pixeles_cuad, ns):
         
-        g, gi, gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad, alpha_values)
+        if save_alpha_values:
+            g, gi, gI0, alphas = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad, alpha_values, save_alpha_values)
+            alphas_final.append(alphas)
+        else:
+            g, gi, gI0 = generate_multiple_images(n, partitioned_gi0_image, n_cuad_lado, pixeles_cuad, alpha_values)
         g_list.append(g)
         gi_list.append(gi)
         gI0_list.append(gI0)
@@ -232,4 +258,7 @@ def mixed_dataset(
     gi_final = np.concatenate(gi_list, axis=0)
     gI0_final = np.concatenate(gI0_list, axis=0)
     
-    return g_final, gi_final, gI0_final
+    if save_alpha_values:
+        return g_final, gi_final, gI0_final, alphas_final
+    else:
+        return g_final, gi_final, gI0_final
