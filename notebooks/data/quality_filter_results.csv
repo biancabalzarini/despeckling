@@ -2,3 +2,4 @@ config_name,Estadístico de 1er orden,Estadístico de 2do orden
 config_base_simetrico_mix_imagenes,0.30474925,4.688202429051152
 config_1,0.2326613515615463,2.343220345971219
 config_simetrico_mas_profundo,0.31347978115081787,3.9793424124176573
+config_2,"modelo muy malo","modelo muy malo"
