@@ -15,7 +15,9 @@ from matplotlib import colors
 
 from omegaconf import OmegaConf
 from scripts.autoencoders import ConfigurableAutoencoder
+from scripts.GenrationGI0 import partitioned_gi0_image
 import torch
+import random
 
 
 # In[2]:
@@ -93,3 +95,90 @@ autoencoder_cargado.load_state_dict(torch.load(f'data/trained_models/{config_nam
 # 3. Modo evaluación (cuando lo use para inferencia)
 autoencoder_cargado.eval()
 
+
+# In[8]:
+
+
+ciudades = {
+    'Munich': Munich,
+    'San Francisco': SanFranIm
+}
+
+
+# In[9]:
+
+
+# Veo un pedazo (de 50x50) de una imagen real pasado por el autoencoder
+
+ciudad = 'Munich' # Elegir ciudad según el diccionario
+
+i_rand = random.randint(0, ciudades[ciudad].shape[0]-50)
+j_rand = random.randint(0, ciudades[ciudad].shape[1]-50)
+
+Image = ciudades[ciudad][i_rand:i_rand+50, j_rand:j_rand+50].astype(np.float64)
+Image = Image / np.max(Image)
+
+Im_tensor = torch.from_numpy(Image).double()
+Im_tensor = Im_tensor.unsqueeze(0)
+Im_tensor = Im_tensor.unsqueeze(1)
+autoencoder_cargado = autoencoder_cargado.double()
+
+plt.figure(figsize=(8, 4))
+
+plt.subplot(1, 2, 1)
+plt.imshow(Image)
+plt.title("Original")
+plt.axis('off')
+
+plt.subplot(1, 2, 2)
+plt.imshow(autoencoder_cargado(Im_tensor).detach().numpy()[0, 0, :, :])
+plt.title("Limpia")
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
+
+
+# ---
+# Solo para probar veo como se ve el autoencoder pasado por una imagen del conjunto de test
+
+# In[10]:
+
+
+a = partitioned_gi0_image(
+    p_alphas=[-8],
+    p_gammas=[1.0],
+    p_looks=[1],
+    n_cuad_lado=1,
+    pixeles_cuad=50
+)
+
+Image = a[2].astype(np.float64)
+Image = Image / np.max(Image)
+Im_tensor = torch.from_numpy(Image).double()
+Im_tensor = Im_tensor.unsqueeze(0)
+Im_tensor = Im_tensor.unsqueeze(1)
+autoencoder_cargado = autoencoder_cargado.double()
+
+plt.figure(figsize=(8, 4))
+
+plt.subplot(1, 3, 1)
+plt.imshow(a[2])
+plt.title('Imagen sucia (GI0)')
+plt.axis('off')
+
+plt.subplot(1, 3, 2)
+plt.imshow(a[1])
+plt.title('Imagen limpia (GI)')
+plt.axis('off')
+
+plt.subplot(1, 3, 3)
+plt.imshow(autoencoder_cargado(Im_tensor).detach().numpy()[0,0,:,:])
+plt.title("Imagen pasada por el autoencoder")
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
+
+
+# El problema que se ve aca es que si el modelo fue entrenado con ciertas particiones, parece aprender los bordes de esas particiones, con lo cual no funciona bien cuando se le da imágenes con particiones diferentes. Y probablemente por esta misma razón no siempre funciona muy bien en las imágenes reales.
