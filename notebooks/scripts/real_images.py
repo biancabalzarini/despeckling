@@ -137,7 +137,7 @@ plt.figure(figsize=(5.3, 5.3))
 
 plt.subplot(2, 2, 1)
 plt.imshow(Image)
-plt.title("Original")
+plt.title("Original (SAR real)")
 plt.axis('off')
 
 plt.subplot(2, 2, 2)
@@ -147,7 +147,7 @@ plt.axis('off')
 
 plt.subplot(2, 2, 3)
 plt.imshow(Image_eq)
-plt.title("Original"+titulo_agregado)
+plt.title("Original (SAR real)"+titulo_agregado)
 plt.axis('off')
 
 plt.subplot(2, 2, 4)
