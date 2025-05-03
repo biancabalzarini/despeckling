@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 from PIL import Image
@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# In[72]:
+# In[2]:
 
 
 def load_tiff_datasets(carpeta):
@@ -34,20 +34,35 @@ def load_tiff_datasets(carpeta):
     return array_final
 
 
-# In[75]:
+# In[3]:
 
 
 noisy = load_tiff_datasets('Noisy')
 
 
-# In[76]:
+# In[4]:
 
 
-plt.imshow(noisy[1])
+clean = load_tiff_datasets('GTruth')
 
 
-# In[ ]:
+# In[5]:
 
 
+index = 58 # Index random
 
+plt.figure(figsize=(7, 4))
+
+plt.subplot(1, 2, 1)
+plt.imshow(noisy[index], cmap='gray')
+plt.title("Imagen con speckle")
+plt.axis('off')
+
+plt.subplot(1, 2, 2)
+plt.imshow(clean[index], cmap='gray')
+plt.title("Imágen promediada ('limpia')")
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
 
