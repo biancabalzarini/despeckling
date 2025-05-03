@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import sys
@@ -23,7 +23,7 @@ import cv2
 from omegaconf import OmegaConf
 
 
-# In[ ]:
+# In[2]:
 
 
 try:
@@ -34,10 +34,10 @@ except ValueError:
 
 # Elegir el archivo de configuración correspondiente:
 
-# In[2]:
+# In[3]:
 
 
-config_name = 'config_simetrico_mas_profundo' # Elegir
+config_name = 'config_3' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -47,7 +47,7 @@ config
 # ---
 # # Creación del dataset para entrenar
 
-# In[3]:
+# In[4]:
 
 
 n = config['training']['n']
@@ -56,7 +56,7 @@ pixeles_cuad = config['training']['pixeles_cuad']
 batch_size = config['training']['batch_size']
 
 
-# In[4]:
+# In[5]:
 
 
 train_g, train_gi, train_gI0 = mixed_dataset(
@@ -68,7 +68,7 @@ train_g, train_gi, train_gI0 = mixed_dataset(
 )
 
 
-# In[5]:
+# In[6]:
 
 
 normalize_to_01 = transforms.Lambda(lambda x: (x - x.min()) / (x.max() - x.min()))
@@ -85,7 +85,7 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[6]:
+# In[7]:
 
 
 num_epochs = config['training']['num_epochs']
@@ -93,14 +93,14 @@ learning_rate = config['training']['learning_rate']
 scheduler_name = config['training']['scheduler_name']
 
 
-# In[7]:
+# In[8]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config)
 autoencoder
 
 
-# In[8]:
+# In[9]:
 
 
 ncl = n_cuad_lado[0]
@@ -113,7 +113,7 @@ summary(
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
-# In[9]:
+# In[10]:
 
 
 loss = config['model']['loss_function'].lower()
@@ -137,7 +137,7 @@ elif optim == 'sgd':
     )
 
 
-# In[10]:
+# In[11]:
 
 
 if scheduler_name is None:
@@ -168,7 +168,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[11]:
+# In[12]:
 
 
 training_losses = []
@@ -209,14 +209,14 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[12]:
+# In[13]:
 
 
 # Guardo los parámetros del modelo entrenado:
 torch.save(autoencoder.state_dict(), f'data/trained_models/{config_name}.pth')
 
 
-# In[13]:
+# In[14]:
 
 
 """
@@ -231,7 +231,7 @@ autoencoder_cargado.eval()
 """
 
 
-# In[14]:
+# In[15]:
 
 
 df_errors = pd.DataFrame({
@@ -242,7 +242,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[15]:
+# In[16]:
 
 
 plt.figure(figsize=(5, 3))
@@ -256,7 +256,7 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[16]:
+# In[17]:
 
 
 autoencoder.eval() # Para desactivar Dropout, BatchNorm, etc.
@@ -264,7 +264,7 @@ n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[ ]:
+# In[18]:
 
 
 test_g, test_gi, test_gI0 = mixed_dataset(
@@ -276,14 +276,14 @@ test_g, test_gi, test_gI0 = mixed_dataset(
 )
 
 
-# In[18]:
+# In[19]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[19]:
+# In[20]:
 
 
 total_loss = 0
@@ -307,7 +307,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[20]:
+# In[21]:
 
 
 test_file_path = f'data/test_errors.csv'
@@ -327,7 +327,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[21]:
+# In[22]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -377,7 +377,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[22]:
+# In[23]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -400,7 +400,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[23]:
+# In[24]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo
