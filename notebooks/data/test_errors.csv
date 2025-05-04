@@ -2,9 +2,9 @@ config_name,loss_testing
 config_base,0.0026514586752455
 config_1,0.0025051001794054
 config_base_simetrico,0.0024560479141655
-config_4,0.0036356124172237
 config_base_simetrico_longtrain,0.0026202147655567
 config_base_simetrico_mix_imagenes,0.0112117876124102
 config_simetrico_mas_profundo,0.0025280963927798
 config_2,0.0053307708615389
-config_3,0.002642800625318441
+config_3,0.0026428006253184
+config_4,0.003690950832844447
