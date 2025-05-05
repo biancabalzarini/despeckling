@@ -8,4 +8,5 @@ config_4,0.0036909508328444
 config_base_simetrico_longtrain,0.0027991411807306
 config_base_simetrico,0.0025941090716514
 config_base,0.0056950525686261
-config_simetrico-2conv_128encod,0.0024330744417966343
+config_simetrico-2conv_128encod,0.0024330744417966
+config_simetrico-2conv_256encod,0.0025471978551649954
