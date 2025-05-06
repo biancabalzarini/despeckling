@@ -10,4 +10,5 @@ config_base_simetrico,0.0025941090716514
 config_base,0.0056950525686261
 config_simetrico-2conv_128encod,0.0024330744417966
 config_simetrico-2conv_256encod,0.0025471978551649
-config_simetrico-3conv_128encod,0.0023460052580048796
+config_simetrico-3conv_128encod,0.0023460052580048
+config_simetrico-3conv_256encod,0.0023188214836409315
