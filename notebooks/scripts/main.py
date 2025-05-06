@@ -168,7 +168,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[ ]:
+# In[12]:
 
 
 training_losses = []
@@ -209,14 +209,14 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[ ]:
+# In[13]:
 
 
 # Guardo los parámetros del modelo entrenado:
 torch.save(autoencoder.state_dict(), f'data/trained_models/{config_name}.pth')
 
 
-# In[ ]:
+# In[14]:
 
 
 """
@@ -231,7 +231,7 @@ autoencoder_cargado.eval()
 """
 
 
-# In[ ]:
+# In[15]:
 
 
 df_errors = pd.DataFrame({
@@ -242,7 +242,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[ ]:
+# In[16]:
 
 
 plt.figure(figsize=(5, 3))
@@ -256,7 +256,7 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[ ]:
+# In[17]:
 
 
 autoencoder.eval() # Para desactivar Dropout, BatchNorm, etc.
@@ -264,7 +264,7 @@ n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[ ]:
+# In[18]:
 
 
 test_g, test_gi, test_gI0 = mixed_dataset(
@@ -276,14 +276,14 @@ test_g, test_gi, test_gI0 = mixed_dataset(
 )
 
 
-# In[ ]:
+# In[19]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[ ]:
+# In[20]:
 
 
 total_loss = 0
@@ -307,7 +307,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[ ]:
+# In[21]:
 
 
 test_file_path = f'data/test_errors.csv'
@@ -327,7 +327,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[ ]:
+# In[22]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -377,7 +377,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[ ]:
+# In[23]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -400,7 +400,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[ ]:
+# In[24]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo
