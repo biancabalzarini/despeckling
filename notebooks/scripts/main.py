@@ -37,7 +37,7 @@ except ValueError:
 # In[3]:
 
 
-config_name = 'config_simetrico-lr0_001' # Elegir
+config_name = 'config_simetrico-lr0_0005' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -168,7 +168,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[12]:
+# In[ ]:
 
 
 training_losses = []
@@ -209,14 +209,14 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[13]:
+# In[ ]:
 
 
 # Guardo los parámetros del modelo entrenado:
 torch.save(autoencoder.state_dict(), f'data/trained_models/{config_name}.pth')
 
 
-# In[14]:
+# In[ ]:
 
 
 """
@@ -231,7 +231,7 @@ autoencoder_cargado.eval()
 """
 
 
-# In[15]:
+# In[ ]:
 
 
 df_errors = pd.DataFrame({
@@ -242,7 +242,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/{config_name}.csv', index=False)
 
 
-# In[16]:
+# In[ ]:
 
 
 plt.figure(figsize=(5, 3))
@@ -256,7 +256,7 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[17]:
+# In[ ]:
 
 
 autoencoder.eval() # Para desactivar Dropout, BatchNorm, etc.
@@ -264,7 +264,7 @@ n = config['testing']['n']
 batch_size = config['testing']['batch_size']
 
 
-# In[18]:
+# In[ ]:
 
 
 test_g, test_gi, test_gI0 = mixed_dataset(
@@ -276,14 +276,14 @@ test_g, test_gi, test_gI0 = mixed_dataset(
 )
 
 
-# In[19]:
+# In[ ]:
 
 
 dataset_test = InMemoryImageDataset(test_gI0, test_gi, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[20]:
+# In[ ]:
 
 
 total_loss = 0
@@ -307,7 +307,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[21]:
+# In[ ]:
 
 
 test_file_path = f'data/test_errors.csv'
@@ -327,7 +327,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[22]:
+# In[ ]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -377,7 +377,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[23]:
+# In[ ]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -400,7 +400,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[24]:
+# In[ ]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo

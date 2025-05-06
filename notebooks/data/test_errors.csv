@@ -12,4 +12,5 @@ config_simetrico-2conv_128encod,0.0024330744417966
 config_simetrico-2conv_256encod,0.0025471978551649
 config_simetrico-3conv_128encod,0.0023460052580048
 config_simetrico-3conv_256encod,0.0023188214836409
-config_simetrico-lr0_001,0.002781210743705742
+config_simetrico-lr0_001,0.0027812107437057
+config_simetrico-lr0_0005,0.003443901445280062
