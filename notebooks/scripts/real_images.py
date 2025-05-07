@@ -105,7 +105,7 @@ ciudades = {
 }
 
 
-# In[9]:
+# In[10]:
 
 
 # Veo un pedazo (de 50x50) de una imagen real pasado por el autoencoder
@@ -136,22 +136,22 @@ titulo_agregado = '\n(ecualizada)'
 plt.figure(figsize=(5.3, 5.3))
 
 plt.subplot(2, 2, 1)
-plt.imshow(Image)
+plt.imshow(Image, cmap='gray')
 plt.title("Original (SAR real)")
 plt.axis('off')
 
 plt.subplot(2, 2, 2)
-plt.imshow(Processed_image)
+plt.imshow(Processed_image, cmap='gray')
 plt.title("Limpia")
 plt.axis('off')
 
 plt.subplot(2, 2, 3)
-plt.imshow(Image_eq)
+plt.imshow(Image_eq, cmap='gray')
 plt.title("Original (SAR real)"+titulo_agregado)
 plt.axis('off')
 
 plt.subplot(2, 2, 4)
-plt.imshow(Processed_image_eq)
+plt.imshow(Processed_image_eq, cmap='gray')
 plt.title("Limpia"+titulo_agregado)
 plt.axis('off')
 
@@ -162,7 +162,7 @@ plt.show()
 # ---
 # Solo para probar veo como se ve el autoencoder pasado por una imagen del conjunto de test
 
-# In[10]:
+# In[11]:
 
 
 a = partitioned_gi0_image(
@@ -198,32 +198,32 @@ titulo_agregado = '\n(ecualizada)'
 plt.figure(figsize=(8, 8))
 
 plt.subplot(2, 3, 1)
-plt.imshow(Image)
+plt.imshow(Image, cmap='gray')
 plt.title('Imagen sucia (GI0)')
 plt.axis('off')
 
 plt.subplot(2, 3, 2)
-plt.imshow(Image_clean)
+plt.imshow(Image_clean, cmap='gray')
 plt.title('Imagen limpia (GI)')
 plt.axis('off')
 
 plt.subplot(2, 3, 3)
-plt.imshow(Processed_image)
+plt.imshow(Processed_image, cmap='gray')
 plt.title("Imagen pasada por el autoencoder")
 plt.axis('off')
 
 plt.subplot(2, 3, 4)
-plt.imshow(Image_eq)
+plt.imshow(Image_eq, cmap='gray')
 plt.title("Imagen sucia (GI0)"+titulo_agregado)
 plt.axis('off')
 
 plt.subplot(2, 3, 5)
-plt.imshow(Image_clean_eq)
+plt.imshow(Image_clean_eq, cmap='gray')
 plt.title('Imagen limpia (GI)'+titulo_agregado)
 plt.axis('off')
 
 plt.subplot(2, 3, 6)
-plt.imshow(Processed_image_eq)
+plt.imshow(Processed_image_eq, cmap='gray')
 plt.title("Imagen pasada por el autoencoder"+titulo_agregado)
 plt.axis('off')
 
