@@ -76,7 +76,7 @@ plot_ecualized_image(SanFranIm, 'Imagen de San Francisco, California, USA HH')
 # In[6]:
 
 
-config_name = 'config_1' # Elegir
+config_name = 'config_simetrico_mas_profundo' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -105,12 +105,13 @@ ciudades = {
 }
 
 
-# In[9]:
+# In[10]:
 
 
 # Veo un pedazo (de 50x50) de una imagen real pasado por el autoencoder
 
 ciudad = 'Munich' # Elegir ciudad según el diccionario
+ecualizar_hist = True # Si se quiere o no ecualizar el histograma
 
 i_rand = random.randint(0, ciudades[ciudad].shape[0]-50)
 j_rand = random.randint(0, ciudades[ciudad].shape[1]-50)
@@ -122,17 +123,36 @@ Im_tensor = torch.from_numpy(Image).double()
 Im_tensor = Im_tensor.unsqueeze(0)
 Im_tensor = Im_tensor.unsqueeze(1)
 autoencoder_cargado = autoencoder_cargado.double()
+Processed_image = autoencoder_cargado(Im_tensor).detach().numpy()[0, 0, :, :]
 
-plt.figure(figsize=(8, 4))
+Image_eq = ((Image - Image.min()) * 255) / (Image.max() - Image.min())
+Image_eq = cv2.equalizeHist(Image_eq.astype(np.uint8))
 
-plt.subplot(1, 2, 1)
-plt.imshow(Image)
-plt.title("Original")
+Processed_image_eq = ((Processed_image - Processed_image.min()) * 255) / (Processed_image.max() - Processed_image.min())
+Processed_image_eq = cv2.equalizeHist(Processed_image_eq.astype(np.uint8))
+    
+titulo_agregado = '\n(ecualizada)'
+
+plt.figure(figsize=(5.3, 5.3))
+
+plt.subplot(2, 2, 1)
+plt.imshow(Image, cmap='gray')
+plt.title("Original (SAR real)")
 plt.axis('off')
 
-plt.subplot(1, 2, 2)
-plt.imshow(autoencoder_cargado(Im_tensor).detach().numpy()[0, 0, :, :])
+plt.subplot(2, 2, 2)
+plt.imshow(Processed_image, cmap='gray')
 plt.title("Limpia")
+plt.axis('off')
+
+plt.subplot(2, 2, 3)
+plt.imshow(Image_eq, cmap='gray')
+plt.title("Original (SAR real)"+titulo_agregado)
+plt.axis('off')
+
+plt.subplot(2, 2, 4)
+plt.imshow(Processed_image_eq, cmap='gray')
+plt.title("Limpia"+titulo_agregado)
 plt.axis('off')
 
 plt.tight_layout()
@@ -142,7 +162,7 @@ plt.show()
 # ---
 # Solo para probar veo como se ve el autoencoder pasado por una imagen del conjunto de test
 
-# In[10]:
+# In[11]:
 
 
 a = partitioned_gi0_image(
@@ -159,22 +179,52 @@ Im_tensor = torch.from_numpy(Image).double()
 Im_tensor = Im_tensor.unsqueeze(0)
 Im_tensor = Im_tensor.unsqueeze(1)
 autoencoder_cargado = autoencoder_cargado.double()
+Processed_image = autoencoder_cargado(Im_tensor).detach().numpy()[0,0,:,:]
 
-plt.figure(figsize=(8, 4))
+Image_clean = a[1].astype(np.float64)
+Image_clean = Image_clean / np.max(Image_clean)
 
-plt.subplot(1, 3, 1)
-plt.imshow(a[2])
+Image_eq = ((Image - Image.min()) * 255) / (Image.max() - Image.min())
+Image_eq = cv2.equalizeHist(Image_eq.astype(np.uint8))
+
+Processed_image_eq = ((Processed_image - Processed_image.min()) * 255) / (Processed_image.max() - Processed_image.min())
+Processed_image_eq = cv2.equalizeHist(Processed_image_eq.astype(np.uint8))
+
+Image_clean_eq = ((Image_clean - Image_clean.min()) * 255) / (Image_clean.max() - Image_clean.min())
+Image_clean_eq = cv2.equalizeHist(Image_clean_eq.astype(np.uint8))
+
+titulo_agregado = '\n(ecualizada)'
+
+plt.figure(figsize=(8, 8))
+
+plt.subplot(2, 3, 1)
+plt.imshow(Image, cmap='gray')
 plt.title('Imagen sucia (GI0)')
 plt.axis('off')
 
-plt.subplot(1, 3, 2)
-plt.imshow(a[1])
+plt.subplot(2, 3, 2)
+plt.imshow(Image_clean, cmap='gray')
 plt.title('Imagen limpia (GI)')
 plt.axis('off')
 
-plt.subplot(1, 3, 3)
-plt.imshow(autoencoder_cargado(Im_tensor).detach().numpy()[0,0,:,:])
+plt.subplot(2, 3, 3)
+plt.imshow(Processed_image, cmap='gray')
 plt.title("Imagen pasada por el autoencoder")
+plt.axis('off')
+
+plt.subplot(2, 3, 4)
+plt.imshow(Image_eq, cmap='gray')
+plt.title("Imagen sucia (GI0)"+titulo_agregado)
+plt.axis('off')
+
+plt.subplot(2, 3, 5)
+plt.imshow(Image_clean_eq, cmap='gray')
+plt.title('Imagen limpia (GI)'+titulo_agregado)
+plt.axis('off')
+
+plt.subplot(2, 3, 6)
+plt.imshow(Processed_image_eq, cmap='gray')
+plt.title("Imagen pasada por el autoencoder"+titulo_agregado)
 plt.axis('off')
 
 plt.tight_layout()

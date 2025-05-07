@@ -373,4 +373,7 @@ def second_order_method(
         dh = deltah(ratios[i], g)
         estadisticos_2do_orden.append(dh)
         
+        if i % 500 == 0:
+            print(f"Procesadas {i} imágenes de {ratios.shape[0]}")
+        
     return np.array(estadisticos_2do_orden)
