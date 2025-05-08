@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[50]:
+# In[1]:
 
 
 import sys
@@ -57,31 +57,31 @@ def load_tiff_datasets(carpeta):
     return array_final
 
 
-# In[27]:
+# In[4]:
 
 
 noisy = load_tiff_datasets('Noisy')
 
 
-# In[43]:
+# In[5]:
 
 
 noisy_val = load_tiff_datasets('Noisy_val')
 
 
-# In[28]:
+# In[6]:
 
 
 clean = load_tiff_datasets('GTruth')
 
 
-# In[44]:
+# In[7]:
 
 
 clean_val = load_tiff_datasets('GTruth_val')
 
 
-# In[29]:
+# In[8]:
 
 
 clean = clean[np.array([np.min(img) != np.max(img) for img in clean])]
@@ -90,7 +90,7 @@ print(clean.shape)
 print(noisy.shape)
 
 
-# In[45]:
+# In[9]:
 
 
 clean_val = clean_val[np.array([np.min(img) != np.max(img) for img in clean_val])]
@@ -99,10 +99,10 @@ print(clean_val.shape)
 print(noisy_val.shape)
 
 
-# In[30]:
+# In[10]:
 
 
-index = 0 # Index random
+index = 450 # Index random
 
 plt.figure(figsize=(7, 4))
 
@@ -123,10 +123,10 @@ plt.show()
 # ---
 # Elegir el archivo de configuración correspondiente:
 
-# In[ ]:
+# In[11]:
 
 
-config_name = 'config_2' # Elegir
+config_name = 'config_1' # Elegir
 
 config_path = f'configs/imagenes_reales/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -136,25 +136,27 @@ config
 # ---
 # # Creación del dataset para entrenar
 
-# In[9]:
+# In[12]:
 
 
 batch_size = config['training']['batch_size']
 
 
-# In[31]:
+# In[13]:
 
 
 #Borrar
+"""
 clean = clean[:,:50,:50]
 noisy = noisy[:,:50,:50]
 clean = clean[np.array([np.min(img) != np.max(img) for img in clean])]
 noisy = noisy[np.array([np.min(img) != np.max(img) for img in noisy])]
 print(clean.shape)
 print(noisy.shape)
+"""
 
 
-# In[32]:
+# In[14]:
 
 
 # noisy = GI0
@@ -174,7 +176,7 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[33]:
+# In[15]:
 
 
 num_epochs = config['training']['num_epochs']
@@ -182,14 +184,14 @@ learning_rate = config['training']['learning_rate']
 scheduler_name = config['training'].get('scheduler_name')
 
 
-# In[34]:
+# In[16]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config, image_size=noisy.shape[1])
 autoencoder
 
 
-# In[35]:
+# In[17]:
 
 
 summary(
@@ -199,7 +201,7 @@ summary(
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
-# In[36]:
+# In[18]:
 
 
 loss = config['model']['loss_function'].lower()
@@ -223,7 +225,7 @@ elif optim == 'sgd':
     )
 
 
-# In[37]:
+# In[19]:
 
 
 if scheduler_name is None:
@@ -254,7 +256,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[38]:
+# In[20]:
 
 
 training_losses = []
@@ -313,7 +315,7 @@ df_errors = pd.DataFrame({
 ### df_errors.to_csv(f'data/train_errors/imagenes_reales/{config_name}.csv', index=False)
 
 
-# In[40]:
+# In[ ]:
 
 
 plt.figure(figsize=(5, 3))
@@ -327,33 +329,35 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[42]:
+# In[ ]:
 
 
 autoencoder.eval() # Para desactivar Dropout, BatchNorm, etc.
 batch_size = config['testing']['batch_size']
 
 
-# In[46]:
+# In[ ]:
 
 
 #Borrar
+"""
 clean_val = clean_val[:,:50,:50]
 noisy_val = noisy_val[:,:50,:50]
 clean_val = clean_val[np.array([np.min(img) != np.max(img) for img in clean_val])]
 noisy_val = noisy_val[np.array([np.min(img) != np.max(img) for img in noisy_val])]
 print(clean_val.shape)
 print(noisy_val.shape)
+"""
 
 
-# In[47]:
+# In[ ]:
 
 
 dataset_test = InMemoryImageDataset(noisy_val, clean_val, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[48]:
+# In[ ]:
 
 
 total_loss = 0
@@ -377,7 +381,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[49]:
+# In[ ]:
 
 
 test_file_path = f'data/test_errors_imagenes_reales.csv'
@@ -397,7 +401,7 @@ except FileNotFoundError:
 ### all_results.to_csv(test_file_path, index=False)
 
 
-# In[61]:
+# In[ ]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -447,7 +451,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[62]:
+# In[ ]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -470,7 +474,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[63]:
+# In[ ]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo
