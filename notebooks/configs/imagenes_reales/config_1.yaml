@@ -62,32 +62,32 @@ decoder:
       out_channels: 128
     - type: "conv2d_transpose"
       filters: 64
-      kernel_size: 5
-      stride: 2
-      padding: 2
-      output_padding: 1  # Ajustado para 32→64
-      activation: "relu"
-    - type: "conv2d_transpose"
-      filters: 32
-      kernel_size: 5
-      stride: 2
-      padding: 2
-      output_padding: 1  # Ajustado para 64→128
-      activation: "relu"
-    - type: "conv2d_transpose"
-      filters: 16
-      kernel_size: 5
-      stride: 2
-      padding: 2
-      output_padding: 1  # Ajustado para 128→256
-      activation: "relu"
-    - type: "conv2d_transpose"
-      filters: 1
-      kernel_size: 4  # Cambiado a 4 para mejor ajuste
+      kernel_size: 4  # Cambiado de 5 a 4
       stride: 2
       padding: 1
-      output_padding: 1  # Crítico para 256→512
-      activation: "sigmoid"
+      output_padding: 0
+      activation: "relu"  # 32→64
+    - type: "conv2d_transpose"
+      filters: 32
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      output_padding: 0
+      activation: "relu"  # 64→128
+    - type: "conv2d_transpose"
+      filters: 16
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      output_padding: 0
+      activation: "relu"  # 128→256
+    - type: "conv2d_transpose"
+      filters: 1
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      output_padding: 0
+      activation: "sigmoid"  # 256→512
 
 # Parámetros de la evaluación
 testing:
