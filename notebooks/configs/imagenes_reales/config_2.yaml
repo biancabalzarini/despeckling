@@ -1,0 +1,72 @@
+# Parámetros del entrenamiento
+training:
+  num_epochs: 100        # Cantidad de épocas
+  batch_size: 64         # Cantidad de imágenes en cada batch
+  learning_rate: 0.001   # Learning rate
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 32      # Dimensión del espacio latente
+  loss_function: "mse"  # Opciones: "mse", "bce"
+                        # Binary Cross Entropy Loss como loss function puede ser una buena idea ya que las imágenes están normalizadas en el rango [0, 1]
+  optimizer: "adam"     # Opciones: "adam", "sgd"
+                        # El optimizador es responsable de ajustar los pesos del modelo con el fin de minimizar la función de pérdida.
+                        # Adam es un algoritmo de optimización popular y eficiente que adapta la tasa de aprendizaje de forma dinámica para cada parámetro del modelo.
+                        # La tasa de aprendizaje determina qué tan rápido se ajustan los pesos del modelo durante el entrenamiento.
+
+encoder:
+  layers:
+    - type: "conv2d"
+      filters: 32
+      kernel_size: 3
+      stride: 2
+      padding: 3
+      activation: "relu"
+    - type: "conv2d"
+      filters: 64
+      kernel_size: 3
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d"
+      filters: 128
+      kernel_size: 3
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "flatten"
+    - type: "dense"
+      dim: "${model.encoding_dim}"
+      activation: "relu"
+
+decoder:
+  layers:
+    - type: "dense"
+      dim: 6272
+      activation: "relu"
+    - type: "unflatten"
+      dim1: 7
+      dim2: 7
+      out_channels: 128
+    - type: "conv2d_transpose"
+      filters: 64
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d_transpose"
+      filters: 32
+      kernel_size: 3
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d_transpose"
+      filters: 1
+      kernel_size: 2
+      stride: 2
+      padding: 2
+      activation: "sigmoid"
+
+# Parámetros de la evaluación
+testing:
+  batch_size: 32  # Cantidad de imágenes en cada batch
