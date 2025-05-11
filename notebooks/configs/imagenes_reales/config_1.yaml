@@ -1,6 +1,6 @@
 # Parámetros del entrenamiento
 training:
-  num_epochs: 100        # Cantidad de épocas
+  num_epochs: 250        # Cantidad de épocas
   batch_size: 64         # Cantidad de imágenes en cada batch
   learning_rate: 0.001   # Learning rate
   scheduler_name: "elr"  # Opciones: "rlrop", "slr", "elr"
@@ -12,7 +12,7 @@ training:
 
 # Parámetros generales del modelo
 model:
-  encoding_dim: 3200    # Dimensión del espacio latente
+  encoding_dim: 1600    # Dimensión del espacio latente
   loss_function: "mse"  # Opciones: "mse", "bce"
                         # Binary Cross Entropy Loss como loss function puede ser una buena idea ya que las imágenes están normalizadas en el rango [0, 1]
   optimizer: "adam"     # Opciones: "adam", "sgd"
@@ -23,29 +23,17 @@ model:
 encoder:
   layers:
     - type: "conv2d"
+      filters: 8
+      kernel_size: 8
+      stride: 4
+      padding: 2
+      activation: "relu"
+    - type: "conv2d"
       filters: 16
-      kernel_size: 5
-      stride: 2
+      kernel_size: 8
+      stride: 4
       padding: 2
-      activation: "relu"  # 512→256
-    - type: "conv2d"
-      filters: 32
-      kernel_size: 5
-      stride: 2
-      padding: 2
-      activation: "relu"  # 256→128
-    - type: "conv2d"
-      filters: 64
-      kernel_size: 5
-      stride: 2
-      padding: 2
-      activation: "relu"  # 128→64
-    - type: "conv2d"
-      filters: 128
-      kernel_size: 5
-      stride: 2
-      padding: 2
-      activation: "relu"  # 64→32
+      activation: "relu"
     - type: "flatten"
     - type: "dense"
       dim: "${model.encoding_dim}"
@@ -54,40 +42,24 @@ encoder:
 decoder:
   layers:
     - type: "dense"
-      dim: 131072  # 128*32*32
+      dim: 16384
       activation: "relu"
     - type: "unflatten"
       dim1: 32
       dim2: 32
-      out_channels: 128
+      out_channels: 16
     - type: "conv2d_transpose"
-      filters: 64
-      kernel_size: 4  # Cambiado de 5 a 4
-      stride: 2
-      padding: 1
-      output_padding: 0
-      activation: "relu"  # 32→64
-    - type: "conv2d_transpose"
-      filters: 32
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      output_padding: 0
-      activation: "relu"  # 64→128
-    - type: "conv2d_transpose"
-      filters: 16
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      output_padding: 0
-      activation: "relu"  # 128→256
+      filters: 8
+      kernel_size: 8
+      stride: 4
+      padding: 2
+      activation: "relu"
     - type: "conv2d_transpose"
       filters: 1
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      output_padding: 0
-      activation: "sigmoid"  # 256→512
+      kernel_size: 8
+      stride: 4
+      padding: 2
+      activation: "sigmoid"
 
 # Parámetros de la evaluación
 testing:
