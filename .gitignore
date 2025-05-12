@@ -8,3 +8,6 @@ scripts/__pycache__/**
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# Archivos muy pesados
+notebooks/data/trained_models/imagenes_reales/config_1.pth
