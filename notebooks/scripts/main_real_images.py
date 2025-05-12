@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import sys
 sys.path.append('..')
 
-from scripts.autoencoders import InMemoryImageDataset, ConfigurableAutoencoder
+from scripts.autoencoders import InMemoryImageDataset, split_images, ConfigurableAutoencoder
 
 import pandas as pd
 from PIL import Image
@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 from omegaconf import OmegaConf
 
 
-# In[2]:
+# In[3]:
 
 
 try:
@@ -33,7 +33,7 @@ except ValueError:
     pass
 
 
-# In[3]:
+# In[4]:
 
 
 def load_tiff_datasets(carpeta):
@@ -57,31 +57,31 @@ def load_tiff_datasets(carpeta):
     return array_final
 
 
-# In[4]:
+# In[5]:
 
 
 noisy = load_tiff_datasets('Noisy')
 
 
-# In[5]:
+# In[6]:
 
 
 noisy_val = load_tiff_datasets('Noisy_val')
 
 
-# In[6]:
+# In[7]:
 
 
 clean = load_tiff_datasets('GTruth')
 
 
-# In[7]:
+# In[8]:
 
 
 clean_val = load_tiff_datasets('GTruth_val')
 
 
-# In[8]:
+# In[9]:
 
 
 clean = clean[np.array([np.min(img) != np.max(img) for img in clean])]
@@ -90,7 +90,7 @@ print(clean.shape)
 print(noisy.shape)
 
 
-# In[9]:
+# In[10]:
 
 
 clean_val = clean_val[np.array([np.min(img) != np.max(img) for img in clean_val])]
@@ -99,7 +99,7 @@ print(clean_val.shape)
 print(noisy_val.shape)
 
 
-# In[10]:
+# In[11]:
 
 
 index = 450 # Index random
@@ -123,7 +123,7 @@ plt.show()
 # ---
 # Elegir el archivo de configuración correspondiente:
 
-# In[11]:
+# In[12]:
 
 
 config_name = 'config_1' # Elegir
@@ -136,27 +136,44 @@ config
 # ---
 # # Creación del dataset para entrenar
 
-# In[12]:
+# In[13]:
 
 
 batch_size = config['training']['batch_size']
 
 
-# In[13]:
+# In[ ]:
 
 
-#Borrar
-"""
-clean = clean[:,:50,:50]
-noisy = noisy[:,:50,:50]
-clean = clean[np.array([np.min(img) != np.max(img) for img in clean])]
-noisy = noisy[np.array([np.min(img) != np.max(img) for img in noisy])]
+if (
+    not isinstance(config['training']['side_size'], int)
+    or config['training']['side_size'] <= 0
+    or config['training']['side_size'] > clean.shape[1]
+):
+    raise ValueError(
+        f"side_size debe ser un entero positivo y menor o igual al número de píxeles por lado de las imágenes ({clean.shape[1]}). "
+        f"Se recibió side_size = {config['training']['side_size']}."
+    )
+
+
+# In[16]:
+
+
+if config['training']['side_size'] == 512:
+    pass
+
+else:
+    clean = split_images(clean, config['training']['side_size'])
+    noisy = split_images(noisy, config['training']['side_size'])    
+    
+    clean = clean[np.array([np.min(img) != np.max(img) for img in clean])]
+    noisy = noisy[np.array([np.min(img) != np.max(img) for img in noisy])]
+    
 print(clean.shape)
 print(noisy.shape)
-"""
 
 
-# In[14]:
+# In[13]:
 
 
 # noisy = GI0
@@ -176,7 +193,7 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[15]:
+# In[14]:
 
 
 num_epochs = config['training']['num_epochs']
@@ -184,14 +201,14 @@ learning_rate = config['training']['learning_rate']
 scheduler_name = config['training'].get('scheduler_name')
 
 
-# In[16]:
+# In[15]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config, image_size=noisy.shape[1])
 autoencoder
 
 
-# In[17]:
+# In[16]:
 
 
 summary(
@@ -201,7 +218,7 @@ summary(
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
-# In[18]:
+# In[17]:
 
 
 loss = config['model']['loss_function'].lower()
@@ -225,7 +242,7 @@ elif optim == 'sgd':
     )
 
 
-# In[19]:
+# In[18]:
 
 
 if scheduler_name is None:
@@ -256,7 +273,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[20]:
+# In[19]:
 
 
 training_losses = []
@@ -339,25 +356,28 @@ batch_size = config['testing']['batch_size']
 # In[ ]:
 
 
-#Borrar
-"""
-clean_val = clean_val[:,:50,:50]
-noisy_val = noisy_val[:,:50,:50]
-clean_val = clean_val[np.array([np.min(img) != np.max(img) for img in clean_val])]
-noisy_val = noisy_val[np.array([np.min(img) != np.max(img) for img in noisy_val])]
+if config['training']['side_size'] == 512:
+    pass
+
+else:
+    clean_val = split_images(clean_val, config['training']['side_size'])
+    noisy_val = split_images(noisy_val, config['training']['side_size'])    
+    
+    clean_val = clean_val[np.array([np.min(img) != np.max(img) for img in clean_val])]
+    noisy_val = noisy_val[np.array([np.min(img) != np.max(img) for img in noisy_val])]
+    
 print(clean_val.shape)
 print(noisy_val.shape)
-"""
 
 
-# In[ ]:
+# In[26]:
 
 
 dataset_test = InMemoryImageDataset(noisy_val, clean_val, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[ ]:
+# In[27]:
 
 
 total_loss = 0
@@ -381,7 +401,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[ ]:
+# In[28]:
 
 
 test_file_path = f'data/test_errors_imagenes_reales.csv'
@@ -401,7 +421,7 @@ except FileNotFoundError:
 ### all_results.to_csv(test_file_path, index=False)
 
 
-# In[ ]:
+# In[29]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -451,7 +471,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[ ]:
+# In[30]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -474,7 +494,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[ ]:
+# In[31]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo

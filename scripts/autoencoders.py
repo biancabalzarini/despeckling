@@ -23,6 +23,33 @@ class InMemoryImageDataset(Dataset):
         
         return input_image, target_image
 
+def split_images(images, side_size):
+    """
+    Divide un array de imágenes en subimágenes más pequeñas.
+    
+    Parameters
+    ----------
+        images: np.array
+            Array de forma (n_images, height, width)
+        side_size: int
+            Tamaño de las subimágenes (cuadradas)
+    
+    Returns
+    -------
+        Array de forma (n_images * n_subimages, side_size, side_size)
+    """
+    n_images, height, width = images.shape
+    n_h = height // side_size
+    n_w = width // side_size
+    
+    cropped = images[:, :n_h * side_size, :n_w * side_size]
+    
+    subimages = cropped.reshape(n_images, n_h, side_size, n_w, side_size)
+    subimages = subimages.transpose(0, 1, 3, 2, 4)
+    subimages = subimages.reshape(-1, side_size, side_size)
+    
+    return subimages
+
 class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la clase nn.Module, que es una clase base para todos los modelos en PyTorch.
                                           # Esto permite que nuestra clase Autoencoder tenga todas las funcionalidades necesarias para ser un modelo de aprendizaje profundo en PyTorch.
     

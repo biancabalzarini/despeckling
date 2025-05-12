@@ -9,6 +9,8 @@ training:
       gamma: 0.95        # Si es rlop, los params son: mode, factor y patience
     }                    # Si es slr, los params son: step_size y gamma
                          # Si es elr, los params son: gamma
+  side_size: 512         # Cantidad de píxeles de lado que se quiere que tengan las imágenes.
+                         # Si este número es mayor al tamaño de las imágenes disponibles (512), va a fallar.
 
 # Parámetros generales del modelo
 model:
