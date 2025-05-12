@@ -318,7 +318,7 @@ for epoch in range(num_epochs):
 
 
 # Guardo los parámetros del modelo entrenado:
-### torch.save(autoencoder.state_dict(), f'data/trained_models/imagenes_reales/{config_name}.pth')
+torch.save(autoencoder.state_dict(), f'data/trained_models/imagenes_reales/{config_name}.pth')
 
 
 # In[ ]:
@@ -329,7 +329,7 @@ df_errors = pd.DataFrame({
     'loss': training_losses
 })
 
-### df_errors.to_csv(f'data/train_errors/imagenes_reales/{config_name}.csv', index=False)
+df_errors.to_csv(f'data/train_errors/imagenes_reales/{config_name}.csv', index=False)
 
 
 # In[ ]:
@@ -401,7 +401,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[28]:
+# In[ ]:
 
 
 test_file_path = f'data/test_errors_imagenes_reales.csv'
@@ -418,10 +418,10 @@ try:
 except FileNotFoundError:
     all_results = new_result
 
-### all_results.to_csv(test_file_path, index=False)
+all_results.to_csv(test_file_path, index=False)
 
 
-# In[29]:
+# In[ ]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -461,7 +461,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
         ax.set_title(titulo)
 
     plt.tight_layout()
-    ### plt.savefig(f'data/images/imagenes_reales/{config_name}_{name_suffix}.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'data/images/imagenes_reales/{config_name}_{name_suffix}.png', dpi=300, bbox_inches='tight')
 
     if not show_plot:
         plt.close(fig)
