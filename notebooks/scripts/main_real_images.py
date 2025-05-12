@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import sys
@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 from omegaconf import OmegaConf
 
 
-# In[3]:
+# In[2]:
 
 
 try:
@@ -33,7 +33,7 @@ except ValueError:
     pass
 
 
-# In[4]:
+# In[3]:
 
 
 def load_tiff_datasets(carpeta):
@@ -57,31 +57,31 @@ def load_tiff_datasets(carpeta):
     return array_final
 
 
-# In[5]:
+# In[4]:
 
 
 noisy = load_tiff_datasets('Noisy')
 
 
-# In[6]:
+# In[5]:
 
 
 noisy_val = load_tiff_datasets('Noisy_val')
 
 
-# In[7]:
+# In[6]:
 
 
 clean = load_tiff_datasets('GTruth')
 
 
-# In[8]:
+# In[7]:
 
 
 clean_val = load_tiff_datasets('GTruth_val')
 
 
-# In[9]:
+# In[8]:
 
 
 clean = clean[np.array([np.min(img) != np.max(img) for img in clean])]
@@ -90,7 +90,7 @@ print(clean.shape)
 print(noisy.shape)
 
 
-# In[10]:
+# In[9]:
 
 
 clean_val = clean_val[np.array([np.min(img) != np.max(img) for img in clean_val])]
@@ -99,7 +99,7 @@ print(clean_val.shape)
 print(noisy_val.shape)
 
 
-# In[11]:
+# In[10]:
 
 
 index = 450 # Index random
@@ -123,7 +123,7 @@ plt.show()
 # ---
 # Elegir el archivo de configuración correspondiente:
 
-# In[12]:
+# In[11]:
 
 
 config_name = 'config_1' # Elegir
@@ -136,13 +136,13 @@ config
 # ---
 # # Creación del dataset para entrenar
 
-# In[13]:
+# In[12]:
 
 
 batch_size = config['training']['batch_size']
 
 
-# In[ ]:
+# In[13]:
 
 
 if (
@@ -156,7 +156,7 @@ if (
     )
 
 
-# In[16]:
+# In[14]:
 
 
 if config['training']['side_size'] == 512:
@@ -173,7 +173,7 @@ print(clean.shape)
 print(noisy.shape)
 
 
-# In[13]:
+# In[15]:
 
 
 # noisy = GI0
@@ -193,7 +193,7 @@ train_loader = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
 # ---
 # # Entrenamiento
 
-# In[14]:
+# In[16]:
 
 
 num_epochs = config['training']['num_epochs']
@@ -201,14 +201,14 @@ learning_rate = config['training']['learning_rate']
 scheduler_name = config['training'].get('scheduler_name')
 
 
-# In[15]:
+# In[17]:
 
 
 autoencoder = ConfigurableAutoencoder(config=config, image_size=noisy.shape[1])
 autoencoder
 
 
-# In[16]:
+# In[18]:
 
 
 summary(
@@ -218,7 +218,7 @@ summary(
 # El -1 que se ve en la primera posición de todos los output shapes es un placeholder para el tamaño del batch
 
 
-# In[17]:
+# In[19]:
 
 
 loss = config['model']['loss_function'].lower()
@@ -242,7 +242,7 @@ elif optim == 'sgd':
     )
 
 
-# In[18]:
+# In[20]:
 
 
 if scheduler_name is None:
@@ -273,7 +273,7 @@ elif scheduler_name.lower() == "elr":
     )
 
 
-# In[19]:
+# In[21]:
 
 
 training_losses = []
@@ -314,14 +314,14 @@ for epoch in range(num_epochs):
     print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}")
 
 
-# In[ ]:
+# In[22]:
 
 
 # Guardo los parámetros del modelo entrenado:
 torch.save(autoencoder.state_dict(), f'data/trained_models/imagenes_reales/{config_name}.pth')
 
 
-# In[ ]:
+# In[23]:
 
 
 df_errors = pd.DataFrame({
@@ -332,7 +332,7 @@ df_errors = pd.DataFrame({
 df_errors.to_csv(f'data/train_errors/imagenes_reales/{config_name}.csv', index=False)
 
 
-# In[ ]:
+# In[24]:
 
 
 plt.figure(figsize=(5, 3))
@@ -346,14 +346,14 @@ plt.grid()
 # ---
 # # Evaluación
 
-# In[ ]:
+# In[25]:
 
 
 autoencoder.eval() # Para desactivar Dropout, BatchNorm, etc.
 batch_size = config['testing']['batch_size']
 
 
-# In[ ]:
+# In[26]:
 
 
 if config['training']['side_size'] == 512:
@@ -370,14 +370,14 @@ print(clean_val.shape)
 print(noisy_val.shape)
 
 
-# In[26]:
+# In[27]:
 
 
 dataset_test = InMemoryImageDataset(noisy_val, clean_val, transform=transform)
 test_loader = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
 
 
-# In[27]:
+# In[28]:
 
 
 total_loss = 0
@@ -401,7 +401,7 @@ average_loss = total_loss / len(test_loader) # Se calcula la pérdida promedio d
 print(f"Average Test Loss: {average_loss:.4f}")
 
 
-# In[ ]:
+# In[29]:
 
 
 test_file_path = f'data/test_errors_imagenes_reales.csv'
@@ -421,7 +421,7 @@ except FileNotFoundError:
 all_results.to_csv(test_file_path, index=False)
 
 
-# In[ ]:
+# In[30]:
 
 
 # Aplico el autoencoder a un ejemplo particular del dataset de testeo y veo cómo queda la
@@ -471,7 +471,7 @@ def graph_random_image(ecualizar_hist, name_suffix, show_plot=True):
 imagenes, titulos = graph_random_image(ecualizar_hist=ecualizar_hist, name_suffix=1, show_plot=True)
 
 
-# In[30]:
+# In[31]:
 
 
 # Hago lo mismo que arriba, para la misma imagen, pero sin ecualizar
@@ -494,7 +494,7 @@ for ax, imagen, titulo in zip(axes, imagenes, titulos):
 plt.tight_layout()
 
 
-# In[31]:
+# In[32]:
 
 
 # Guardo otra imagen solo para tener a modo de ejemplo
