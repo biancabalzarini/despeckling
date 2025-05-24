@@ -17,32 +17,33 @@ model:
 
 encoder:
   layers:
-    - type: "conv2d"
-      filters: 8
-      kernel_size: 3
-      stride: 1
-      padding: 1
-      activation: "relu"
-    - type: "conv2d"
-      filters: 8
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      activation: "relu"
-    - type: "conv2d"
-      filters: 16
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      activation: "relu"
+    # Bloque 1 (128x128 -> 64x64)
     - type: "conv2d"
       filters: 32
-      kernel_size: 4
+      kernel_size: 10
       stride: 2
-      padding: 1
+      padding: 4
       activation: "relu"
+    
+    # Bloque 2 (64x64 -> 32x32)
     - type: "conv2d"
       filters: 64
+      kernel_size: 8
+      stride: 2
+      padding: 3
+      activation: "relu"
+    
+    # Bloque 3 (32x32 -> 16x16)
+    - type: "conv2d"
+      filters: 128
+      kernel_size: 6
+      stride: 2
+      padding: 2
+      activation: "relu"
+    
+    # Bloque 4 (16x16 -> 8x8) - Cuello de botella
+    - type: "conv2d"
+      filters: 256
       kernel_size: 4
       stride: 2
       padding: 1
@@ -50,42 +51,46 @@ encoder:
 
 decoder:
   layers:
+    # Bloque 1 (8x8 -> 16x16)
     - type: "conv2d_transpose"
-      filters: 32
+      in_channels: 256  # Debe coincidir con los 256 del encoder
+      filters: 128
       kernel_size: 4
       stride: 2
       padding: 1
+      output_padding: 0
+      activation: "relu"
+    
+    # Bloque 2 (16x16 -> 32x32)
+    - type: "conv2d_transpose"
+      in_channels: 128
+      filters: 64
+      kernel_size: 6
+      stride: 2
+      padding: 2
+      output_padding: 0
+      activation: "relu"
+    
+    # Bloque 3 (32x32 -> 64x64)
+    - type: "conv2d_transpose"
       in_channels: 64
-      activation: "relu"
-    - type: "conv2d_transpose"
-      filters: 16
-      kernel_size: 4
+      filters: 32
+      kernel_size: 8
       stride: 2
-      padding: 1
+      padding: 3
+      output_padding: 0
+      activation: "relu"
+    
+    # Bloque 4 (64x64 -> 128x128)
+    - type: "conv2d_transpose"
       in_channels: 32
-      activation: "relu"
-    - type: "conv2d_transpose"
-      filters: 8
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      in_channels: 16
-      activation: "relu"
-    - type: "conv2d_transpose"
-      filters: 8
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      in_channels: 8
-      activation: "sigmoid"
-    - type: "conv2d_transpose"
       filters: 1
-      kernel_size: 3
-      stride: 1
-      padding: 1
-      in_channels: 8
+      kernel_size: 10
+      stride: 2
+      padding: 4
+      output_padding: 0
       activation: "sigmoid"
-
+      
 # Parámetros de la evaluación
 testing:
   batch_size: 32
