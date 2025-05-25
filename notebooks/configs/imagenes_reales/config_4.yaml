@@ -7,7 +7,7 @@ training:
   scheduler_params: {
       gamma: 0.97
     }
-  side_size: 256
+  side_size: 128
 
 # Parámetros generales del modelo
 model:
@@ -18,22 +18,10 @@ model:
 encoder:
   layers:
     - type: "conv2d"
-      filters: 4
+      filters: 8
       kernel_size: 3
       stride: 1
       padding: 1
-      activation: "relu"
-    - type: "conv2d"
-      filters: 4
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      activation: "relu"
-    - type: "conv2d"
-      filters: 8
-      kernel_size: 5
-      stride: 1
-      padding: 2
       activation: "relu"
     - type: "conv2d"
       filters: 16
@@ -78,27 +66,13 @@ decoder:
       in_channels: 16
       activation: "relu"
     - type: "conv2d_transpose"
-      filters: 4
-      kernel_size: 5
-      stride: 1
-      padding: 2
-      in_channels: 8
-      activation: "relu"
-    - type: "conv2d_transpose"
-      filters: 4
-      kernel_size: 4
-      stride: 2
-      padding: 1
-      in_channels: 4
-      activation: "sigmoid"
-    - type: "conv2d_transpose"
       filters: 1
       kernel_size: 3
       stride: 1
       padding: 1
-      in_channels: 4
+      in_channels: 8
       activation: "sigmoid"
-      
+
 # Parámetros de la evaluación
 testing:
   batch_size: 32
