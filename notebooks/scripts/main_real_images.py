@@ -126,7 +126,7 @@ plt.show()
 # In[11]:
 
 
-config_name = 'config_3' # Elegir
+config_name = 'config_4' # Elegir
 
 config_path = f'configs/imagenes_reales/{config_name}.yaml'
 config = OmegaConf.load(config_path)
