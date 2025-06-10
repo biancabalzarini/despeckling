@@ -23,14 +23,57 @@ class InMemoryImageDataset(Dataset):
         
         return input_image, target_image
 
+def split_images(images, side_size):
+    """
+    Divide un array de imágenes en subimágenes más pequeñas.
+    
+    Parameters
+    ----------
+        images: np.array
+            Array de forma (n_images, height, width)
+        side_size: int
+            Tamaño de las subimágenes (cuadradas)
+    
+    Returns
+    -------
+        Array de forma (n_images * n_subimages, side_size, side_size)
+    """
+    n_images, height, width = images.shape
+    n_h = height // side_size
+    n_w = width // side_size
+    
+    cropped = images[:, :n_h * side_size, :n_w * side_size]
+    
+    subimages = cropped.reshape(n_images, n_h, side_size, n_w, side_size)
+    subimages = subimages.transpose(0, 1, 3, 2, 4)
+    subimages = subimages.reshape(-1, side_size, side_size)
+    
+    return subimages
+
 class ConfigurableAutoencoder(nn.Module): # La clase Autoencoder hereda de la clase nn.Module, que es una clase base para todos los modelos en PyTorch.
                                           # Esto permite que nuestra clase Autoencoder tenga todas las funcionalidades necesarias para ser un modelo de aprendizaje profundo en PyTorch.
     
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, image_size: int = None):
         super(ConfigurableAutoencoder, self).__init__()
         
         self.config = config
-        self.image_size = self.config['training']['n_cuad_lado'][0] * self.config['training']['pixeles_cuad'][0]
+        
+        if image_size is not None:
+            if not isinstance(image_size, int) or image_size <= 0:
+                raise ValueError("image_size debe ser un entero positivo")
+            self.image_size = image_size
+        else:
+            if 'training' not in config:
+                raise KeyError("Config debe tener sección 'training' o se debe proveer image_size")
+            required_params = ['n_cuad_lado', 'pixeles_cuad']
+            missing = [p for p in required_params if p not in config['training']]
+            if missing:
+                raise KeyError(
+                    f"Config debe tener los parámetros {missing} en 'training' "
+                    f"o se debe proveer image_size directamente"
+                )
+            self.image_size = self.config['training']['n_cuad_lado'][0] * self.config['training']['pixeles_cuad'][0]
+        
         self.flat_size = self.image_size * self.image_size
         self.encoding_dim = self.config['model']['encoding_dim']
         

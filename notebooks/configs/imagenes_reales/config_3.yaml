@@ -1,0 +1,104 @@
+# Parámetros del entrenamiento
+training:
+  num_epochs: 200
+  batch_size: 64
+  learning_rate: 0.001
+  scheduler_name: "elr"
+  scheduler_params: {
+      gamma: 0.97
+    }
+  side_size: 256
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 1500
+  loss_function: "mse"
+  optimizer: "adam"
+
+encoder:
+  layers:
+    - type: "conv2d"
+      filters: 4
+      kernel_size: 3
+      stride: 1
+      padding: 1
+      activation: "relu"
+    - type: "conv2d"
+      filters: 4
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d"
+      filters: 8
+      kernel_size: 5
+      stride: 1
+      padding: 2
+      activation: "relu"
+    - type: "conv2d"
+      filters: 16
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d"
+      filters: 32
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d"
+      filters: 64
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      activation: "relu"
+
+decoder:
+  layers:
+    - type: "conv2d_transpose"
+      filters: 32
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      in_channels: 64
+      activation: "relu"
+    - type: "conv2d_transpose"
+      filters: 16
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      in_channels: 32
+      activation: "relu"
+    - type: "conv2d_transpose"
+      filters: 8
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      in_channels: 16
+      activation: "relu"
+    - type: "conv2d_transpose"
+      filters: 4
+      kernel_size: 5
+      stride: 1
+      padding: 2
+      in_channels: 8
+      activation: "relu"
+    - type: "conv2d_transpose"
+      filters: 4
+      kernel_size: 4
+      stride: 2
+      padding: 1
+      in_channels: 4
+      activation: "sigmoid"
+    - type: "conv2d_transpose"
+      filters: 1
+      kernel_size: 3
+      stride: 1
+      padding: 1
+      in_channels: 4
+      activation: "sigmoid"
+      
+# Parámetros de la evaluación
+testing:
+  batch_size: 32
