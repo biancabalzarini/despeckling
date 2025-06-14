@@ -129,7 +129,7 @@ def lee_filter(image, window_size=3, noise_var=0.1):
 
 # El filtro de Lee necesita un valor para la varianza estimada del ruido. Lo calculo tomando la varianza en una zona homogénea de las imágenes, y promediando esa varianza sobre varias imágenes:
 
-# In[22]:
+# In[8]:
 
 
 var = []
@@ -145,7 +145,7 @@ np.mean(var)
 
 # Primero necesitamos los ratios de las de imágenes originales a las imágenes filtradas:
 
-# In[37]:
+# In[9]:
 
 
 inputs = test_gI0
@@ -160,7 +160,7 @@ ratios = inputs / outputs
 
 # Grafico solo a modo de ejemplo:
 
-# In[48]:
+# In[10]:
 
 
 ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
@@ -190,14 +190,69 @@ def graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_h
 graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
 
 
-# ### Estadístico de primer orden
+# ### Método de primer orden
 
-# In[ ]:
-
-
+# In[11]:
 
 
+fom = first_order_method(config.training.pixeles_cuad, alphas, inputs, ratios)
 
-# ### Estadístico de segundo orden
 
-# 
+# In[12]:
+
+
+print(f'El filtro perfecto produciría un estadístico de primer orden igual a 0.\n')
+print(f'Media del estadístico de 1er orden sobre todas las imágenes: {np.mean(fom)}')
+print(f'Desviación estándar del estadístico de 1er orden sobre todas las imágenes: {np.std(fom)}\n')
+plt.hist(fom, bins=50)
+plt.title('Distribución del estadístico de 1er orden')
+
+
+# ### Método de segundo orden
+
+# In[13]:
+
+
+# Grafico solo a modo de ejemplo
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+
+random_index = np.random.randint(0, ratios.shape[0])
+img_original = ratios[random_index]
+axes[0].imshow(img_original, cmap='viridis')
+axes[0].set_title("Imagen\nRatio")
+
+glcm_avg = co_ocurrence_matrix(img_original)
+axes[1].imshow(glcm_avg, cmap='viridis')
+axes[1].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio)")
+
+shuffled_flat = np.random.permutation(img_original.ravel())
+shuffled_arr = shuffled_flat.reshape(img_original.shape)
+glcm_avg_shuffled = co_ocurrence_matrix(shuffled_arr)
+axes[2].imshow(glcm_avg_shuffled, cmap='viridis')
+axes[2].set_title("Matriz de Co-ocurrencia\n(de la imagen Ratio shuffleada)")
+
+plt.tight_layout()
+
+
+# In[14]:
+
+
+deltah(ratios[random_index], g=30)
+
+
+# In[15]:
+
+
+som = second_order_method(ratios, g=30)
+
+
+# In[16]:
+
+
+print(f'El filtro perfecto produciría un estadístico de segundo orden igual a 0.\n')
+print(f'Media del estadístico de 2do orden sobre todas las imágenes: {np.mean(som)}')
+print(f'Desviación estándar del estadístico de 2do orden sobre todas las imágenes: {np.std(som)}\n')
+plt.hist(som, bins=50)
+plt.title('Distribución del estadístico de 2do orden')
+
