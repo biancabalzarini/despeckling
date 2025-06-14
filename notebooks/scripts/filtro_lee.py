@@ -71,7 +71,7 @@ test_g, test_gi, test_gI0, alphas = mixed_dataset(
     ratios = config.training.get('ratio',[1]),
     save_alpha_values=True
 )
-del test_g, alphas
+del test_g
 
 
 # Normalizo:
@@ -129,18 +129,19 @@ def lee_filter(image, window_size=3, noise_var=0.1):
 
 # El filtro de Lee necesita un valor para la varianza estimada del ruido. Lo calculo tomando la varianza en una zona homogénea de las imágenes, y promediando esa varianza sobre varias imágenes:
 
-# In[8]:
+# In[22]:
 
 
 var = []
 for i in range(test_gI0.shape[0]):
-    var.append(np.var(test_gI0[i,0:pixeles_cuad[0],0:pixeles_cuad[0]]))
+    if alphas[0][i][0,0] <= -6:
+        var.append(np.var(test_gI0[i,0:pixeles_cuad[0],0:pixeles_cuad[0]]))
 np.mean(var)
 
 
 # Aplico el filtro a un ejemplo particular y veo como queda:
 
-# In[9]:
+# In[23]:
 
 
 ecualizar_hist = True
