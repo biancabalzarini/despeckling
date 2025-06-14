@@ -139,29 +139,65 @@ for i in range(test_gI0.shape[0]):
 np.mean(var)
 
 
-# Aplico el filtro a un ejemplo particular y veo como queda:
+# ---
+# ## Calidad del filtro de Lee
+# ##### Calculo los estadísticos de primer y segundo orden para medir la calidad del filtro de Lee
 
-# In[23]:
+# Primero necesitamos los ratios de las de imágenes originales a las imágenes filtradas:
+
+# In[37]:
 
 
-ecualizar_hist = True
+inputs = test_gI0
+targets = test_gi
 
-i = random.randint(0, len(test_gI0) - 1)
+outputs = np.empty_like(test_gI0)
+for i in range(test_gI0.shape[0]):
+    outputs[i] = lee_filter(test_gI0[i], window_size=3, noise_var=np.mean(var))
 
-imagen_filtrada = lee_filter(test_gI0[i], window_size=3, noise_var=np.mean(var))
+ratios = inputs / outputs
 
-imagenes = [test_gI0[i], test_gi[i], imagen_filtrada]
-titulos = ['Imagen ruidosa', 'Imagen limpia', 'Imagen con filtro de Lee']
 
-fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-for ax, imagen, titulo in zip(axes, imagenes, titulos):
-    if ecualizar_hist:
-        imagen = ((imagen - imagen.min()) * 255) / (imagen.max() - imagen.min())
-        imagen = cv2.equalizeHist(imagen.astype(np.uint8))
-        titulo += '\n(ecualizada)'
-    
-    ax.imshow(imagen, cmap='gray')
-    ax.set_title(titulo)
+# Grafico solo a modo de ejemplo:
 
-plt.tight_layout()
+# In[48]:
 
+
+ecualizar_hist = True  # Si se quiere o no ecualizar el histograma de la imagen
+
+###
+
+def graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist, show_plot=True):
+
+    index = int(n*np.random.random()) # Índice del ejemplo puntual que se desea seleccionar
+    entrada_red, target_red, salida_red, ratios = inputs[index, :, :], targets[index, :, :], outputs[index, :, :], ratios[index, :, :]
+
+    imagenes = [entrada_red, target_red, salida_red, ratios]
+    titulos = ['Imagen ruidosa', 'Imagen limpia', 'Imagen con filtro de Lee', 'Ratio original/filtrada']
+
+    fig, axes = plt.subplots(1, 4, figsize=(15, 5))
+    for ax, imagen, titulo in zip(axes, imagenes, titulos):
+        if ecualizar_hist:
+            imagen = ((imagen - imagen.min()) * 255) / (imagen.max() - imagen.min())
+            imagen = cv2.equalizeHist(imagen.astype(np.uint8))
+            titulo += '\n(ecualizada)'
+        
+        ax.imshow(imagen, cmap='gray')
+        ax.set_title(titulo)
+
+    plt.tight_layout()
+
+graph_random_image_with_ratios(inputs, targets, outputs, ratios, ecualizar_hist)
+
+
+# ### Estadístico de primer orden
+
+# In[ ]:
+
+
+
+
+
+# ### Estadístico de segundo orden
+
+# 
