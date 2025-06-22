@@ -1,0 +1,67 @@
+# Parámetros del entrenamiento
+training:
+  n: 50000
+  n_cuad_lado: [2]
+  pixeles_cuad: [25]
+  ratio: [1]
+  num_epochs: 70
+  batch_size: 64
+  learning_rate: 0.001
+  scheduler_name: "elr"
+  scheduler_params: {
+      gamma: 0.95
+    }
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 256
+  loss_function: "mse"
+  optimizer: "adam"
+
+# Arquitectura del encoder
+encoder:
+  layers:
+    - type: "conv2d"
+      filters: 8
+      kernel_size: 3
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d"
+      filters: 16
+      kernel_size: 3
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "flatten"
+    - type: "dense"
+      dim: "${model.encoding_dim}"
+      activation: "relu"
+
+# Arquitectura del decoder
+decoder:
+  layers:
+    - type: "dense"
+      dim: 2704
+      activation: "relu"
+    - type: "unflatten"
+      dim1: 13
+      dim2: 13
+      out_channels: 16
+    - type: "conv2d_transpose"
+      filters: 8
+      kernel_size: 3
+      stride: 2
+      padding: 1
+      activation: "relu"
+    - type: "conv2d_transpose"
+      filters: 1
+      kernel_size: 2
+      stride: 2
+      padding: 0
+      activation: "sigmoid"
+
+# Parámetros de la evaluación
+testing:
+  n: 1000         # Cantidad de imágenes a generar para evaluar
+  batch_size: 32  # Cantidad de imágenes en cada batch

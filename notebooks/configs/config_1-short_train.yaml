@@ -1,0 +1,52 @@
+# Parámetros del entrenamiento
+training:
+  n: 50000
+  n_cuad_lado: [2]
+  pixeles_cuad: [25]
+  num_epochs: 11
+  batch_size: 64
+  learning_rate: 0.001
+  scheduler_name: None
+  scheduler_params: None
+
+# Parámetros generales del modelo
+model:
+  encoding_dim: 32
+  loss_function: "mse"
+  optimizer: "adam"
+
+# Arquitectura del encoder
+encoder:
+  layers:
+    - type: "conv2d_transpose"
+      filters: 1
+      kernel_size: 3
+      stride: 1
+      padding: 1
+      activation: "sigmoid"
+    - type: "maxpool2d"
+      pool_size: 4
+    - type: "flatten"
+    - type: "dense"
+      dim: 128
+      activation: "relu"
+    - type: "dense"
+      dim: "${model.encoding_dim}"
+
+# Arquitectura del decoder
+decoder:
+  layers:
+    - type: "dense"
+      dim: 128
+      activation: "relu"
+    - type: "dense"
+      dim: "${eval:'(${training.n_cuad_lado[0]} * ${training.pixeles_cuad[0]})**2'}"
+      activation: "sigmoid"
+    - type: "unflatten"
+      dim1: "${eval:'${training.n_cuad_lado[0]} * ${training.pixeles_cuad[0]}'}"
+      dim2: "${eval:'${training.n_cuad_lado[0]} * ${training.pixeles_cuad[0]}'}"
+
+# Parámetros de la evaluación
+testing:
+  n: 1000
+  batch_size: 32
