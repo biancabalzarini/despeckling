@@ -17,3 +17,4 @@ config_simetrico-lr0_0005,0.003443901445280062
 config_simetrico-maxpool_upsample,demasiados parámetros para ajustar
 config_1-short_train,0.0025862199181574397
 config_3-short_train,0.002575083801629968
+config_base_simetrico-short_train,0.004342838779848535
