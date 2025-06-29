@@ -76,7 +76,7 @@ plot_ecualized_image(SanFranIm, 'Imagen de San Francisco, California, USA HH')
 # In[6]:
 
 
-config_name = 'config_simetrico_mas_profundo' # Elegir
+config_name = 'config_simetrico-lr0_001-short_train' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -105,7 +105,7 @@ ciudades = {
 }
 
 
-# In[10]:
+# In[9]:
 
 
 # Veo un pedazo (de 50x50) de una imagen real pasado por el autoencoder
@@ -162,7 +162,7 @@ plt.show()
 # ---
 # Solo para probar veo como se ve el autoencoder pasado por una imagen del conjunto de test
 
-# In[11]:
+# In[10]:
 
 
 a = partitioned_gi0_image(
