@@ -21,3 +21,4 @@ config_base_simetrico-short_train,0.004342838779848535
 config_simetrico_mas_profundo-short_train,0.0024846675150911324
 config_simetrico-2conv_128encod-short_train,0.0025679235623101704
 config_simetrico-2conv_256encod-short-train,0.00251584389116033
+config_simetrico-3conv_256encod-short_train,0.0023482366996177007
