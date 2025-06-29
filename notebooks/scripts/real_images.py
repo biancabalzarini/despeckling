@@ -76,7 +76,7 @@ plot_ecualized_image(SanFranIm, 'Imagen de San Francisco, California, USA HH')
 # In[6]:
 
 
-config_name = 'config_simetrico-3conv_256encod-short_train' # Elegir
+config_name = 'config_simetrico-lr0_001-short_train' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
