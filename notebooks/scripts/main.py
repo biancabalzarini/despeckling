@@ -37,7 +37,7 @@ except ValueError:
 # In[3]:
 
 
-config_name = 'config_simetrico-lr0_001-short_train' # Elegir
+config_name = 'config_simetrico-3conv_128encod-short-train' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
