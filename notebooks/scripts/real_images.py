@@ -76,7 +76,7 @@ plot_ecualized_image(SanFranIm, 'Imagen de San Francisco, California, USA HH')
 # In[6]:
 
 
-config_name = 'config_simetrico-lr0_001-short_train' # Elegir
+config_name = 'config_simetrico-3conv_256encod' # Elegir
 
 config_path = f'configs/{config_name}.yaml'
 config = OmegaConf.load(config_path)
@@ -165,12 +165,51 @@ plt.show()
 # In[10]:
 
 
+n_cuad = config['training']['n_cuad_lado']
+n_cuad
+
+
+# In[11]:
+
+
+pixeles_cuad = config['training']['pixeles_cuad']
+pixeles_cuad
+
+
+# In[12]:
+
+
+i = random.randrange(len(n_cuad))
+i
+
+
+# In[13]:
+
+
+n_cuad[i]
+
+
+# In[14]:
+
+
+pixeles_cuad[i]
+
+
+# In[15]:
+
+
+alpha_values = [-1.5, -2, -3, -5, -6, -8, -10, -20]
+
+
+# In[16]:
+
+
 a = partitioned_gi0_image(
-    p_alphas=[-8],
-    p_gammas=[1.0],
-    p_looks=[1],
-    n_cuad_lado=1,
-    pixeles_cuad=50
+    p_alphas=random.choices(alpha_values, k=n_cuad[i]**2),
+    p_gammas=[1.0]*(n_cuad[i]**2),
+    p_looks=[1]*(n_cuad[i]**2),
+    n_cuad_lado=n_cuad[i],
+    pixeles_cuad=pixeles_cuad[i]
 )
 
 Image = a[2].astype(np.float64)
