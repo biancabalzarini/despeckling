@@ -1,0 +1,171 @@
+% ******************************* PhD Thesis Template **************************
+% Please have a look at the README.md file for info on how to use the template
+
+\documentclass[a4paper,12pt,spanish,customfont,numbered,print,index]{PhDThesisPSnPDF}
+
+% Definición de encabezamientos y pié de página
+\lhead[Bianca Balzarini]{Titulo de la Tesis}
+\rhead[Titulo]{Bianca Balzarini}
+%\lfoot[\thepage]{Capítulo \thechapter .\ \leftmark}
+%\rfoot[Capítulo \thechapter .\ \leftmark]{\thepage} 
+
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{subcaption}
+\usepackage{makecell}
+\usepackage{mathtools}
+
+% Comando personalizado
+\newcommand{\titulito}[1]{%
+    \par\vspace{0.5em}%
+    \noindent\textbf{#1}%
+    \par\vspace{0.2em}%
+}
+
+%********************************
+
+
+
+\title{Eliminación de Ruido \emph{Speckle} en Imágenes SAR utilizando Autoencoders}
+
+%% Subtitle (Optional)
+
+%\subtitle{Subtítulo}
+%\else
+%\subtitle{Using the ULL template}
+%\fi
+
+%% The full name of the author
+\author{Bianca Balzarini}
+
+\pagestyle{fancy}
+\fancyhf{}  % borra todo contenido previo
+\fancyhead[LE,RO]{\thepage}                 % número de página izquierda/derecha
+\fancyhead[LO,RE]{\nouppercase{\leftmark}}  % título de sección o capítulo
+
+%% Department (eg. Department of Engineering, Maths, Physics)
+
+\dept{Departamento de Sistemas Digitales y Datos}
+
+
+%% University and Crest
+
+\university{Instituto Tecnológico de Buenos Aires}
+
+\crest{\includegraphics[width=0.5\textwidth]{Images/derf__64049_1952016_LOGOITBA.jpg}}
+
+
+
+
+
+%% Supervisor (optional)
+%% for multiple supervisors, append each supervisor with the \newline command
+\supervisor{Dra. Juliana Gambini}
+
+
+
+
+\degreetitle{Master en Ciencias de Datos}
+
+
+
+
+\ifdefineAbstract
+\includeonly{FrontMatter/abstract} 
+
+
+
+\fi
+% ***************************** Chapter Mode ***********************************
+% The chapter mode allows user to only print particular chapters with references
+% Title, Contents, Frontmatter are disabled by default
+% Useful option to review a particular chapter or to send it to supervisior.
+% To use choose `chapter' option in the document class
+
+\ifdefineChapter
+%\includeonly{Chapter3/chapter3}
+\fi
+
+% ******************************** Front Matter ********************************
+\begin{document}
+
+\setlength{\parskip}{0.4em} % o el valor que prefieras, como 0.8em
+	
+	\frontmatter
+	
+	\maketitle
+	
+%	\include{dedication}
+%	\include{Declaration/declaration}
+%	\include{Acknowledgement/acknowledgement}
+%	\include{Abstract/abstract}
+	
+	% *********************** Adding TOC and List of Figures ***********************
+	
+	\tableofcontents
+	
+	\listoffigures
+	
+	\listoftables
+	
+	% \printnomenclature[space] space can be set as 2em between symbol and description
+	%\printnomenclature[3em]
+	
+	\printnomenclature
+	
+	% ******************************** Main Matter *********************************
+	\mainmatter
+	\include{FrontMatter/abstract}
+	\include{Chapters/abstract}
+	\include{Chapters/chapterIntroduccion}
+        \include{Chapters/chapter2Metodos}
+	\include{Chapters/chapter3Resultados}
+	\include{Chapters/chapter4Discusion}
+	\include{Chapters/chapter5Conclusiones}
+	%\include{Chapters/chapter7}
+	
+	
+	
+	% ********************************** Back Matter *******************************
+	% Backmatter should be commented out, if you are using appendices after References
+	\backmatter
+	
+	% ********************************** Bibliography ******************************
+	\begin{spacing}{0.9}
+		
+		% To use the conventional natbib style referencing
+		% Bibliography style previews: http://nodonn.tipido.net/bibstyle.php
+		% Reference styles: http://sites.stat.psu.edu/~surajit/present/bib.htm
+
+            \nocite{*}
+		\bibliographystyle{apalike}
+		%\bibliographystyle{unsrt} % Use for unsorted references  
+		%\bibliographystyle{plainnat} % use this to have URLs listed in References
+		\cleardoublepage
+		\bibliography{references} % Path to your References.bib file
+		
+		
+		% If you would like to use BibLaTeX for your references, pass `custombib' as
+		% an option in the document class. The location of 'reference.bib' should be
+		% specified in the preamble.tex file in the custombib section.
+		% Comment out the lines related to natbib above and uncomment the following line.
+		
+		%\printbibliography[heading=bibintoc, title={References}]
+		
+		
+	\end{spacing}
+	
+	% ********************************** Appendices ********************************
+	
+	\begin{appendices} % Using appendices environment for more functunality
+		
+		%\include{appendix1}
+	%	\include{Appendix2/appendix2}
+		
+	\end{appendices}
+	
+	% *************************************** Index ********************************
+	\printthesisindex % If index is present
+%	
+
+\end{document}
+
