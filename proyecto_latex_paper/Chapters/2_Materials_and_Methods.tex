@@ -2,26 +2,31 @@
 
 \subsection{SAR Images}
 
-For this study, two types of datasets were used: synthetically generated images and real SAR images. The synthetic dataset was created based on the $\mathcal{G}_I^0$ distribution, which models the statistical properties of speckle noise. This allowed us to generate pairs of clean and noisy images for training the proposed models.
+For this study, two types of datasets were used: synthetically generated images and real SAR images. The synthetic dataset was created based on the $\mathcal{G}_I^0$ distribution, which models the statistical properties of speckle noise. 
+A random variable $z$ following the $\mathcal{G}_I^0$ distribution can be expressed as the product of two independent random variables:
+\begin{equation} \label{eq:zxy}
+z = x \cdot y
+\end{equation}
+where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models.
 
-The real SAR images used in this work are from the AirSAR sensor of NASA/JPL. We used images from San Francisco and Munich, shown in Figure \ref{fig:sar_images}. These images present varied textures, including urban areas, vegetation, and water bodies, which are suitable for testing the generalization capability of the despeckling filters.
+The real SAR images used in this work are from the dataset provided by \cite{vasquez2024labeled}, which contains pairs of noisy and clean images obtained through temporal averaging. An example of such a pair is shown in Figure \ref{fig:sar_images}. These images present varied textures, including urban areas, vegetation, and water bodies, which are suitable for training and testing the generalization capability of the despeckling filters.
 
 \begin{figure}[htbp]
     \centering
     \begin{minipage}{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{Images/sar_sanfran.jpg}
-        \caption{San Francisco}
-        \label{fig:sar_sanfran}
+        \includegraphics[width=\textwidth]{Images/noisy_ex.jpg}
+        \caption{Noisy SAR image.}
+        \label{fig:sar_noisy}
     \end{minipage}
     \hfill
     \begin{minipage}{0.48\textwidth}
         \centering
-        \includegraphics[width=\textwidth]{Images/sar_munich.jpg}
-        \caption{Munich}
-        \label{fig:sar_munich}
+        \includegraphics[width=\textwidth]{Images/clean_ex.jpg}
+        \caption{Clean SAR image.}
+        \label{fig:sar_clean}
     \end{minipage}
-    \caption{Real SAR images used for visual evaluation of the trained models.}
+    \caption{Example of a real SAR image pair (noisy and clean) from the dataset.}
     \label{fig:sar_images}
 \end{figure}
 
@@ -34,7 +39,7 @@ Our implementation uses a convolutional architecture. The encoder consists of a 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[height=4.5cm]{Images/red.png}
+    \includegraphics[height=3.5cm]{Images/red.png}
     \caption{Scheme of a convolutional autoencoder. The input image is progressively downsampled by the encoder to a latent representation and then upsampled by the decoder to the original dimensions.}
     \label{fig:esquema_red}
 \end{figure}
