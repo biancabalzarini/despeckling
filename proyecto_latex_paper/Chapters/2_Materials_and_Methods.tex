@@ -2,4 +2,50 @@
 
 \subsection{SAR Images}
 
+For this study, two types of datasets were used: synthetically generated images and real SAR images. The synthetic dataset was created based on the $\mathcal{G}_I^0$ distribution, which models the statistical properties of speckle noise. This allowed us to generate pairs of clean and noisy images for training the proposed models.
+
+The real SAR images used in this work are from the AirSAR sensor of NASA/JPL. We used images from San Francisco and Munich, shown in Figure \ref{fig:sar_images}. These images present varied textures, including urban areas, vegetation, and water bodies, which are suitable for testing the generalization capability of the despeckling filters.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/sar_sanfran.jpg}
+        \caption{San Francisco}
+        \label{fig:sar_sanfran}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/sar_munich.jpg}
+        \caption{Munich}
+        \label{fig:sar_munich}
+    \end{minipage}
+    \caption{Real SAR images used for visual evaluation of the trained models.}
+    \label{fig:sar_images}
+\end{figure}
+
 \subsection{Methods}
+
+\subsubsection{Autoencoder Architecture}
+The core of our despeckling method is a convolutional autoencoder. An autoencoder is a neural network designed to learn a compressed representation (encoding) of its input and then reconstruct it (decoding). The network is composed of an encoder, which maps the input image to a lower-dimensional latent space, and a decoder, which reconstructs the image from the latent representation.
+
+Our implementation uses a convolutional architecture. The encoder consists of a series of convolutional layers that apply filters to the input image, extracting hierarchical features and reducing spatial dimensions. The decoder uses transposed convolutional layers (also known as deconvolutions) to upsample the feature maps and reconstruct the image. The general structure of the autoencoder is symmetrical, as shown in Figure \ref{fig:esquema_red}. A key aspect of our training process is that the network takes a noisy image as input and is trained to reconstruct the corresponding clean (noise-free) version, which is provided as the target output. The model is trained by minimizing the Mean Squared Error (MSE) loss between the reconstructed image and the clean target image.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=4.5cm]{Images/red.png}
+    \caption{Scheme of a convolutional autoencoder. The input image is progressively downsampled by the encoder to a latent representation and then upsampled by the decoder to the original dimensions.}
+    \label{fig:esquema_red}
+\end{figure}
+
+\subsubsection{Evaluation Metrics}
+To quantitatively assess the performance of the despeckling filter, we used statistical metrics based on the multiplicative nature of speckle noise. Assuming the noisy image $z$ is the product of the clean image $x$ and the speckle noise $y$ ($z = x \cdot y$), the ratio image $I = z / \hat{x}$ (where $\hat{x}$ is the filtered image) should ideally contain only speckle noise with no remaining structural information.
+
+Based on this principle, we used two metrics:
+\begin{itemize}
+    \item \textbf{First-order statistics ($r_{\textnormal{ENL},\mu}$):} This metric evaluates the preservation of the mean and the increase in the Equivalent Number of Looks (ENL) in homogeneous areas of the image. A good filter should preserve the mean brightness while smoothing the noise, thus increasing the ENL.
+    \item \textbf{Second-order statistics ($\delta_h$):} This metric measures the amount of residual geometric information in the ratio image $I$ by analyzing the homogeneity descriptor ($h$) derived from the Gray-Level Co-occurrence Matrix (GLCM). For a perfect filter, the ratio image should have no structure, and its statistical properties should be invariant to random pixel permutations. $\delta_h$ quantifies the change in homogeneity after such permutations.
+\end{itemize}
+
+Finally, we combine these two metrics into a single figure of merit, $\mathcal{M} = r_{\textnormal{ENL},\mu} + \delta_h$, where a lower value indicates better despeckling performance.
