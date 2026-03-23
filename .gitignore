@@ -11,3 +11,12 @@ scripts/__pycache__/**
 
 # Archivos muy pesados
 notebooks/data/trained_models/imagenes_reales/config_1.pth
+
+# LaTeX compilation files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.pdf
+*.synctex.gz
