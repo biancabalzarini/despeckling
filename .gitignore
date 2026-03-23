@@ -20,3 +20,15 @@ notebooks/data/trained_models/imagenes_reales/config_1.pth
 *.out
 *.pdf
 *.synctex.gz
+*.bcf
+*-blx.bib
+*.run.xml
+*.fdb_latexmk
+*.fls
+*.toc
+*.lof
+*.lot
+*.lol
+*.nav
+*.snm
+*.vrb
