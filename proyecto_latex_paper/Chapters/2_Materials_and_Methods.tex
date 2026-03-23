@@ -9,6 +9,8 @@ z = x \cdot y
 \end{equation}
 where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models.
 
+A key concept in SAR image analysis is the 'number of looks' (L), which refers to the number of independent images of the same scene that are averaged to reduce speckle noise. A higher number of looks results in a smoother image with less noise. The 'Equivalent Number of Looks' (ENL) is a widely used metric to estimate the effectiveness of a speckle filter. It quantifies the smoothness of a homogeneous area in the filtered image. A higher ENL value indicates a greater reduction in noise and, therefore, a better filter performance.
+
 The real SAR images used in this work are from the dataset provided by \cite{vasquez2024labeled}, which contains pairs of noisy and clean images obtained through temporal averaging. An example of such a pair is shown in Figure \ref{fig:sar_images}. These images present varied textures, including urban areas, vegetation, and water bodies, which are suitable for training and testing the generalization capability of the despeckling filters.
 
 \begin{figure}[htbp]
