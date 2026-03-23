@@ -22,9 +22,12 @@
 %
 \usepackage{orcidlink}
 
-\usepackage[numbers,sort&compress]{natbib}
+\usepackage[style=apa, backend=biber]{biblatex}
 
 \setlength{\parskip}{0pt plus 0pt minus 0pt}
+
+% Add the bib resource
+\addbibresource{thebiblio.bib}
 
 \begin{document}
 %
@@ -127,7 +130,6 @@ y desempeño comparable a otros ya conocidos.
 \input{Chapters/3_Results}
 \input{Chapters/4_Conclusions}
 
-\bibliographystyle{splncs04}
-\bibliography{thebiblio}
+\printbibliography
 
 \end{document}
