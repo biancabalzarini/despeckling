@@ -1,12 +1,43 @@
 \section{Introduction}
 \label{sec:introduction}
 
-Synthetic Aperture Radar (SAR) is a highly effective remote sensing technology capable of generating high-resolution images of the Earth's surface regardless of weather or lighting conditions. This makes SAR imagery an invaluable tool for applications ranging from environmental monitoring to terrain change detection and disaster management. However, a significant drawback of SAR images is the inherent presence of speckle noise. Unlike the additive noise common in optical imagery, speckle is a multiplicative, non-Gaussian phenomenon resulting from the coherent interference of radar waves scattered by surface elements. This granular noise severely degrades the visual quality of SAR images and complicates subsequent analysis and interpretation tasks.
+Synthetic Aperture Radar (SAR) is a highly effective remote sensing technology capable of generating high-resolution
+images of the Earth's surface regardless of weather or lighting conditions. This makes SAR imagery an invaluable
+tool for applications ranging from environmental monitoring to terrain change detection and disaster management.
+However, a significant drawback of SAR images is the inherent presence of speckle noise. Unlike the additive noise
+common in optical imagery, speckle is a multiplicative, non-Gaussian phenomenon resulting from the coherent
+interference of radar waves scattered by surface elements. This granular noise severely degrades the visual quality
+of SAR images and complicates subsequent analysis and interpretation tasks.
 
-Over the years, various techniques have been proposed for speckle mitigation. Classical approaches include spatial filters such as the Lee \cite{lee1980digital} and Frost \cite{frost1982model} filters, as well as Maximum a Posteriori (MAP) estimators \cite{kuan1987adaptive}. Transform-domain methods, such as those based on wavelets \cite{zhang2017nonmodel} or Shearlets \cite{hou2012shearlet}, have also been widely utilized. While advanced algorithms like Block-Matching and 3D filtering (BM3D) \cite{parrilli2012nonlocal} are often considered the state of the art among classical methods, they still struggle to balance effective noise reduction with the preservation of fine structural details, frequently introducing blurring or incurring high computational costs.
+Over the years, various techniques have been proposed for speckle mitigation. Classical approaches include spatial
+filters such as the Lee \cite{lee1980digital} and Frost \cite{frost1982model} filters, as well as Maximum a
+Posteriori (MAP) estimators \cite{kuan1987adaptive}. Transform-domain methods, such as those based on wavelets
+\cite{zhang2017nonmodel} or Shearlets \cite{hou2012shearlet}, have also been widely utilized. While advanced
+algorithms like Block-Matching and 3D filtering (BM3D) \cite{parrilli2012nonlocal} are often considered the state of
+the art among classical methods, they still struggle to balance effective noise reduction with the preservation of
+fine structural details, frequently introducing blurring or incurring high computational costs.
 
-Recently, deep learning techniques---particularly Convolutional Neural Networks (CNNs) and Autoencoders---have revolutionized image denoising \cite{zhang2018dilated,vitale2021multiobjective,lattari2019deep,cardona2025optimization}. These models typically operate within a supervised learning framework, requiring large datasets of paired noisy and clean images to learn an effective mapping. Since acquiring real, perfectly noise-free SAR images is practically impossible, researchers must rely on synthetic data generation. This involves artificially injecting simulated speckle noise into clean optical or simulated images to create the necessary training pairs. Alternatively, large series of temporal images can be averaged to approximate a clean ground truth \cite{vasquez2024labeled}, but this data is scarce and hard to process.
+Recently, deep learning techniques---particularly Convolutional Neural Networks (CNNs) and Autoencoders---have
+revolutionized image denoising \cite{zhang2018dilated,vitale2021multiobjective,lattari2019deep,cardona2025optimization}.
+These models typically operate within a supervised learning framework, requiring large datasets of paired noisy and
+clean images to learn an effective mapping. Since acquiring real, perfectly noise-free SAR images is practically
+impossible, researchers must rely on synthetic data generation. This involves artificially injecting simulated
+speckle noise into clean optical or simulated images to create the necessary training pairs. Alternatively, large
+series of temporal images can be averaged to approximate a clean ground truth \cite{vasquez2024labeled}, but this
+data is scarce and hard to process.
 
-The efficacy of supervised deep learning models is heavily dependent on the realism of the simulated speckle noise. Existing literature often employs relatively simple statistical models for noise generation, such as the Gamma or Rayleigh distributions. While computationally convenient, these models are limited; for instance, the Rayleigh distribution is only statistically accurate for specific homogeneous areas like pasturelands \cite{lattari2019deep}. They fail to adequately capture the complex statistical properties of actual speckle across heterogeneous terrains, such as urban environments or dense vegetation, thereby limiting the generalization capability of the trained networks.
+The efficacy of supervised deep learning models is heavily dependent on the realism of the simulated speckle noise.
+Existing literature often employs relatively simple statistical models for noise generation, such as the Gamma or
+Rayleigh distributions. While computationally convenient, these models are limited; for instance, the Rayleigh
+distribution is only statistically accurate for specific homogeneous areas like pasturelands \cite{lattari2019deep}.
+They fail to adequately capture the complex statistical properties of actual speckle across heterogeneous terrains,
+such as urban environments or dense vegetation, thereby limiting the generalization capability of the trained
+networks.
 
-To address this gap, this paper proposes the use of the \( \mathcal{G}_I^0 \) distribution for simulating speckle noise. The \( \mathcal{G}_I^0 \) distribution is renowned for its flexibility and robustness, accurately modeling speckle across a wide variety of surface roughness levels and heterogeneous clutter \cite{originalGI0}. Despite its proven accuracy in the statistical modeling of SAR data, its integration into the synthetic data generation pipeline for training deep learning despeckling models remains relatively unexplored. This work investigates how incorporating the \( \mathcal{G}_I^0 \) distribution for dataset preparation can enhance the training quality, leading to more robust and generalizable convolutional autoencoder models for SAR image despeckling.
+To address this gap, this paper proposes the use of the \( \mathcal{G}_I^0 \) distribution for simulating speckle
+noise. The \( \mathcal{G}_I^0 \) distribution is renowned for its flexibility and robustness, accurately modeling
+speckle across a wide variety of surface roughness levels and heterogeneous clutter \cite{originalGI0}. Despite its
+proven accuracy in the statistical modeling of SAR data, its integration into the synthetic data generation pipeline
+for training deep learning despeckling models remains relatively unexplored. This work investigates how
+incorporating the \( \mathcal{G}_I^0 \) distribution for dataset preparation can enhance the training quality,
+leading to more robust and generalizable convolutional autoencoder models for SAR image despeckling.
