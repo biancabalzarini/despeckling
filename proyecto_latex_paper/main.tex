@@ -10,7 +10,7 @@
 % Other font encondings may result in incorrect characters.
 %
 \usepackage{graphicx}
-\usepackage{microtype}
+\usepackage[expansion=false]{microtype}
 % Used for displaying a sample figure. If possible, figure files should
 % be included in EPS format.
 %
@@ -22,8 +22,7 @@
 %
 \usepackage{orcidlink}
 
-\usepackage[style=apa]{biblatex} % <- AGREGAR ESTA LÍNEA
-\addbibresource{thebiblio.bib} % <- AGREGAR ESTA LÍNEA
+\usepackage[numbers,sort&compress]{natbib}
 \begin{document}
 %
 % ENGLISH VERSION
@@ -69,6 +68,7 @@ Models trained on synthetic data showed good performance on synthetic test image
 \input{Chapters/3_Results}
 \input{Chapters/4_Conclusions}
 
-\printbibliography
+\bibliographystyle{splncs04}
+\bibliography{thebiblio}
 
 \end{document}
