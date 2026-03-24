@@ -122,16 +122,16 @@ B4 & Fully Convolutional (4 layers) & 1500 & $128\times128$ & 0.01014 & 0.778 & 
 
 Model B5 emerged as the top-performing architecture, achieving the lowest test MSE and a strong statistical figure of merit ($\mathcal{M}$). The visual results, shown in Figure \ref{fig:sar_real_filtered_B5}, confirm a substantial improvement over models trained on synthetic data. The filtered image is significantly cleaner, with well-defined edges and textures that are much more consistent with the clean target image. This demonstrates the clear superiority of training directly on real data for this task. Furthermore, visual inspection of the ratio images ($I = z / \hat{x}$) for the B5 model corroborated the quantitative statistical metrics. These ratio images lacked evident geometric structures or fine textures, behaving essentially as pure random noise (as illustrated in Figure \ref{fig:ratio_image_B5}). This confirms that the B5 autoencoder successfully extracted the speckle component without undesirably filtering out the underlying physical structures of the scene.
 
-\begin{figure}[htbp]
+\begin{figure}[!tb]
     \centering
-    \includegraphics[width=\textwidth]{Images/B5_imej_1.png}
+    \includegraphics[width=0.85\textwidth]{Images/B5_imej_1.png}
     \caption{Result of the best-performing model (B5), trained on real SAR data. Left: noisy input. Center: clean target. Right: filtered output. The model achieves excellent noise reduction while preserving structural detail.}
     \label{fig:sar_real_filtered_B5}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[!tb]
     \centering
-    \includegraphics[width=0.95\textwidth]{Images/imratio_imreales_config5.png}
+    \includegraphics[width=0.85\textwidth]{Images/imratio_imreales_config5.png}
     \caption{Visual inspection of the ratio image for the B5 model. Left: Original noisy SAR image. Center: Filtered output. Right: Ratio image ($I = z / \hat{x}$). The lack of prominent geometric structure in the ratio image indicates successful speckle removal.}
     \label{fig:ratio_image_B5}
 \end{figure}
@@ -139,7 +139,7 @@ Model B5 emerged as the top-performing architecture, achieving the lowest test M
 \subsection{Statistical Evaluation and Comparative Analysis}
 A final comparative analysis was performed to benchmark our models against established methods. The Lee filter, a classic adaptive filter that uses local image statistics to estimate the clean signal, was used as a baseline. As shown in Table \ref{tab:stat_results_A}, the Lee filter achieved a figure of merit $\mathcal{M}=5.05$ on our synthetic dataset with its optimal window size (3x3). In contrast, our best autoencoder configuration (A24) achieved $\mathcal{M}=2.58$, demonstrating a clear quantitative improvement. It is particularly noteworthy that the A24 model features an atypical architecture: it employs a transposed convolution within the encoder, deviating from traditional symmetric compression principles. The fact that this unconventional design achieved the best statistical preservation of speckle properties opens an interesting avenue for future research beyond standard symmetrical autoencoders. This holds true even for the Lee filter's optimal window size (3x3), confirming the viability and superior performance of the deep learning approach.
 
-\begin{table}[htbp]
+\begin{table}[!tb]
 \centering
 \caption{Statistical evaluation for a selection of models trained on synthetic data, compared to the Lee filter. Lower values are better.}
 \label{tab:stat_results_A}
