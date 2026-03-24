@@ -43,11 +43,88 @@ Our implementation uses a convolutional architecture. The encoder consists of a 
     \centering
     \includegraphics[height=3.5cm]{Images/red.png}
     \caption{Scheme of a convolutional autoencoder. The input image is progressively downsampled by the encoder to a latent representation and then upsampled by the decoder to the original dimensions.}
-    \label{fig:esquema_red}
-\end{figure}
-
-\subsubsection{Evaluation Metrics}
-To quantitatively assess the performance of the despeckling filter, we used statistical metrics based on the multiplicative nature of speckle noise. Assuming the noisy image $z$ is the product of the clean image $x$ and the speckle noise $y$ ($z = x \cdot y$), the ratio image $I = z / \hat{x}$ (where $\hat{x}$ is the filtered image) should ideally contain only speckle noise with no remaining structural information.
+    	\label{fig:esquema_red}
+    \end{figure}
+    
+    \subsubsection{Tested Architectures}
+    To identify an optimal model, we designed and tested 25 distinct autoencoder configurations. The key hyperparameters for each configuration are summarized in Table \ref{tab:autoencoder_configs}. This systematic approach allowed us to explore the impact of network depth, latent space dimensionality, and training duration on despeckling performance.
+    
+    \begin{table}[htbp]
+    \centering
+    \caption{Summary of all tested convolutional autoencoder configurations.}
+    \label{tab:autoencoder_configs}
+    \scriptsize
+    \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    \textbf{Config.} & \textbf{Conv Layers} & \textbf{Encoding Dim} & \textbf{Epochs} & \textbf{Samples} & \textbf{LR} & \textbf{Scheduler} \\
+    \hline
+    \hline
+    \multicolumn{7}{|c|}{\textbf{Base and Reference Architectures}} \\
+    \hline
+    A1 & 1+MaxPool & 32 & 5 & 50K & 0.001 & None \\
+    A2 & 1 & 32 & 30 & 50K & 0.001 & ELR \\
+    A3 & 2+MaxPool & 512 & 500 & 50K & 0.001 & ELR \\
+    \hline
+    \hline
+    \multicolumn{7}{|c|}{\textbf{Depth Variations}} \\
+    \hline
+    \multicolumn{7}{|c|}{\textit{1 Convolutional Layer}} \\
+    \hline
+    A4 & 1 & 32 & 500 & 50K & 0.001 & None \\
+    A5 & 1 & 32 & 70 & 50K & 0.001 & None \\
+    A6 & 1 & 32 & 500 & 50K & 0.0005 & None \\
+    \hline
+    \multicolumn{7}{|c|}{\textit{2 Convolutional Layers}} \\
+    \hline
+    A7 & 2 & 128 & 500 & 50K & 0.001 & ELR \\
+    A8 & 2 & 128 & 70 & 50K & 0.001 & ELR \\
+    A9 & 2 & 256 & 500 & 50K & 0.001 & ELR \\
+    A10 & 2 & 256 & 70 & 50K & 0.001 & ELR \\
+    A11 & 2 & 64 & 100 & 100K & 0.001 & RLROP \\
+    A12 & 2 & 64 & 40 & 100K & 0.001 & RLROP \\
+    \hline
+    \multicolumn{7}{|c|}{\textit{3+ Convolutional Layers}} \\
+    \hline
+    A13 & 3 & 128 & 500 & 50K & 0.001 & ELR \\
+    A14 & 3 & 128 & 70 & 50K & 0.001 & ELR \\
+    A15 & 3 & 256 & 500 & 50K & 0.001 & ELR \\
+    A16 & 3 & 256 & 70 & 50K & 0.001 & ELR \\
+    A17 & 3+Dense & 128 & 500 & 50K & 0.001 & None \\
+    A18 & 3+Dense & 128 & 70 & 50K & 0.001 & None \\
+    A19 & 3 & 64 & 100 & 100K & 0.001 & RLROP \\
+    A20 & 4+Dense & 64 & 100 & 100K & 0.001 & RLROP \\
+    \hline
+    \hline
+    \multicolumn{7}{|c|}{\textbf{Special Training Runs}} \\
+    \hline
+    A21 & 1 & 32 & 15 & 50K & 0.001 & ELR \\
+    A22 & 1 & 32 & 500 & 50K & 0.001 & ELR \\
+    A23 & 1 & 32 & 500 & 100K & 0.001 & ELR \\
+    \hline
+    \hline
+    \multicolumn{7}{|c|}{\textbf{Experimental Architectures}} \\
+    \hline
+    A24 & Conv2DT* & 32 & 20 & 50K & 0.001 & None \\
+    A25 & Conv2DT* & 32 & 11 & 50K & 0.001 & None \\
+    \hline
+    \end{tabular}
+    
+    \begin{flushleft}
+    \footnotesize
+    \textbf{Notes:}
+    \begin{itemize}
+        \item \textbf{Encoding Dim}: Smallest network dimension (bottleneck layer).
+        \item \textbf{Samples}: Size of the training dataset.
+        \item \textbf{LR}: Learning Rate.
+        \item \textbf{ELR}: Exponential Learning Rate ($\gamma=0.95$).
+        \item \textbf{RLROP}: Reduce Learning Rate on Plateau ($factor=0.8$).
+        \item \textbf{Conv2DT*}: Uses transposed convolution in the encoder (atypical architecture).
+        \item All models use Adam optimizer, MSE loss, a batch size of 64, ReLU activation for hidden layers, and Sigmoid for the output layer.
+    \end{itemize}
+    \end{flushleft}
+    \end{table}
+    
+    \subsubsection{Evaluation Metrics}To quantitatively assess the performance of the despeckling filter, we used statistical metrics based on the multiplicative nature of speckle noise. Assuming the noisy image $z$ is the product of the clean image $x$ and the speckle noise $y$ ($z = x \cdot y$), the ratio image $I = z / \hat{x}$ (where $\hat{x}$ is the filtered image) should ideally contain only speckle noise with no remaining structural information.
 
 Based on this principle, we used two metrics:
 \begin{itemize}
