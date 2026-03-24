@@ -1,19 +1,6 @@
-\section{Conclusions and Future Work}
+\section{Conclusions}
 \label{chap:conclusions}
 
-This work explored the use of autoencoders for speckle noise reduction in SAR images, presenting original contributions in both the training data generation methodology and the development of flexible tools for experimenting with different architectures.
+In this work, we explored the use of autoencoders for speckle noise reduction in SAR images, presenting original contributions in both the training data generation methodology and the development of flexible tools for experimenting with different architectures. We demonstrated that it is possible to use the $\mathcal{G}_I^0$ distribution to generate synthetic training data for training autoencoders capable of filtering speckle noise, although with limitations in their generalization to real images. Our experiments consistently reveal that deeper and more complex architectures yield better results, suggesting that the problem benefits from deep representations. The comparison with traditional filtering methods validates our approach, showing that autoencoders can achieve comparable performance levels while offering advantages in terms of flexibility and optimization potential. However, the superior performance observed with models trained directly on real data underscores the importance of having training data that is representative of the application domain.
 
-\section{Conclusions}
-
-We have demonstrated that it is possible to use the $\mathcal{G}_I^0$ distribution to generate synthetic training data for training autoencoders capable of filtering speckle noise, although with limitations in their generalization to real images. This approach represents a novel contribution to the field and opens new lines of research on the generation of more sophisticated synthetic data.
-
-Our experiments consistently reveal that deeper and more complex architectures yield better results, suggesting that the problem benefits from deep representations and that there is potential for improvement through the use of even more sophisticated architectures. The absence of overfitting in these complex architectures is an encouraging result, suggesting that the approach has significant room for improvement.
-
-The comparison with traditional filtering methods validates our approach, showing that autoencoders can achieve comparable performance levels while offering advantages in terms of flexibility and optimization potential. However, the superior performance observed with models trained directly on real data underscores the importance of having training data that is representative of the application domain.
-
-\section{Future Work}
-
-Future research will focus on exploring more sophisticated architectures, such as U-Net and attention-based models, to enhance detail preservation. We also plan to refine synthetic data generation techniques and investigate hybrid training schemes that combine synthetic and real data to improve model generalization. A rigorous comparison with other state-of-the-art methods is also a priority. Finally, we will extend the proposed methodology to more complex data, including polarimetric and multi-temporal SAR images, to assess its performance in a broader range of applications.
-
-
-In conclusion, this work establishes a solid foundation for the use of autoencoders in speckle noise reduction in SAR images and demonstrates the potential of combining statistical generative models with deep learning techniques to address classic problems in radar image processing.
+Future research will focus on exploring more sophisticated architectures, such as U-Net and attention-based models, to enhance detail preservation. We also plan to refine synthetic data generation techniques and investigate hybrid training schemes that combine synthetic and real data to improve model generalization. A rigorous comparison with other state-of-the-art methods is also a priority. Finally, we will extend the proposed methodology to more complex data, including polarimetric and multi-temporal SAR images, to assess its performance in a broader range of applications. In conclusion, this work establishes a solid foundation for the use of autoencoders in speckle noise reduction in SAR images and demonstrates the potential of combining statistical generative models with deep learning techniques to address classic problems in radar image processing.
