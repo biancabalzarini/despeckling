@@ -9,13 +9,7 @@ common in optical imagery, speckle is a multiplicative, non-Gaussian phenomenon 
 interference of radar waves scattered by surface elements. This granular noise severely degrades the visual quality
 of SAR images and complicates subsequent analysis and interpretation tasks.
 
-Over the years, various techniques have been proposed for speckle mitigation. Classical approaches include spatial
-filters such as the Lee \parencite{lee1980digital} and Frost \parencite{frost1982model} filters, as well as Maximum a
-Posteriori (MAP) estimators \parencite{kuan1987adaptive}. Transform-domain methods, such as those based on wavelets
-\parencite{zhang2017nonmodel} or Shearlets \parencite{hou2012shearlet}, have also been widely utilized. While advanced
-algorithms like Block-Matching and 3D filtering (BM3D) \parencite{parrilli2012nonlocal} are often considered the state of
-the art among classical methods, they still struggle to balance effective noise reduction with the preservation of
-fine structural details, frequently introducing blurring or incurring high computational costs.
+Over the years, various techniques have been proposed for speckle mitigation. Classical approaches range from adaptive spatial filters (e.g., Lee, Frost) \parencite{lee1980digital, frost1982model} to transform-domain methods (e.g., wavelets) \parencite{zhang2017nonmodel} and non-local algorithms like SAR-BM3D \parencite{parrilli2012nonlocal}. However, these methods often struggle to balance noise reduction with detail preservation, frequently introducing blurring artifacts or incurring high computational costs, which has motivated the shift towards data-driven deep learning approaches.
 
 Recently, deep learning techniques---particularly Convolutional Neural Networks (CNNs) and Autoencoders---have
 revolutionized image denoising \parencite{zhang2018dilated,lattari2019deep,vitale2021multiobjective,cardona2025optimization}.

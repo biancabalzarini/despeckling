@@ -47,7 +47,7 @@ The autoencoder demonstrates a remarkable ability to reduce speckle and reconstr
 \subsection{Performance on Real SAR Images}
 To assess the generalization capabilities of models trained on synthetic data, they were applied to real SAR images. The results, shown in Figure \ref{fig:sar_real_comparison}, reveal a critical difference in performance based on the training data strategy.
 
-The best-performing model on synthetic data, A15, shows a critical limitation when applied to a real image (Figure \ref{fig:sar_real_comparison}a). While it effectively reduces speckle, it also superimposes the square partition structure learned from the training data onto the real image. This is not strictly overfitting; rather, the model learned the rules of the synthetic images too well and failed to generalize to images without this structure.
+The best-performing model on synthetic data, A15, shows a critical limitation when applied to a real image (Figure \ref{fig:sar_real_comparison}a). While it effectively reduces speckle, it also superimposes the square partition structure learned from the training data onto the real image. This reveals a critical limitation: even with a sophisticated statistical model like $\mathcal{G}_I^0$, the simplistic spatial structure of the training data (i.e., the quadrant partitions) was learned by the model, preventing its generalization. This highlights that structural variety in the training dataset is as crucial as the statistical accuracy of the noise model.
 
 In contrast, model A20 was trained on a mixed dataset of synthetic images with different partition granularities. As shown in Figure \ref{fig:sar_real_comparison}b, this strategy yielded significantly better generalization. Although its MSE on synthetic data was higher, the A20 model does not impose a rigid quadrant structure and preserves the natural texture of the real SAR image more faithfully. This highlights a key insight: a lower error on a narrow synthetic test set does not guarantee superior performance on real-world data, and training data variety is crucial for robust generalization.
 
@@ -102,7 +102,7 @@ B4 & 0.01014 & 0.778 & 27.388 & 28.166 \\
 \end{figure}
 
 \subsection{Statistical Evaluation and Comparative Analysis}
-A final comparative analysis was performed to benchmark our models against established methods. The Lee filter, a classic adaptive filter that uses local image statistics to estimate the clean signal, was used as a baseline. For the models trained on synthetic data, Table \ref{tab:stat_results_A} shows that our best autoencoder configurations (e.g., A24, A2) significantly outperform the Lee filter in terms of the statistical merit $\mathcal{M}$. This holds true even for the Lee filter's optimal window size (3x3), confirming the viability and superior performance of the deep learning approach.
+A final comparative analysis was performed to benchmark our models against established methods. The Lee filter, a classic adaptive filter that uses local image statistics to estimate the clean signal, was used as a baseline. As shown in Table \ref{tab:stat_results_A}, the Lee filter achieved a figure of merit $\mathcal{M}=5.05$ on our synthetic dataset with its optimal window size (3x3). In contrast, our best autoencoder configuration (A24) achieved $\mathcal{M}=2.58$, demonstrating a clear quantitative improvement. This holds true even for the Lee filter's optimal window size (3x3), confirming the viability and superior performance of the deep learning approach.
 
 \begin{table}[htbp]
 \centering

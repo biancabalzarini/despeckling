@@ -7,7 +7,7 @@ A random variable $z$ following the $\mathcal{G}_I^0$ distribution can be expres
 \begin{equation} \label{eq:zxy}
 z = x \cdot y
 \end{equation}
-where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models.
+where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models. To create a robust training dataset, we generated synthetic images structured in quadrants, where each quadrant simulated a different surface texture by assigning a randomly chosen value for the $\alpha$ parameter. This approach forces the model to learn to filter noise in the presence of heterogeneous textures.
 
 A key concept in SAR image analysis is the 'number of looks' (L), which refers to the number of independent images of the same scene that are averaged to reduce speckle noise. A higher number of looks results in a smoother image with less noise. The 'Equivalent Number of Looks' (ENL) is a widely used metric to estimate the effectiveness of a speckle filter. It quantifies the smoothness of a homogeneous area in the filtered image. A higher ENL value indicates a greater reduction in noise and, therefore, a better filter performance.
 
@@ -125,10 +125,19 @@ Our implementation uses a convolutional architecture. The encoder consists of a 
     
     \subsubsection{Evaluation Metrics}To quantitatively assess the performance of the despeckling filter, we used statistical metrics based on the multiplicative nature of speckle noise. Assuming the noisy image $z$ is the product of the clean image $x$ and the speckle noise $y$ ($z = x \cdot y$), the ratio image $I = z / \hat{x}$ (where $\hat{x}$ is the filtered image) should ideally contain only speckle noise with no remaining structural information.
 
-Based on this principle, we used two metrics:
+Based on this principle, we used two metrics proposed by \cite{gomez2017unassisted}:
 \begin{itemize}
-    \item \textbf{First-order statistics ($r_{\textnormal{ENL},\mu}$):} This metric evaluates the preservation of the mean and the increase in the Equivalent Number of Looks (ENL) in homogeneous areas of the image. A good filter should preserve the mean brightness while smoothing the noise, thus increasing the ENL.
-    \item \textbf{Second-order statistics ($\delta_h$):} This metric measures the amount of residual geometric information in the ratio image $I$ by analyzing the homogeneity descriptor ($h$) derived from the Gray-Level Co-occurrence Matrix (GLCM). For a perfect filter, the ratio image should have no structure, and its statistical properties should be invariant to random pixel permutations. $\delta_h$ quantifies the change in homogeneity after such permutations.
+    \item \textbf{First-order statistics ($r_{\textnormal{ENL},\mu}$):} This metric evaluates the preservation of the mean ($\mu_I$) and the Equivalent Number of Looks (ENL) in N homogeneous regions of the ratio image. It is defined as:
+    \begin{equation}
+        r_{\text{ENL},\mu} = \frac{1}{2N}\sum_{i=1}^{N} \left( \frac{\left|\text{ENL}_z(i) - \text{ENL}_I(i)\right|}{\text{ENL}_z(i)} + \left|1-\mu_I(i)\right| \right).
+    \end{equation}
+    A good filter should yield a ratio image with a mean close to 1 and preserve the ENL, resulting in a low $r_{\text{ENL},\mu}$.
+
+    \item \textbf{Second-order statistics ($\delta_h$):} This metric measures residual geometric structure in the ratio image. It uses the homogeneity descriptor ($h$) from the Gray-Level Co-occurrence Matrix (GLCM). The metric $\delta_h$ calculates the percentage variation of the homogeneity of the original ratio image ($h_0$) compared to the average homogeneity of several randomly permuted versions of it ($\bar{h}_m$):
+    \begin{equation}
+        \delta_h = 100 \cdot \left| 1 - \frac{\bar{h}_m}{h_0} \right|.
+    \end{equation}
+    For a structureless ratio image, this value should be close to zero.
 \end{itemize}
 
 Finally, we combine these two metrics into a single figure of merit, $\mathcal{M} = r_{\textnormal{ENL},\mu} + \delta_h$, where a lower value indicates better despeckling performance.
