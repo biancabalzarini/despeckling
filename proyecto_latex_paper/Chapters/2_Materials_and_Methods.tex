@@ -126,21 +126,18 @@ Our implementation uses a convolutional architecture. The encoder consists of a 
     \end{table}
     
     \subsubsection{Evaluation Metrics}
-To quantitatively assess the performance of the despeckling filter, we used statistical metrics based on the multiplicative nature of speckle noise. Assuming the noisy image $z$ is the product of the clean image $x$ and the speckle noise $y$ ($z = x \cdot y$), the ratio image $I = z / \hat{x}$ (where $\hat{x}$ is the filtered image) should ideally contain only speckle noise with no remaining structural information.
+To quantitatively assess the performance of the despeckling filter, we used statistical metrics based on the multiplicative nature of speckle noise. Assuming the noisy image $z$ is the product of the clean image $x$ and the speckle noise $y$ ($z = x \cdot y$), the ratio image $I = z / \hat{x}$ (where $\hat{x}$ is the filtered image) should ideally contain only speckle noise with no remaining structural information. Based on this principle, we used two metrics proposed by \cite{gomez2017unassisted}.
 
-Based on this principle, we used two metrics proposed by \cite{gomez2017unassisted}:
-\begin{itemize}
-    \item \textbf{First-order statistics ($r_{\textnormal{ENL},\mu}$):} This metric evaluates the preservation of the mean and the level of smoothness in homogeneous regions. It is based on two conditions: the mean of the ratio image $\mu_I$ should be close to 1, and the filter should increase smoothness. Smoothness is measured by the Equivalent Number of Looks ($\text{ENL} = (\mu/\sigma)^2$), where $\mu$ and $\sigma$ are the mean and standard deviation of a homogeneous area. The metric combines these two aspects for $N$ selected homogeneous regions:
-    \begin{equation}
-        r_{\text{ENL},\mu} = \frac{1}{2N}\sum_{i=1}^{N} \left( \frac{\left|\text{ENL}_z(i) - \text{ENL}_I(i)\right|}{\text{ENL}_z(i)} + \left|1-\mu_I(i)\right| \right).
-    \end{equation}
-    A low $r_{\text{ENL},\mu}$ indicates that the filter successfully removes noise while preserving the average brightness.
+The first metric, focused on first-order statistics ($r_{\textnormal{ENL},\mu}$), evaluates the preservation of the mean and the level of smoothness in homogeneous regions. It is based on two conditions: the mean of the ratio image $\mu_I$ should be close to 1, and the filter should increase smoothness. Smoothness is measured by the Equivalent Number of Looks ($\text{ENL} = (\mu/\sigma)^2$), where $\mu$ and $\sigma$ are the mean and standard deviation of a homogeneous area. The metric combines these two aspects for $N$ selected homogeneous regions:
+\begin{equation}
+    r_{\text{ENL},\mu} = \frac{1}{2N}\sum_{i=1}^{N} \left( \frac{\left|\text{ENL}_z(i) - \text{ENL}_I(i)\right|}{\text{ENL}_z(i)} + \left|1-\mu_I(i)\right| \right).
+\end{equation}
+A low $r_{\text{ENL},\mu}$ indicates that the filter successfully removes noise while preserving the average brightness.
 
-    \item \textbf{Second-order statistics ($\delta_h$):} This metric quantifies the amount of residual geometric structure in the ratio image by testing its texture properties' invariance to random permutations. An ideal ratio image, being pure noise, should have texture properties that do not change significantly when its pixels are randomly shuffled. This is measured using the homogeneity descriptor ($h$) from the Gray-Level Co-occurrence Matrix (GLCM). The metric $\delta_h$ calculates the percentage variation between the homogeneity of the original ratio image ($h_0$) and the average homogeneity of several randomly permuted versions of it ($\bar{h}_m$):
-    \begin{equation}
-        \delta_h = 100 \cdot \left| 1 - \frac{\bar{h}_m}{h_0} \right|.
-    \end{equation}
-    A value close to zero implies that no significant geometric information remains in the ratio image, indicating a successful filtering.
-\end{itemize}
+The second metric, for second-order statistics ($\delta_h$), quantifies the amount of residual geometric structure in the ratio image by testing its texture properties' invariance to random permutations. An ideal ratio image, being pure noise, should have texture properties that do not change significantly when its pixels are randomly shuffled. This is measured using the homogeneity descriptor ($h$) from the Gray-Level Co-occurrence Matrix (GLCM). The metric $\delta_h$ calculates the percentage variation between the homogeneity of the original ratio image ($h_0$) and the average homogeneity of several randomly permuted versions of it ($\bar{h}_m$):
+\begin{equation}
+    \delta_h = 100 \cdot \left| 1 - \frac{\bar{h}_m}{h_0} \right|.
+\end{equation}
+A value close to zero implies that no significant geometric information remains in the ratio image, indicating a successful filtering.
 
 Finally, we combine these two metrics into a single figure of merit, $\mathcal{M} = r_{\textnormal{ENL},\mu} + \delta_h$, where a lower value indicates better despeckling performance.
