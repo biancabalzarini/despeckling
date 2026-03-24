@@ -45,15 +45,15 @@ The autoencoder demonstrates a remarkable ability to reduce speckle and reconstr
 \end{figure}
 
 \subsection{Performance on Real SAR Images}
-To assess the generalization capabilities of our approach, the best model (A15) was applied to real SAR images. Figure \ref{fig:sar_munich_filtered} shows the result on a complex urban scene of Munich.
+To assess the generalization capabilities of our approach, the best-performing model (A15) was applied to a real SAR image. The result, shown in Figure \ref{fig:sar_real_filtered}, reveals a critical limitation of training exclusively on the synthetic dataset.
 
-The filter successfully reduces a significant amount of the visible speckle, especially in smoother regions like parks or large rooftops. However, the model's limitations become apparent. Having been trained exclusively on simple, artificially generated quadrant images, the autoencoder did not learn the complex textures and structures inherent to real-world SAR data. As a result, it tends to over-smooth fine details and can sometimes create artifacts that do not correspond to the underlying scene. This highlights a key trade-off: while synthetic data allows for controlled training and evaluation, it may not equip the model with the robustness needed for the variability of real-world scenarios.
+While the model effectively reduces speckle and averages the gray levels within regions, it also superimposes the square partition structure it learned from the training data onto the real image. This is not strictly overfitting, as the model is correctly applying what it learned; rather, it highlights that the model learned the "rules" of the synthetic images too well, including their artificial boundaries. This demonstrates a failure to generalize to images that do not share this specific structure. Although the model respects the general brightness of the original image (darker areas correspond to darker quadrants), its practical utility is limited by these learned artifacts. This finding motivated the subsequent experiments with models trained directly on real SAR images.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=0.7\textwidth]{Images/sar_munich.jpg}
-    \caption{Application of the A15 filter to the original real SAR image of Munich (shown). On applying the filter, speckle is visibly reduced, particularly in homogeneous regions. However, as the model was trained on synthetic data, it tends to over-smooth complex textures and fine details present in the real scene.}
-    \label{fig:sar_munich_filtered}
+    \includegraphics[width=0.7\textwidth]{Images/realimages_A15.png}
+    \caption{Application of the A15 model to a real SAR image. Left: original image. Right: filtered result. The model imposes the square quadrant structure learned from the synthetic training data.}
+    \label{fig:sar_real_filtered}
 \end{figure}
 
 \subsection{Statistical Evaluation and Comparative Analysis}
