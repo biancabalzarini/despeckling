@@ -47,8 +47,7 @@ Our implementation uses a convolutional architecture. The encoder consists of a 
     \end{figure}
     
     \subsubsection{Tested Architectures}
-    To identify an optimal model, we designed and tested 25 distinct autoencoder configurations. The key hyperparameters for each configuration are summarized in Table \ref{tab:autoencoder_configs}. This systematic approach allowed us to explore the impact of network depth, latent space dimensionality, and training duration on despeckling performance.
-    
+    To facilitate rapid experimentation, we developed a training framework driven by configuration files, which allowed for testing numerous architectures without modifying the source code. A key feature of this framework was its ability to automatically validate the dimensional consistency of the network layers, ensuring that all configured architectures were viable. Using this system, we designed and tested 25 distinct autoencoder configurations to identify an optimal model. The key hyperparameters for each configuration are summarized in Table \ref{tab:autoencoder_configs}. This systematic approach allowed us to explore the impact of network depth, latent space dimensionality, and training duration on despeckling performance.    
     \begin{table}[htbp]
     \centering
     \caption{Summary of all tested convolutional autoencoder configurations.}
