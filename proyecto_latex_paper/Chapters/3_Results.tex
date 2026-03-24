@@ -109,11 +109,11 @@ The limitations of synthetic data led to a second phase of experiments using a d
 \hline
 \textbf{Config.} & \textbf{\begin{tabular}{@{}c@{}}Architecture \\ Type\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Encoding \\ Dim.\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Image \\ Size\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Test \\ MSE\end{tabular}} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
 \hline
-B1 & \begin{tabular}{@{}c@{}}Hybrid \\ (Conv + Dense)\end{tabular} & 1600 & $512\times512$ & 0.03217 & 0.159 & 49.346 & 49.505 \\
-B2 & \begin{tabular}{@{}c@{}}Fully Convolutional \\ (5 layers)\end{tabular} & 1500 & $256\times256$ & 0.00905 & 0.487 & 30.591 & 31.078 \\
-B3 & \begin{tabular}{@{}c@{}}Fully Convolutional \\ (6 layers)\end{tabular} & 1500 & $256\times256$ & 0.00907 & 0.298 & 30.721 & 31.019 \\
-B4 & \begin{tabular}{@{}c@{}}Fully Convolutional \\ (4 layers)\end{tabular} & 1500 & $128\times128$ & 0.01014 & 0.778 & 27.388 & 28.166 \\
-\textbf{B5} & \begin{tabular}{@{}c@{}}Hybrid \\ (Conv + Pooling)\end{tabular} & 1500 & $256\times256$ & \textbf{0.00887} & \textbf{0.540} & \textbf{29.319} & \textbf{29.859} \\
+B1 & Hybrid (Conv + Dense) & 1600 & $512\times512$ & 0.03217 & 0.159 & 49.346 & 49.505 \\
+B2 & Fully Convolutional (5 layers) & 1500 & $256\times256$ & 0.00905 & 0.487 & 30.591 & 31.078 \\
+B3 & Fully Convolutional (6 layers) & 1500 & $256\times256$ & 0.00907 & 0.298 & 30.721 & 31.019 \\
+B4 & Fully Convolutional (4 layers) & 1500 & $128\times128$ & 0.01014 & 0.778 & 27.388 & 28.166 \\
+\textbf{B5} & Hybrid (Conv + Pooling) & 1500 & $256\times256$ & \textbf{0.00887} & \textbf{0.540} & \textbf{29.319} & \textbf{29.859} \\
 \hline
 \end{tabular}
 \end{table}
