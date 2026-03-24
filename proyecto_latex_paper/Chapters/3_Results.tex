@@ -96,49 +96,29 @@ In contrast, model A20 was trained on a mixed dataset of synthetic images with d
 \end{figure}
 
 \subsection{Performance of Models Trained on Real SAR Data}
-The limitations of synthetic data led to a second phase of experiments using a dataset of real SAR image pairs for training. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task, as detailed in Table \ref{tab:real_architectures}. The performance of these models is summarized in Table \ref{tab:real_models_results}.
-
-\begin{table}[htbp]
-	\centering
-	\caption{Architectures designed for training with real SAR images.}
-	\label{tab:real_architectures}
-	\vspace{3mm}
-	\scriptsize
-	\renewcommand{\arraystretch}{1.15}
-	\begin{tabular}{|c|c|c|c|}
-		\hline
-		\textbf{Config.} & \textbf{Architecture Type} & \textbf{Encoding Dim.} & \textbf{Image Size} \\
-		\hline
-		B1 & Hybrid (Conv + Dense) & 1600 & $512\times512$ \\
-		B2 & Fully Convolutional (5 layers) & 1500 & $256\times256$ \\
-		B3 & Fully Convolutional (6 layers) & 1500 & $256\times256$ \\
-		B4 & Fully Convolutional (4 layers) & 1500 & $128\times128$ \\
-		B5 & Hybrid (Conv + Pooling) & 1500 & $256\times256$ \\
-		\hline
-	\end{tabular}
-\end{table}
-
-Model B5 emerged as the top-performing architecture, achieving the lowest test MSE and a strong statistical figure of merit ($\mathcal{M}$). The visual results, shown in Figure \ref{fig:sar_real_filtered_B5}, confirm a substantial improvement over models trained on synthetic data. The filtered image is significantly cleaner, with well-defined edges and textures that are much more consistent with the clean target image. This demonstrates the clear superiority of training directly on real data for this task.
+The limitations of synthetic data led to a second phase of experiments using a dataset of real SAR image pairs for training. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task. Their architectures and performance are summarized in Table \ref{tab:real_models_summary}.
 
 \begin{table}[htbp]
 \centering
-\caption{Performance of models trained on real SAR data.}
-\label{tab:real_models_results}
+\caption{Architectures and performance of models trained with real SAR images.}
+\label{tab:real_models_summary}
 \vspace{3mm}
 \scriptsize
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Config.} & \textbf{Test MSE} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
+\textbf{Config.} & \textbf{\begin{tabular}{@{}c@{}}Architecture \\ Type\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Encoding \\ Dim.\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Image \\ Size\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Test \\ MSE\end{tabular}} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
 \hline
-B1 & 0.03217 & 0.159 & 49.346 & 49.505 \\
-B2 & 0.00905 & 0.487 & 30.591 & 31.078 \\
-B3 & 0.00907 & 0.298 & 30.721 & 31.019 \\
-B4 & 0.01014 & 0.778 & 27.388 & 28.166 \\
-\textbf{B5} & \textbf{0.00887} & \textbf{0.540} & \textbf{29.319} & \textbf{29.859} \\
+B1 & \begin{tabular}{@{}c@{}}Hybrid \\ (Conv + Dense)\end{tabular} & 1600 & $512\times512$ & 0.03217 & 0.159 & 49.346 & 49.505 \\
+B2 & \begin{tabular}{@{}c@{}}Fully Convolutional \\ (5 layers)\end{tabular} & 1500 & $256\times256$ & 0.00905 & 0.487 & 30.591 & 31.078 \\
+B3 & \begin{tabular}{@{}c@{}}Fully Convolutional \\ (6 layers)\end{tabular} & 1500 & $256\times256$ & 0.00907 & 0.298 & 30.721 & 31.019 \\
+B4 & \begin{tabular}{@{}c@{}}Fully Convolutional \\ (4 layers)\end{tabular} & 1500 & $128\times128$ & 0.01014 & 0.778 & 27.388 & 28.166 \\
+\textbf{B5} & \begin{tabular}{@{}c@{}}Hybrid \\ (Conv + Pooling)\end{tabular} & 1500 & $256\times256$ & \textbf{0.00887} & \textbf{0.540} & \textbf{29.319} & \textbf{29.859} \\
 \hline
 \end{tabular}
 \end{table}
+
+Model B5 emerged as the top-performing architecture, achieving the lowest test MSE and a strong statistical figure of merit ($\mathcal{M}$). The visual results, shown in Figure \ref{fig:sar_real_filtered_B5}, confirm a substantial improvement over models trained on synthetic data. The filtered image is significantly cleaner, with well-defined edges and textures that are much more consistent with the clean target image. This demonstrates the clear superiority of training directly on real data for this task.
 
 \begin{figure}[htbp]
     \centering
