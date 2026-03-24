@@ -74,6 +74,8 @@ To assess the generalization capabilities of models trained on synthetic data, t
 
 The best-performing model on synthetic data, A15, shows a critical limitation when applied to a real image (Figure \ref{fig:sar_real_comparison}a). While it effectively reduces speckle, it also superimposes the square partition structure learned from the training data onto the real image. This reveals a critical limitation: even with a sophisticated statistical model like $\mathcal{G}_I^0$, the simplistic spatial structure of the training data (i.e., the quadrant partitions) was learned by the model, preventing its generalization. This highlights that structural variety in the training dataset is as crucial as the statistical accuracy of the noise model.
 
+Another critical factor limiting generalization is the discrepancy in the number of looks ($L$). The synthetic training dataset was generated assuming single-look SAR images ($L=1$). However, some of the real test images possess different characteristics; for instance, the San Francisco bay image (used in our qualitative assessments) is a multi-look image ($L=3$). This physical discrepancy in the speckle noise distribution further explains the difficulty of synthetically trained models to seamlessly transition to diverse real-world data.
+
 In contrast, model A20 was trained on a mixed dataset of synthetic images with different partition granularities. As shown in Figure \ref{fig:sar_real_comparison}b, this strategy yielded significantly better generalization. Although its MSE on synthetic data was higher, the A20 model does not impose a rigid quadrant structure and preserves the natural texture of the real SAR image more faithfully. This highlights a key insight: a lower error on a narrow synthetic test set does not guarantee superior performance on real-world data, and training data variety is crucial for robust generalization.
 
 \begin{figure}[htbp]
@@ -96,7 +98,7 @@ In contrast, model A20 was trained on a mixed dataset of synthetic images with d
 \end{figure}
 
 \subsection{Performance of Models Trained on Real SAR Data}
-The limitations of synthetic data led to a second phase of experiments using a dataset of real SAR image pairs for training. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task. Their architectures and performance are summarized in Table \ref{tab:real_models_summary}.
+The limitations of synthetic data led to a second phase of experiments using a dataset of real SAR image pairs for training. To manage the computational load and maximize the number of training samples, the original $512 \times 512$ images were systematically segmented into smaller, non-overlapping patches (as detailed in Table \ref{tab:real_models_summary}). As a crucial pre-processing step, any extracted patches where the maximum pixel intensity equaled the minimum were automatically discarded. This filtering prevented the networks from learning from completely flat, structureless regions lacking useful information. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task. Their architectures and performance are summarized in Table \ref{tab:real_models_summary}.
 
 \begin{table}[htbp]
 \centering
@@ -118,7 +120,7 @@ B4 & Fully Convolutional (4 layers) & 1500 & $128\times128$ & 0.01014 & 0.778 & 
 \end{tabular}
 \end{table}
 
-Model B5 emerged as the top-performing architecture, achieving the lowest test MSE and a strong statistical figure of merit ($\mathcal{M}$). The visual results, shown in Figure \ref{fig:sar_real_filtered_B5}, confirm a substantial improvement over models trained on synthetic data. The filtered image is significantly cleaner, with well-defined edges and textures that are much more consistent with the clean target image. This demonstrates the clear superiority of training directly on real data for this task.
+Model B5 emerged as the top-performing architecture, achieving the lowest test MSE and a strong statistical figure of merit ($\mathcal{M}$). The visual results, shown in Figure \ref{fig:sar_real_filtered_B5}, confirm a substantial improvement over models trained on synthetic data. The filtered image is significantly cleaner, with well-defined edges and textures that are much more consistent with the clean target image. This demonstrates the clear superiority of training directly on real data for this task. Furthermore, visual inspection of the ratio images ($I = z / \hat{x}$) for the B5 model corroborated the quantitative statistical metrics. These ratio images lacked evident geometric structures or fine textures, behaving essentially as pure random noise. This confirms that the B5 autoencoder successfully extracted the speckle component without undesirably filtering out the underlying physical structures of the scene.
 
 \begin{figure}[htbp]
     \centering
@@ -128,7 +130,7 @@ Model B5 emerged as the top-performing architecture, achieving the lowest test M
 \end{figure}
 
 \subsection{Statistical Evaluation and Comparative Analysis}
-A final comparative analysis was performed to benchmark our models against established methods. The Lee filter, a classic adaptive filter that uses local image statistics to estimate the clean signal, was used as a baseline. As shown in Table \ref{tab:stat_results_A}, the Lee filter achieved a figure of merit $\mathcal{M}=5.05$ on our synthetic dataset with its optimal window size (3x3). In contrast, our best autoencoder configuration (A24) achieved $\mathcal{M}=2.58$, demonstrating a clear quantitative improvement. This holds true even for the Lee filter's optimal window size (3x3), confirming the viability and superior performance of the deep learning approach.
+A final comparative analysis was performed to benchmark our models against established methods. The Lee filter, a classic adaptive filter that uses local image statistics to estimate the clean signal, was used as a baseline. As shown in Table \ref{tab:stat_results_A}, the Lee filter achieved a figure of merit $\mathcal{M}=5.05$ on our synthetic dataset with its optimal window size (3x3). In contrast, our best autoencoder configuration (A24) achieved $\mathcal{M}=2.58$, demonstrating a clear quantitative improvement. It is particularly noteworthy that the A24 model features an atypical architecture: it employs a transposed convolution within the encoder, deviating from traditional symmetric compression principles. The fact that this unconventional design achieved the best statistical preservation of speckle properties opens an interesting avenue for future research beyond standard symmetrical autoencoders. This holds true even for the Lee filter's optimal window size (3x3), confirming the viability and superior performance of the deep learning approach.
 
 \begin{table}[htbp]
 \centering
