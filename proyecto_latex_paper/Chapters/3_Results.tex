@@ -14,7 +14,9 @@ Furthermore, we observed that training duration did not linearly correlate with 
 \centering
 \caption{Test and final train MSE results for a selection of autoencoder configurations, ordered by test performance. The `Test vs. Train` column indicates overfitting (red) or underfitting (green).}
 \label{tab:mse_results}
+\vspace{3mm}
 \scriptsize
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \textbf{Rank} & \textbf{Config.} & \textbf{Test MSE} & \textbf{Train MSE} & \textbf{Test vs. Train} \\
@@ -85,7 +87,9 @@ The limitations of synthetic data led to a second phase of experiments using a d
 	\centering
 	\caption{Architectures designed for training with real SAR images.}
 	\label{tab:real_architectures}
+	\vspace{3mm}
 	\scriptsize
+	\renewcommand{\arraystretch}{1.15}
 	\begin{tabular}{|c|c|c|c|}
 		\hline
 		\textbf{Config.} & \textbf{Architecture Type} & \textbf{Encoding Dim.} & \textbf{Image Size} \\
@@ -105,7 +109,9 @@ Model B5 emerged as the top-performing architecture, achieving the lowest test M
 \centering
 \caption{Performance of models trained on real SAR data.}
 \label{tab:real_models_results}
+\vspace{3mm}
 \scriptsize
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \textbf{Config.} & \textbf{Test MSE} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
@@ -133,7 +139,9 @@ A final comparative analysis was performed to benchmark our models against estab
 \centering
 \caption{Statistical evaluation for a selection of models trained on synthetic data, compared to the Lee filter. Lower values are better.}
 \label{tab:stat_results_A}
+\vspace{3mm}
 \scriptsize
+\renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|l|c|c|c|}
 \hline
 \textbf{Filter} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
