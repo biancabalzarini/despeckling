@@ -12,21 +12,28 @@ Furthermore, we observed that training duration did not linearly correlate with 
 
 \begin{table}[htbp]
 \centering
-\caption{Test MSE results for a selection of autoencoder configurations, ordered by performance. The table highlights the best models, an underperforming one, and a case with significant overfitting.}
+\caption{Test and final train MSE results for a selection of autoencoder configurations, ordered by test performance. The `Test vs. Train` column indicates overfitting (red) or underfitting (green).}
 \label{tab:mse_results}
 \scriptsize
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\textbf{Rank} & \textbf{Config.} & \textbf{Architecture Details} & \textbf{Test MSE} & \textbf{Comment} \\
+\textbf{Rank} & \textbf{Config.} & \textbf{Test MSE} & \textbf{Train MSE} & \textbf{Test vs. Train} \\
 \hline
-1 & A15 & 3 Conv, 256 Dim, 500 Epochs & 0.002319 & Best performance \\
-2 & A13 & 3 Conv, 128 Dim, 500 Epochs & 0.002346 & Excellent performance \\
-3 & A16 & 3 Conv, 256 Dim, 70 Epochs  & 0.002348 & Best short-training model \\
-4 & A7  & 2 Conv, 128 Dim, 500 Epochs & 0.002433 & Best 2-layer model \\
+1 & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$} \\
+2 & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$} \\
+3 & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$} \\
+4 & A7 & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$} \\
+5 & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$} \\
 ... & ... & ... & ... & ... \\
-16 & A4 & 1 Conv, 32 Dim, 500 Epochs  & 0.002781 & High overfitting (+28.5\%) \\
+9 & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$} \\
 ... & ... & ... & ... & ... \\
-23 & A1 & 1 Conv+Pool, 32 Dim, 5 Epochs & 0.005695 & Underperforming base model \\
+16 & A4 & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$} \\
+... & ... & ... & ... & ... \\
+20 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$} \\
+... & ... & ... & ... & ... \\
+22 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$} \\
+23 & A1 & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$} \\
+
 \hline
 \end{tabular}
 \end{table}
@@ -56,23 +63,41 @@ In contrast, model A20 was trained on a mixed dataset of synthetic images with d
     \begin{subfigure}[b]{0.7\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Images/realimages_A15.png}
-        \caption{Model A15 (trained on uniform partitions) imposes an artificial structure.}
+        \caption{Model A15 (trained on uniform partitions) fails to generalize.}
         \label{fig:sar_real_A15}
     \end{subfigure}
-    \vfill % Adds vertical space between subfigures
-    \medskip % Adds a bit more space
+    \vfill
+    \medskip
     \begin{subfigure}[b]{0.7\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Images/realimages_A20.png}
         \caption{Model A20 (trained on mixed partitions) generalizes better.}
         \label{fig:sar_real_A20}
     \end{subfigure}
-    \caption{Comparison of generalization on a real SAR image. The model trained on uniform data (a) fails to generalize, while the model trained on varied data (b) performs better.}
+    \caption{Comparison of generalization on a real SAR image. In both (a) and (b), the original real image is on the left and the filtered output is on the right. Model A15 superimposes an artificial structure, while Model A20 preserves the image's natural texture more faithfully.}
     \label{fig:sar_real_comparison}
 \end{figure}
 
 \subsection{Performance of Models Trained on Real SAR Data}
-The limitations of synthetic data led to a second phase of experiments using a dataset of real SAR image pairs for training. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task. The performance of these models is summarized in Table \ref{tab:real_models_results}.
+The limitations of synthetic data led to a second phase of experiments using a dataset of real SAR image pairs for training. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task, as detailed in Table \ref{tab:real_architectures}. The performance of these models is summarized in Table \ref{tab:real_models_results}.
+
+\begin{table}[htbp]
+	\centering
+	\caption{Architectures designed for training with real SAR images.}
+	\label{tab:real_architectures}
+	\scriptsize
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{Config.} & \textbf{Architecture Type} & \textbf{Encoding Dim.} & \textbf{Image Size} \\
+		\hline
+		B1 & Hybrid (Conv + Dense) & 1600 & $512\times512$ \\
+		B2 & Fully Convolutional (5 layers) & 1500 & $256\times256$ \\
+		B3 & Fully Convolutional (6 layers) & 1500 & $256\times256$ \\
+		B4 & Fully Convolutional (4 layers) & 1500 & $128\times128$ \\
+		B5 & Hybrid (Conv + Pooling) & 1500 & $256\times256$ \\
+		\hline
+	\end{tabular}
+\end{table}
 
 Model B5 emerged as the top-performing architecture, achieving the lowest test MSE and a strong statistical figure of merit ($\mathcal{M}$). The visual results, shown in Figure \ref{fig:sar_real_filtered_B5}, confirm a substantial improvement over models trained on synthetic data. The filtered image is significantly cleaner, with well-defined edges and textures that are much more consistent with the clean target image. This demonstrates the clear superiority of training directly on real data for this task.
 
@@ -106,19 +131,20 @@ A final comparative analysis was performed to benchmark our models against estab
 
 \begin{table}[htbp]
 \centering
-\caption{Statistical figure of merit $\mathcal{M}$ for a selection of models trained on synthetic data, compared to the Lee filter. The table shows the best statistical performers (A24, A2), the model with the best MSE (A15), and one of the worst statistical performers (A21) to illustrate the range.}
+\caption{Statistical evaluation for a selection of models trained on synthetic data, compared to the Lee filter. Lower values are better.}
 \label{tab:stat_results_A}
-\begin{tabular}{|l|c|}
+\scriptsize
+\begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Filter} & \textbf{Figure of Merit ($\mathcal{M}$)} \\
+\textbf{Filter} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
 \hline
-\textbf{Autoencoder A24 (Best $\mathcal{M}$)} & \textbf{2.58} \\
-Autoencoder A2 & 3.21 \\
-Autoencoder A15 (Best MSE) & 3.77 \\
-Autoencoder A21 (Worst $\mathcal{M}$) & 8.00 \\
+\textbf{Autoencoder A24 (Best $\mathcal{M}$)} & \textbf{0.233} & \textbf{2.343} & \textbf{2.576} \\
+Autoencoder A2 & 0.218 & 2.988 & 3.206 \\
+Autoencoder A15 (Best MSE) & 0.194 & 3.574 & 3.768 \\
+Autoencoder A21 (Worst $\mathcal{M}$) & 0.376 & 7.627 & 8.003 \\
 \hline
-Lee Filter (3x3) & 5.05 \\
-Lee Filter (7x7) & 11.35 \\
+Lee Filter (3x3) & 0.399 & 4.654 & 5.053 \\
+Lee Filter (7x7) & 0.509 & 10.837 & 11.346 \\
 \hline
 \end{tabular}
 \end{table}
