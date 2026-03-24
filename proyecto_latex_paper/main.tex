@@ -43,7 +43,7 @@
 \begin{document}
 %
 % ENGLISH VERSION
-\title{Speckle Noise Removal in SAR Images using Autoencoders}
+\title{\emph{Speckle} Noise Removal in SAR Images using Autoencoders}
 
 %\titlerunning{Abbreviated paper title}
 % If the paper title is too long for the running head, you can set
@@ -75,16 +75,13 @@
 Synthetic Aperture Radar (SAR) images are fundamental for Earth observation due to their ability to acquire data
 independently of weather and lighting conditions. However, these images are affected by speckle noise, a
 multiplicative granular pattern that degrades their quality and makes them difficult to automatically interpret.
-
 This work presents an approach for speckle removal using convolutional autoencoders. The main innovation lies in
 the use of the $\mathcal{G}_I^0$ distribution  to synthetically generate pairs of noisy and clean images for
 supervised training, adequately modeling the statistical characteristics of real speckle noise.
 In addition, we developed a flexible file-based configuration system that facilitates experimentation with
 different network architectures.
-
 Experimental outcomes reveal that deeper network architectures achieve better results with no evidence of
 overfitting.
-
 Models trained on synthetic data showed good performance on synthetic test images, but limitations in generalizing
 to actual SAR images. To address this problem, we explored training with pairs of real images obtained through time
 averaging, achieving significant improvements and performance comparable to other known models.
