@@ -32,3 +32,6 @@ notebooks/data/trained_models/imagenes_reales/config_1.pth
 *.nav
 *.snm
 *.vrb
+*.idx
+*.nlo
+*.cls

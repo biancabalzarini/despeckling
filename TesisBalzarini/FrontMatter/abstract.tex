@@ -1,0 +1,15 @@
+\begin{abstract}
+
+Las imágenes de Radar de Apertura Sintética (SAR) son fundamentales para la observación de la Tierra debido a su capacidad de adquisición independiente de las condiciones climáticas y de iluminación. Sin embargo, estas imágenes se ven afectadas por el ruido \emph{speckle}, un patrón granular multiplicativo que degrada su calidad, y dificulta su interpretación.
+
+Este trabajo presenta un enfoque novedoso para la eliminación de ruido \emph{speckle} mediante el uso de autoencoders convolucionales. La principal innovación radica en el uso de la distribución $\mathcal{G}_I^0$ para generar sintéticamente pares de imágenes ruidosas y limpias destinadas al entrenamiento supervisado, modelando fielmente las características estadísticas del ruido \emph{speckle} real. Complementariamente, desarrollamos un sistema flexible basado en archivos de configuración que facilita la experimentación con diferentes arquitecturas.
+
+Los experimentos revelan que las arquitecturas más profundas obtienen consistentemente mejores resultados sin evidencia de \emph{overfitting}. Los modelos entrenados con datos sintéticos mostraron buen desempeño en imágenes de test sintéticas, pero limitaciones en la generalización a imágenes SAR reales. Para abordar esto, exploramos el entrenamiento con pares de imágenes reales obtenidas mediante promediado temporal, logrando mejoras significativas y desempeño comparable a otros ya conocidos.
+
+Este trabajo establece las bases para el uso de autoencoders en el filtrado de \emph{speckle} y demuestra tanto el potencial como las limitaciones de los datos sintéticos generados mediante modelos estadísticos.
+
+\vspace{0.5cm}
+
+\noindent\textbf{Palabras clave:} Radar de Apertura Sintética (SAR), ruido \emph{speckle}, \emph{despeckling}, autoencoders, redes neuronales convolucionales, distribución $\mathcal{G}_I^0$, procesamiento de imágenes, filtrado de ruido.
+
+\end{abstract}
