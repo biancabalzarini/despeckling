@@ -9,6 +9,23 @@ z = x \cdot y
 \end{equation}
 where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. For instance, $\alpha$ values close to zero (e.g., -1 to -3) correspond to heterogeneous urban areas, while more negative values (e.g., -10 to -20) represent homogeneous surfaces like calm water. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models. To create a robust training dataset, we generated synthetic images structured in quadrants, where each quadrant simulated a different surface texture by assigning a randomly chosen value for the $\alpha$ parameter, as shown in Figure \ref{fig:synthetic_quadrants_examples}. This approach, by randomizing the textures in each image, aims to prevent the model from simply memorizing a static pattern of textures. Instead, the goal is to force the model to learn how to filter noise in the presence of heterogeneous textures, thus promoting better generalization.
 
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[height=4cm]{Images/cuadrantes1.png}
+        \caption{4 quadrants}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[height=4cm]{Images/cuadrantes2.png}
+        \caption{9 quadrants}
+    \end{subfigure}
+    \caption{Examples of images split into quadrants, with different values of $\alpha$ in each one. All with $L=\gamma=1$.}
+    \label{fig:synthetic_quadrants_examples}
+\end{figure}
+
 A key concept in SAR image analysis is the 'number of looks' (L), which refers to the number of independent images of the same scene that are averaged to reduce speckle noise. A higher number of looks results in a smoother image with less noise. The 'Equivalent Number of Looks' (ENL) is a widely used metric to estimate the effectiveness of a speckle filter. It quantifies the smoothness of a homogeneous area in the filtered image. A higher ENL value indicates a greater reduction in noise and, therefore, a better filter performance.
 
 The real SAR images used in this work are from the dataset provided by \cite{vasquez2024labeled}, which contains pairs of noisy and clean images obtained through temporal averaging. An example of such a pair is shown in Figure \ref{fig:sar_images}. These images present varied textures, including urban areas, vegetation, and water bodies, which are suitable for training and testing the generalization capability of the despeckling filters.
