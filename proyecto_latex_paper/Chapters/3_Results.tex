@@ -4,7 +4,7 @@ The extensive experimentation, summarized in Table \ref{tab:autoencoder_configs}
 
 \subsection{Performance on Synthetic Data}
 
-The models were initially evaluated based on their Mean Squared Error (MSE) on a synthetic test set of 1000 images, kept separate from the training data. Table \ref{tab:mse_results} summarizes the performance of the top-performing architectures and other relevant cases.
+The models were initially evaluated based on their Mean Squared Error (MSE) on a synthetic test set of 1000 images, kept separate from the training data. Table \ref{tab:mse_results} summarizes the performance of all the architectures.
 
 The results clearly indicate that deeper architectures with three convolutional layers (A13, A15, A16) achieved the best performance, with MSE values around $0.0023$. This suggests that a hierarchical feature extraction is crucial for effectively modeling and removing speckle noise. Notably, the dimensionality of the latent space in these top models ($128$ or $256$) also played a significant role.
 
