@@ -4,55 +4,59 @@ The extensive experimentation, summarized in Table \ref{tab:autoencoder_configs}
 
 \subsection{Performance on Synthetic Data}
 
-The models were initially evaluated based on their Mean Squared Error (MSE) on a synthetic test set of 1000 images, kept separate from the training data. Table \ref{tab:mse_results} summarizes the performance of all the architectures.
+The models were initially evaluated based on their Mean Squared Error (MSE) on a synthetic test set of 1000 images, kept separate from the training data. Table \ref{tab:mse_results} summarizes the performance of all the architectures, including first and second order statistical metrics ($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$).
 
 The results clearly indicate that deeper architectures with three convolutional layers (A13, A15, A16) achieved the best performance, with MSE values around $0.0023$. This suggests that a hierarchical feature extraction is crucial for effectively modeling and removing speckle noise. Notably, the dimensionality of the latent space in these top models ($128$ or $256$) also played a significant role.
 
 Furthermore, we observed that training duration did not linearly correlate with better performance. For instance, model A16, trained for only 70 epochs, achieved a performance nearly identical to A15 (trained for 500 epochs), suggesting that well-designed architectures can converge rapidly. This is a key finding, as it points towards more efficient training strategies. Several models, particularly shallower ones with long training times (e.g., A4), exhibited signs of overfitting, with a test MSE more than 25\% higher than their final training MSE.
 
+\vspace{2mm}
+While MSE primarily measures reconstruction accuracy, the statistical metrics offer insights into the filter's ability to preserve the underlying statistical properties of the SAR image. For instance, configurations A24, A2, and A22 achieved the best statistical performance (lowest $\mathcal{M}$ values of 2.576, 3.206, and 3.414 respectively), even though they did not rank highest in terms of MSE. This highlights that a low reconstruction error does not always guarantee optimal statistical preservation, and vice-versa. Conversely, models exhibiting significant overfitting in MSE (e.g., A6, A4) also generally showed suboptimal statistical performance, reinforcing the correlation between generalization capacity and filtering quality.
+
 \begin{table}[htbp]
 \centering
-\caption{Test and final train MSE results for a selection of autoencoder configurations, ordered by test performance. The `Test vs. Train` column indicates overfitting (red) or underfitting (green).}
+\caption{Test and final train MSE results for all autoencoder configurations, ordered by test performance, including first and second order statistical metrics ($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$). The `Test vs. Train` column indicates overfitting (red) or underfitting (green).}
 \label{tab:mse_results}
 \vspace{3mm}
 \scriptsize
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{|c|c|c|c|c|}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
 \textbf{Rank} & \textbf{Config.} & \textbf{Test MSE} & \textbf{Train MSE} & \textbf{Test vs. Train} \\
+\textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
 \hline
-1 & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$} \\
-2 & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$} \\
-3 & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$} \\
-4 & A7 & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$} \\
-5 & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$} \\
-6 & A14 & 0.002421 & 0.002380 & \textcolor{red}{$\nearrow 1.72\%$} \\
-7 & A24 & 0.002505 & 0.002520 & \textcolor{green}{$\searrow 0.60\%$} \\
-8 & A10 & 0.002516 & 0.002313 & \textcolor{red}{$\nearrow 8.78\%$} \\
-9 & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$} \\
-10 & A9 & 0.002547 & 0.002283 & \textcolor{red}{$\nearrow 11.56\%$} \\
-11 & A12 & 0.002575 & 0.002216 & \textcolor{red}{$\nearrow 16.20\%$} \\
-12 & A25 & 0.002586 & 0.002566 & \textcolor{red}{$\nearrow 0.78\%$} \\
-13 & A2 & 0.002594 & 0.002314 & \textcolor{red}{$\nearrow 12.10\%$} \\
-14 & A8 & 0.002568 & 0.002383 & \textcolor{red}{$\nearrow 7.76\%$} \\
-15 & A11 & 0.002643 & 0.002197 & \textcolor{red}{$\nearrow 20.30\%$} \\
-16 & A4 & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$} \\
-17 & A22 & 0.002799 & 0.002245 & \textcolor{red}{$\nearrow 24.68\%$} \\
-18 & A5 & 0.002879 & 0.002774 & \textcolor{red}{$\nearrow 3.79\%$} \\
-19 & A6 & 0.003444 & 0.002666 & \textcolor{red}{$\nearrow 29.18\%$} \\
-20 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$} \\
-21 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$} \\
-22 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$} \\
-23 & A1 & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$} \\
-24 & A23 & 0.011212 & 0.011238 & \textcolor{green}{$\searrow 0.23\%$} \\
-- & A3 & - & - & - \\
+1 & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$} & 0.194 & 3.574 & 3.768 \\
+2 & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$} & 0.213 & 3.687 & 3.900 \\
+3 & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$} & 0.201 & 3.329 & 3.530 \\
+4 & A7 & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$} & 0.208 & 4.291 & 4.499 \\
+5 & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$} & 0.230 & 3.873 & 4.103 \\
+6 & A14 & 0.002421 & 0.002380 & \textcolor{red}{$\nearrow 1.72\%$} & 0.204 & 3.402 & 3.606 \\
+7 & A24 & 0.002505 & 0.002520 & \textcolor{green}{$\searrow 0.60\%$} & 0.233 & 2.343 & 2.576 \\
+8 & A10 & 0.002516 & 0.002313 & \textcolor{red}{$\nearrow 8.78\%$} & 0.207 & 3.340 & 3.548 \\
+9 & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$} & 0.313 & 3.979 & 4.293 \\
+10 & A9 & 0.002547 & 0.002283 & \textcolor{red}{$\nearrow 11.56\%$} & 0.217 & 3.963 & 4.179 \\
+11 & A12 & 0.002575 & 0.002216 & \textcolor{red}{$\nearrow 16.20\%$} & 0.236 & 4.232 & 4.468 \\
+12 & A25 & 0.002586 & 0.002566 & \textcolor{red}{$\nearrow 0.78\%$} & 0.241 & 3.273 & 3.515 \\
+13 & A2 & 0.002594 & 0.002314 & \textcolor{red}{$\nearrow 12.10\%$} & 0.218 & 2.988 & 3.206 \\
+14 & A8 & 0.002568 & 0.002383 & \textcolor{red}{$\nearrow 7.76\%$} & 0.222 & 3.629 & 3.851 \\
+15 & A11 & 0.002643 & 0.002197 & \textcolor{red}{$\nearrow 20.30\%$} & 0.238 & 3.453 & 3.691 \\
+16 & A4 & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$} & 0.273 & 3.838 & 4.111 \\
+17 & A22 & 0.002799 & 0.002245 & \textcolor{red}{$\nearrow 24.68\%$} & 0.232 & 3.182 & 3.414 \\
+18 & A5 & 0.002879 & 0.002774 & \textcolor{red}{$\nearrow 3.79\%$} & 0.344 & 7.443 & 7.787 \\
+19 & A6 & 0.003444 & 0.002666 & \textcolor{red}{$\nearrow 29.18\%$} & 0.643 & 6.863 & 7.506 \\
+20 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$} & 0.343 & 4.946 & 5.289 \\
+21 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$} & 0.376 & 7.627 & 8.003 \\
+22 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$} & - & - & - \\
+23 & A1 & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$} & - & - & - \\
+24 & A23 & 0.011212 & 0.011238 & \textcolor{green}{$\searrow 0.23\%$} & 0.305 & 4.688 & 4.993 \\
+- & A3 & - & - & - & - & - & - \\
 
 \hline
 \end{tabular}
 \begin{flushleft}
 \footnotesize
 \textbf{Note:}
-Configuration A3 does not present data because we could not carry out the training as the trainable parameters (weights and biases) were too many and the available computing power was not sufficient.
+Configuration A3 does not present data because we could not carry out the training as the trainable parameters (weights and biases) were too many and the available computing power was not sufficient. For configurations A1 and A19, statistical metrics could not be calculated due to convergence issues during training.
 \end{flushleft}
 \end{table}
 
