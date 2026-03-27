@@ -15,42 +15,43 @@ While MSE primarily measures reconstruction accuracy, the statistical metrics of
 
 \begin{table}[htbp]
 \centering
-\caption{Test and final train MSE results for all autoencoder configurations, ordered by test performance, including first and second order statistical metrics ($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$). The `Test vs. Train` column indicates overfitting (red) or underfitting (green).}
+\caption{Test and final train MSE results for all autoencoder configurations,
+ordered by test performance, including first and second order statistical metrics
+($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$). The `Test vs. Train' column
+indicates overfitting (red) or underfitting (green).}
 \label{tab:mse_results}
 \vspace{3mm}
 \scriptsize
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{|c|c|c|c|c|c|c|c|}
 \hline
-\textbf{Rank} & \textbf{Config.} & \textbf{Test MSE} & \textbf{Train MSE} & \textbf{Test vs. Train} \\
-\textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
+\textbf{Rank} & \textbf{Config.} & \textbf{Test MSE} & \textbf{Train MSE} & \textbf{Test vs. Train} & $\boldsymbol{r_{\text{ENL},\mu}}$ & $\boldsymbol{\delta_h}$ & $\boldsymbol{\mathcal{M}}$ \\
 \hline
-1 & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$} & 0.194 & 3.574 & 3.768 \\
-2 & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$} & 0.213 & 3.687 & 3.900 \\
-3 & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$} & 0.201 & 3.329 & 3.530 \\
-4 & A7 & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$} & 0.208 & 4.291 & 4.499 \\
-5 & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$} & 0.230 & 3.873 & 4.103 \\
-6 & A14 & 0.002421 & 0.002380 & \textcolor{red}{$\nearrow 1.72\%$} & 0.204 & 3.402 & 3.606 \\
-7 & A24 & 0.002505 & 0.002520 & \textcolor{green}{$\searrow 0.60\%$} & 0.233 & 2.343 & 2.576 \\
-8 & A10 & 0.002516 & 0.002313 & \textcolor{red}{$\nearrow 8.78\%$} & 0.207 & 3.340 & 3.548 \\
-9 & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$} & 0.313 & 3.979 & 4.293 \\
-10 & A9 & 0.002547 & 0.002283 & \textcolor{red}{$\nearrow 11.56\%$} & 0.217 & 3.963 & 4.179 \\
-11 & A12 & 0.002575 & 0.002216 & \textcolor{red}{$\nearrow 16.20\%$} & 0.236 & 4.232 & 4.468 \\
-12 & A25 & 0.002586 & 0.002566 & \textcolor{red}{$\nearrow 0.78\%$} & 0.241 & 3.273 & 3.515 \\
-13 & A2 & 0.002594 & 0.002314 & \textcolor{red}{$\nearrow 12.10\%$} & 0.218 & 2.988 & 3.206 \\
-14 & A8 & 0.002568 & 0.002383 & \textcolor{red}{$\nearrow 7.76\%$} & 0.222 & 3.629 & 3.851 \\
-15 & A11 & 0.002643 & 0.002197 & \textcolor{red}{$\nearrow 20.30\%$} & 0.238 & 3.453 & 3.691 \\
-16 & A4 & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$} & 0.273 & 3.838 & 4.111 \\
-17 & A22 & 0.002799 & 0.002245 & \textcolor{red}{$\nearrow 24.68\%$} & 0.232 & 3.182 & 3.414 \\
-18 & A5 & 0.002879 & 0.002774 & \textcolor{red}{$\nearrow 3.79\%$} & 0.344 & 7.443 & 7.787 \\
-19 & A6 & 0.003444 & 0.002666 & \textcolor{red}{$\nearrow 29.18\%$} & 0.643 & 6.863 & 7.506 \\
-20 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$} & 0.343 & 4.946 & 5.289 \\
-21 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$} & 0.376 & 7.627 & 8.003 \\
-22 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$} & - & - & - \\
-23 & A1 & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$} & - & - & - \\
-24 & A23 & 0.011212 & 0.011238 & \textcolor{green}{$\searrow 0.23\%$} & 0.305 & 4.688 & 4.993 \\
-- & A3 & - & - & - & - & - & - \\
-
+1  & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$}   & 0.194 & 3.574 & 3.768 \\
+2  & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$}  & 0.213 & 3.687 & 3.900 \\
+3  & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$}  & 0.201 & 3.329 & 3.530 \\
+4  & A7  & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$}    & 0.208 & 4.291 & 4.499 \\
+5  & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$}   & 0.230 & 3.873 & 4.103 \\
+6  & A14 & 0.002421 & 0.002380 & \textcolor{red}{$\nearrow 1.72\%$}    & 0.204 & 3.402 & 3.606 \\
+7  & A24 & 0.002505 & 0.002520 & \textcolor{green}{$\searrow 0.60\%$}  & 0.233 & 2.343 & 2.576 \\
+8  & A10 & 0.002516 & 0.002313 & \textcolor{red}{$\nearrow 8.78\%$}    & 0.207 & 3.340 & 3.548 \\
+9  & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$}   & 0.313 & 3.979 & 4.293 \\
+10 & A9  & 0.002547 & 0.002283 & \textcolor{red}{$\nearrow 11.56\%$}   & 0.217 & 3.963 & 4.179 \\
+11 & A12 & 0.002575 & 0.002216 & \textcolor{red}{$\nearrow 16.20\%$}   & 0.236 & 4.232 & 4.468 \\
+12 & A25 & 0.002586 & 0.002566 & \textcolor{red}{$\nearrow 0.78\%$}    & 0.241 & 3.273 & 3.515 \\
+13 & A2  & 0.002594 & 0.002314 & \textcolor{red}{$\nearrow 12.10\%$}   & 0.218 & 2.988 & 3.206 \\
+14 & A8  & 0.002568 & 0.002383 & \textcolor{red}{$\nearrow 7.76\%$}    & 0.222 & 3.629 & 3.851 \\
+15 & A11 & 0.002643 & 0.002197 & \textcolor{red}{$\nearrow 20.30\%$}   & 0.238 & 3.453 & 3.691 \\
+16 & A4  & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$}   & 0.273 & 3.838 & 4.111 \\
+17 & A22 & 0.002799 & 0.002245 & \textcolor{red}{$\nearrow 24.68\%$}   & 0.232 & 3.182 & 3.414 \\
+18 & A5  & 0.002879 & 0.002774 & \textcolor{red}{$\nearrow 3.79\%$}    & 0.344 & 7.443 & 7.787 \\
+19 & A6  & 0.003444 & 0.002666 & \textcolor{red}{$\nearrow 29.18\%$}   & 0.643 & 6.863 & 7.506 \\
+20 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$}   & 0.343 & 4.946 & 5.289 \\
+21 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$}  & 0.376 & 7.627 & 8.003 \\
+22 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$}  & - & - & - \\
+23 & A1  & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$}    & - & - & - \\
+24 & A23 & 0.011212 & 0.011238 & \textcolor{green}{$\searrow 0.23\%$}  & 0.305 & 4.688 & 4.993 \\
+-  & A3  & - & - & - & - & - & - \\
 \hline
 \end{tabular}
 \begin{flushleft}
