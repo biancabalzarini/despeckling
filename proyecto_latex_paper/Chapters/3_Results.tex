@@ -141,7 +141,7 @@ Model B5 emerged as the top-performing architecture, achieving the lowest test M
 \subsection{Statistical Evaluation and Comparative Analysis}
 A final comparative analysis was performed to benchmark our models against established methods. The Lee filter, a classic adaptive filter that uses local image statistics to estimate the clean signal, was used as a baseline. As shown in Table \ref{tab:stat_results_A}, the Lee filter achieved a figure of merit $\mathcal{M}=5.05$ on our synthetic dataset with its optimal window size (3x3). In contrast, our best autoencoder configuration (A24) achieved $\mathcal{M}=2.58$, demonstrating a clear quantitative improvement. It is particularly noteworthy that the A24 model features an atypical architecture: it employs a transposed convolution within the encoder, deviating from traditional symmetric compression principles. The fact that this unconventional design achieved the best statistical preservation of speckle properties opens an interesting avenue for future research beyond standard symmetrical autoencoders. This holds true even for the Lee filter's optimal window size (3x3), confirming the viability and superior performance of the deep learning approach.
 
-\begin{table}[!tb]
+\begin{table}[h!]
 \centering
 \caption{Statistical evaluation for a selection of models trained on synthetic data, compared to the Lee filter. Lower values are better.}
 \label{tab:stat_results_A}
