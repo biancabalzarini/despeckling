@@ -12,7 +12,7 @@ Furthermore, we observed that training duration did not linearly correlate with 
 
 While MSE primarily measures reconstruction accuracy, the statistical metrics offer insights into the filter's ability to preserve the underlying statistical properties of the SAR image. For instance, configurations A24, A2, and A22 achieved the best statistical performance (lowest $\mathcal{M}$ values of 2.576, 3.206, and 3.414 respectively), even though they did not rank highest in terms of MSE. This highlights that a low reconstruction error does not always guarantee optimal statistical preservation, and vice-versa. Conversely, models exhibiting significant overfitting in MSE (e.g., A6, A4) also generally showed suboptimal statistical performance, reinforcing the correlation between generalization capacity and filtering quality.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
 \centering
 \caption{Test and final train MSE results for all autoencoder configurations,
 ordered by test performance, including first and second order statistical metrics
