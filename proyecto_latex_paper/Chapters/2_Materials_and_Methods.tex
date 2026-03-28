@@ -2,7 +2,7 @@
 
 \subsection{SAR Images}
 
-For this study, two types of datasets were used: synthetically generated images and real SAR images. The synthetic dataset was created based on the $\mathcal{G}_I^0$ distribution, which models the statistical properties of speckle noise. 
+For this study, two types of datasets were used: synthetically generated images and actual SAR images. The synthetic dataset was created based on the $\mathcal{G}_I^0$ distribution, which models the statistical properties of speckle noise. 
 A random variable $z$ following the $\mathcal{G}_I^0$ distribution can be expressed as the product of two independent random variables:
 \begin{equation} \label{eq:zxy}
 z = x \cdot y
@@ -27,7 +27,7 @@ where $x$ represents the noise-free backscatter, modeled by an inverse Gamma dis
 
 A key concept in SAR image analysis is the 'number of looks' (L), which refers to the number of independent images of the same scene that are averaged to reduce speckle noise. A higher number of looks results in a smoother image with less noise. The 'Equivalent Number of Looks' (ENL) is a widely used metric to estimate the effectiveness of a speckle filter. It quantifies the smoothness of a homogeneous area in the filtered image. A higher ENL value indicates a greater reduction in noise and, therefore, a better filter performance.
 
-The real SAR images used in this work are from the dataset provided by \cite{vasquez2024labeled}, which contains pairs of noisy and clean images obtained through temporal averaging. An example of such a pair is shown in Figure \ref{fig:sar_images}. These images present varied textures, including urban areas, vegetation, and water bodies, which are suitable for training and testing the generalization capability of the despeckling filters.
+The actual SAR images used in this work are from the dataset provided by \cite{vasquez2024labeled}, which contains pairs of noisy and clean images obtained through temporal averaging. An example of such a pair is shown in Figure \ref{fig:sar_images}. These images present varied textures, including urban areas, vegetation, and water bodies, which are suitable for training and testing the generalization capability of the despeckling filters.
 
 \begin{figure}[htbp]
     \centering
@@ -44,7 +44,7 @@ The real SAR images used in this work are from the dataset provided by \cite{vas
         \caption{Clean SAR image.}
         \label{fig:sar_clean}
     \end{subfigure}
-    \caption{Example of a real SAR image pair (noisy and clean) from the dataset.}
+    \caption{Example of an actual SAR image pair (noisy and clean) from the dataset.}
     \label{fig:sar_images}
 \end{figure}
 

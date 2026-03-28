@@ -14,7 +14,7 @@ Over the years, various techniques have been proposed for speckle mitigation. Cl
 Recently, deep learning techniques---particularly Convolutional Neural Networks (CNNs) and Autoencoders---have
 revolutionized image denoising \parencite{zhang2018dilated,lattari2019deep,vitale2021multiobjective,cardona2025optimization}.
 These models typically operate within a supervised learning framework, requiring large datasets of paired noisy and
-clean images to learn an effective mapping. Since acquiring real, perfectly noise-free SAR images is practically
+clean images to learn an effective mapping. Since acquiring actual, perfectly noise-free SAR images is practically
 impossible, researchers must rely on synthetic data generation. This involves artificially injecting simulated
 speckle noise into clean optical or simulated images to create the necessary training pairs. Alternatively, large
 series of temporal images can be averaged to approximate a clean ground truth \parencite{vasquez2024labeled}, but this
@@ -34,6 +34,6 @@ speckle across a wide variety of surface roughness levels and heterogeneous clut
 proven accuracy in the statistical modeling of SAR data, its integration into the synthetic data generation pipeline
 for training deep learning despeckling models remains relatively unexplored. This work investigates how
 incorporating the \( \mathcal{G}_I^0 \) distribution for dataset preparation can enhance the training quality,
-leading to more robust and generalizable convolutional autoencoder models for SAR image despeckling. Furthermore, this work includes the use of real SAR images for training and evaluates the model's performance on speckle reduction using standard, well-established metrics.
+leading to more robust and generalizable convolutional autoencoder models for SAR image despeckling. Furthermore, this work includes the use of actual SAR images for training and evaluates the model's performance on speckle reduction using standard, well-established metrics.
 
-This paper is organized as follows. Section 2 describes our methodology, covering the data generation process and the autoencoder architecture. Section 3 details the experimental results on both synthetic and real data, including a comparison with traditional methods. Finally, Section 4 provides the conclusions and outlines future work.
+This paper is organized as follows. Section 2 describes our methodology, covering the data generation process and the autoencoder architecture. Section 3 details the experimental results on both synthetic and actual data, including a comparison with traditional methods. Finally, Section 4 provides the conclusions and outlines future work.
