@@ -48,7 +48,6 @@ While MSE primarily measures reconstruction accuracy, the statistical metrics of
 22 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$}  & 0.376 & 7.627 & 8.003 \\
 23 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$}  & - & - & - \\
 24 & A1  & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$}    & - & - & - \\
--  & A3  & - & - & - & - & - & - \\
 \hline
 \end{tabular}
 \begin{flushleft}
@@ -98,7 +97,7 @@ In contrast, model A20 was trained on a mixed dataset of synthetic images with d
 \end{figure}
 
 \subsection{Performance of Models Trained on Actual SAR Data}
-The limitations of synthetic data led to a second phase of experiments using a dataset of actual SAR image pairs for training. To manage the computational load and maximize the number of training samples, the original $512 \times 512$ images were systematically segmented into smaller, non-overlapping patches, with the input size for each model specified in Table \ref{tab:real_models_summary}.. As a crucial pre-processing step, any extracted patches where the maximum pixel intensity equaled the minimum were automatically discarded. This filtering prevented the networks from learning from completely flat, structureless regions lacking useful information. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task. Their architectures and performance are summarized in Table \ref{tab:real_models_summary}.
+The limitations of synthetic data led to a second phase of experiments using a dataset of actual SAR image pairs for training. To manage the computational load and maximize the number of training samples, the original $512 \times 512$ images were systematically segmented into smaller, non-overlapping patches, with the input size for each model specified in Table \ref{tab:real_models_summary}. As a crucial pre-processing step, any extracted patches where the maximum pixel intensity equaled the minimum were automatically discarded. This filtering prevented the networks from learning from completely flat, structureless regions lacking useful information. Five new, deeper, and fully convolutional architectures (B1-B5) were designed for this task. Their architectures and performance are summarized in Table \ref{tab:real_models_summary}.
 
 \begin{table}[htbp]
 \centering
