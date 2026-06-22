@@ -4,9 +4,9 @@ The extensive experimentation, summarized in Table \ref{tab:autoencoder_configs}
 
 \subsection{Performance on Synthetic Data}
 
-The models were initially evaluated based on their Mean Squared Error (MSE) on a synthetic test set of 1000 images, kept separate from the training data. Table \ref{tab:mse_results} summarizes the performance of all the architectures, including first and second order statistical metrics ($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$).
+The models were initially evaluated based on their Mean Squared Error (MSE) on a synthetic test set of 1000 images, kept separate from the training data. Table \ref{tab:mse_results} summarizes the performance of all the architectures, ranked by the statistical figure of merit $\mathcal{M}$, along with MSE values and other statistical metrics ($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$) for reference.
 
-The results clearly indicate that deeper architectures with three convolutional layers (A13, A15, A16) achieved the best performance, with MSE values around $0.0023$. This suggests that a hierarchical feature extraction is crucial for effectively modeling and removing speckle noise. Notably, the dimensionality of the latent space in these top models ($128$ or $256$) also played a significant role.
+The results indicate that deeper architectures with three convolutional layers (A13, A15, A16) achieved the best performance regarding MSE, with values around $0.0023$. This suggests that a hierarchical feature extraction is crucial for effectively modeling and removing speckle noise. Notably, the dimensionality of the latent space in these top models ($128$ or $256$) also played a significant role.
 
 Furthermore, we observed that training duration did not linearly correlate with better performance. For instance, model A16, trained for only 70 epochs, achieved a performance nearly identical to A15 (trained for 500 epochs), suggesting that well-designed architectures can converge rapidly. This is a key finding, as it points towards more efficient training strategies. Several models, particularly shallower ones with long training times (e.g., A4), exhibited signs of overfitting, with a test MSE more than 25\% higher than their final training MSE.
 
@@ -14,10 +14,8 @@ While MSE primarily measures reconstruction accuracy, the statistical metrics of
 
 \begin{table}[!ht]
 \centering
-\caption{Test and final train MSE results for all autoencoder configurations,
-ordered by test performance, including first and second order statistical metrics
-($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$). The `Test vs. Train' column
-indicates overfitting (red) or underfitting (green).}
+\caption{Performance metrics for all autoencoder configurations, ordered by the statistical figure of merit $\mathcal{M}$. Test and final train MSE values are included for reference, along with first and second order statistical metrics
+($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$). The `Test vs. Train' column indicates overfitting (red) or underfitting (green).}
 \label{tab:mse_results}
 \vspace{3mm}
 \scriptsize
@@ -26,30 +24,30 @@ indicates overfitting (red) or underfitting (green).}
 \hline
 \textbf{Rank} & \textbf{Config.} & \textbf{Test MSE} & \textbf{Train MSE} & \textbf{Test vs. Train} & $\boldsymbol{r_{\text{ENL},\mu}}$ & $\boldsymbol{\delta_h}$ & $\boldsymbol{\mathcal{M}}$ \\
 \hline
-1  & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$}   & 0.194 & 3.574 & 3.768 \\
-2  & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$}  & 0.213 & 3.687 & 3.900 \\
-3  & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$}  & 0.201 & 3.329 & 3.530 \\
-4  & A7  & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$}    & 0.208 & 4.291 & 4.499 \\
-5  & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$}   & 0.230 & 3.873 & 4.103 \\
-6  & A14 & 0.002421 & 0.002380 & \textcolor{red}{$\nearrow 1.72\%$}    & 0.204 & 3.402 & 3.606 \\
-7  & A24 & 0.002505 & 0.002520 & \textcolor{green}{$\searrow 0.60\%$}  & 0.233 & 2.343 & 2.576 \\
-8  & A10 & 0.002516 & 0.002313 & \textcolor{red}{$\nearrow 8.78\%$}    & 0.207 & 3.340 & 3.548 \\
-9  & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$}   & 0.313 & 3.979 & 4.293 \\
-10 & A9  & 0.002547 & 0.002283 & \textcolor{red}{$\nearrow 11.56\%$}   & 0.217 & 3.963 & 4.179 \\
-11 & A12 & 0.002575 & 0.002216 & \textcolor{red}{$\nearrow 16.20\%$}   & 0.236 & 4.232 & 4.468 \\
-12 & A25 & 0.002586 & 0.002566 & \textcolor{red}{$\nearrow 0.78\%$}    & 0.241 & 3.273 & 3.515 \\
-13 & A2  & 0.002594 & 0.002314 & \textcolor{red}{$\nearrow 12.10\%$}   & 0.218 & 2.988 & 3.206 \\
-14 & A8  & 0.002568 & 0.002383 & \textcolor{red}{$\nearrow 7.76\%$}    & 0.222 & 3.629 & 3.851 \\
-15 & A11 & 0.002643 & 0.002197 & \textcolor{red}{$\nearrow 20.30\%$}   & 0.238 & 3.453 & 3.691 \\
-16 & A4  & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$}   & 0.273 & 3.838 & 4.111 \\
-17 & A22 & 0.002799 & 0.002245 & \textcolor{red}{$\nearrow 24.68\%$}   & 0.232 & 3.182 & 3.414 \\
-18 & A5  & 0.002879 & 0.002774 & \textcolor{red}{$\nearrow 3.79\%$}    & 0.344 & 7.443 & 7.787 \\
-19 & A6  & 0.003444 & 0.002666 & \textcolor{red}{$\nearrow 29.18\%$}   & 0.643 & 6.863 & 7.506 \\
-20 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$}   & 0.343 & 4.946 & 5.289 \\
-21 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$}  & 0.376 & 7.627 & 8.003 \\
-22 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$}  & - & - & - \\
-23 & A1  & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$}    & - & - & - \\
-24 & A23 & 0.011212 & 0.011238 & \textcolor{green}{$\searrow 0.23\%$}  & 0.305 & 4.688 & 4.993 \\
+1  & A24 & 0.002505 & 0.002520 & \textcolor{green}{$\searrow 0.60\%$}  & 0.233 & 2.343 & 2.576 \\
+2  & A2  & 0.002594 & 0.002314 & \textcolor{red}{$\nearrow 12.10\%$}   & 0.218 & 2.988 & 3.206 \\
+3  & A22 & 0.002799 & 0.002245 & \textcolor{red}{$\nearrow 24.68\%$}   & 0.232 & 3.182 & 3.414 \\
+4  & A25 & 0.002586 & 0.002566 & \textcolor{red}{$\nearrow 0.78\%$}    & 0.241 & 3.273 & 3.515 \\
+5  & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$}  & 0.201 & 3.329 & 3.530 \\
+6  & A10 & 0.002516 & 0.002313 & \textcolor{red}{$\nearrow 8.78\%$}    & 0.207 & 3.340 & 3.548 \\
+7  & A14 & 0.002421 & 0.002380 & \textcolor{red}{$\nearrow 1.72\%$}    & 0.204 & 3.402 & 3.606 \\
+8  & A11 & 0.002643 & 0.002197 & \textcolor{red}{$\nearrow 20.30\%$}   & 0.238 & 3.453 & 3.691 \\
+9  & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$}   & 0.194 & 3.574 & 3.768 \\
+10 & A8  & 0.002568 & 0.002383 & \textcolor{red}{$\nearrow 7.76\%$}    & 0.222 & 3.629 & 3.851 \\
+11 & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$}  & 0.213 & 3.687 & 3.900 \\
+12 & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$}   & 0.230 & 3.873 & 4.103 \\
+13 & A4  & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$}   & 0.273 & 3.838 & 4.111 \\
+14 & A9  & 0.002547 & 0.002283 & \textcolor{red}{$\nearrow 11.56\%$}   & 0.217 & 3.963 & 4.179 \\
+15 & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$}   & 0.313 & 3.979 & 4.293 \\
+16 & A7  & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$}    & 0.208 & 4.291 & 4.499 \\
+17 & A12 & 0.002575 & 0.002216 & \textcolor{red}{$\nearrow 16.20\%$}   & 0.236 & 4.232 & 4.468 \\
+18 & A23 & 0.011212 & 0.011238 & \textcolor{green}{$\searrow 0.23\%$}  & 0.305 & 4.688 & 4.993 \\
+19 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$}   & 0.343 & 4.946 & 5.289 \\
+20 & A6  & 0.003444 & 0.002666 & \textcolor{red}{$\nearrow 29.18\%$}   & 0.643 & 6.863 & 7.506 \\
+21 & A5  & 0.002879 & 0.002774 & \textcolor{red}{$\nearrow 3.79\%$}    & 0.344 & 7.443 & 7.787 \\
+22 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$}  & 0.376 & 7.627 & 8.003 \\
+23 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$}  & - & - & - \\
+24 & A1  & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$}    & - & - & - \\
 -  & A3  & - & - & - & - & - & - \\
 \hline
 \end{tabular}
@@ -76,7 +74,7 @@ The autoencoder demonstrates a remarkable ability to reduce speckle and reconstr
 \subsection{Performance on Actual SAR Images}
 To assess the generalization capabilities of models trained on synthetic data, they were applied to actual SAR images. The results, shown in Figure \ref{fig:sar_real_comparison}, reveal a critical difference in performance based on the training data strategy.
 
-The best-performing model on synthetic data, A15, shows a critical limitation when applied to an actual image (Figure \ref{fig:sar_real_comparison}a). While it effectively reduces speckle, it also superimposes the square partition structure learned from the training data onto the actual image. Notably, the filter does preserve the overall gray-level distribution: the two upper quadrants, which appear darker in the original image, remain darker in the filtered output, suggesting that the model retains some radiometric fidelity. Nevertheless, this reveals a critical limitation: even with a sophisticated statistical model like $\mathcal{G}_I^0$, the simplistic spatial structure of the training data (i.e., the quadrant partitions) was learned by the model, preventing its generalization. This highlights that structural variety in the training dataset is as crucial as the statistical accuracy of the noise model.
+Model A15, which achieved the lowest test MSE on synthetic data, reveals a critical limitation when applied to actual images (Figure \ref{fig:sar_real_comparison}a). While it effectively reduces speckle, it also superimposes the square partition structure learned from the training data onto the actual image. Notably, the filter does preserve the overall gray-level distribution: the two upper quadrants, which appear darker in the original image, remain darker in the filtered output, suggesting that the model retains some radiometric fidelity. Nevertheless, this reveals a critical limitation: even with a sophisticated statistical model like $\mathcal{G}_I^0$, the simplistic spatial structure of the training data (i.e., the quadrant partitions) was learned by the model, preventing its generalization. This highlights that structural variety in the training dataset is as crucial as the statistical accuracy of the noise model.
 
 In contrast, model A20 was trained on a mixed dataset of synthetic images with different partition granularities. As shown in Figure \ref{fig:sar_real_comparison}b, this strategy yielded significantly better generalization. Although its MSE on synthetic data was higher, the A20 model does not impose a rigid quadrant structure and preserves the natural texture of the actual SAR image more faithfully. This highlights a key insight: a lower error on a narrow synthetic test set does not guarantee superior performance on real-world data, and training data variety is crucial for robust generalization.
 
