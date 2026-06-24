@@ -67,7 +67,7 @@ The statistical figures of merit based on the ratio image and the GLCM are used 
     \end{figure}
     
     \subsubsection{Tested Architectures}
-    To facilitate rapid experimentation, we developed a training framework driven by configuration files, which allowed for testing numerous architectures without modifying the source code. A key feature of this framework was its ability to automatically validate the dimensional consistency of the network layers, ensuring that all configured architectures were viable. Using this system, we designed and tested 25 distinct autoencoder configurations to identify an optimal model. The key hyperparameters for each configuration are summarized in Table \ref{tab:autoencoder_configs}. This systematic approach allowed us to explore the impact of network depth, latent space dimensionality, and training duration on despeckling performance.    
+    To facilitate rapid experimentation, we developed a training framework driven by configuration files, which allowed for testing numerous architectures without modifying the source code. A key feature of this framework was its ability to automatically validate the dimensional consistency of the network layers, ensuring that all configured architectures were viable. Using this system, we designed and tested 25 distinct autoencoder configurations to identify an optimal model. The key hyperparameters for each configuration are summarized in Table \ref{tab:autoencoder_configs}, where \textit{Encoding Dim} refers to the smallest network dimension, \textit{Samples} is the number of training images, \textit{LR} the learning rate, \textit{ELR} denotes exponential learning rate with $\gamma=0.95$, \textit{RLROP} is Reduce Learning Rate on Plateau with $factor=0.8$, \textit{Conv2DT*} is a transposed convolution in the encoder (an atypical architecture), and \textit{Mixed Data} indicates whether the model was trained on a combined dataset of images with different partition granularities or not. All models use the Adam optimizer, MSE loss, a batch size of 64, ReLU activation for hidden layers, and Sigmoid for the output layer. This systematic approach allowed us to explore the impact of network depth, latent space dimensionality, and training duration on despeckling performance.    
     \begin{table}[htbp]
     \centering
     \caption{Summary of all tested convolutional autoencoder configurations.}
@@ -129,21 +129,6 @@ The statistical figures of merit based on the ratio image and the GLCM are used 
     A25 & Conv2DT* & 32 & 11 & 50K & 0.001 & None & No \\
     \hline
     \end{tabular}
-    
-    \begin{flushleft}
-    \footnotesize
-    \textbf{Notes:}
-    \begin{itemize}
-        \item \textbf{Encoding Dim}: Smallest network dimension (bottleneck layer).
-        \item \textbf{Samples}: Size of the training dataset.
-        \item \textbf{LR}: Learning Rate.
-        \item \textbf{ELR}: Exponential Learning Rate ($\gamma=0.95$).
-        \item \textbf{RLROP}: Reduce Learning Rate on Plateau ($factor=0.8$).
-        \item \textbf{Conv2DT*}: Uses transposed convolution in the encoder (atypical architecture).
-        \item \textbf{Mixed Data}: Indicates whether the model was trained on a mixed dataset combining synthetic images with different partition granularities (Yes) or on uniform partitions (No).
-        \item All models use Adam optimizer, MSE loss, a batch size of 64, ReLU activation for hidden layers, and Sigmoid for the output layer.
-    \end{itemize}
-    \end{flushleft}
     \end{table}
     
     \subsubsection{Evaluation Metrics}
@@ -155,7 +140,7 @@ The first metric, focused on first-order statistics ($r_{\textnormal{ENL},\mu}$)
 \end{equation}
 A low $r_{\text{ENL},\mu}$ indicates that the filter successfully removes noise while preserving the average brightness.
 
-The second metric, for second-order statistics ($\delta_h$), quantifies the amount of residual geometric structure in the ratio image by testing its texture properties' invariance to random permutations. An ideal ratio image, being pure noise, should have texture properties that do not change significantly when its pixels are randomly shuffled. This is measured using the homogeneity descriptor ($h$) from the Gray-Level Co-occurrence Matrix (GLCM). The metric $\delta_h$ calculates the percentage variation between the homogeneity of the original ratio image ($h_0$) and the average homogeneity of several randomly permuted versions of it ($\bar{h}_m$):
+The second metric, for second-order statistics ($\delta_h$), quantifies the amount of residual geometric structure in the ratio image by testing its texture properties' invariance to random permutations. An ideal ratio image, being pure noise, should have texture properties that do not change when its pixels are randomly shuffled. This is measured using the homogeneity descriptor ($h$) from the Gray-Level Co-occurrence Matrix (GLCM). The metric $\delta_h$ calculates the percentage variation between the homogeneity of the original ratio image ($h_0$) and the average homogeneity of several randomly permuted versions of it ($\bar{h}_m$):
 \begin{equation}
     \delta_h = 100 \cdot \left| 1 - \frac{\bar{h}_m}{h_0} \right|.
 \end{equation}
