@@ -7,21 +7,13 @@ A random variable $z$ following the $\mathcal{G}_I^0$ distribution can be expres
 \begin{equation} \label{eq:zxy}
 z = x \cdot y
 \end{equation}
-where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. For instance, $\alpha$ values close to zero (e.g., -1 to -3) correspond to heterogeneous urban areas, while more negative values (e.g., -10 to -20) represent homogeneous surfaces like calm water. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models. To create a robust training dataset, we generated synthetic images structured in quadrants, where each quadrant simulated a different surface texture by assigning a randomly chosen value for the $\alpha$ parameter, as shown in Figure \ref{fig:synthetic_quadrants_examples}. This approach forces the model to learn texture-invariant filtering rather than memorizing static patterns. Mixing images with varying partition schemes during training (4, 9, or more quadrants) prevents learning of fixed spatial boundaries, enhancing robustness when applied to real SAR data.
+where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. For instance, $\alpha$ values close to zero (e.g., -1 to -3) correspond to heterogeneous urban areas, while more negative values (e.g., -10 to -20) represent homogeneous surfaces like calm water. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models. To create a robust training dataset, we generated synthetic images structured in quadrants, where each quadrant simulated a different surface texture by assigning a randomly chosen value for the $\alpha$ parameter, as shown in Figure \ref{fig:synthetic_quadrants_examples}. %This approach forces the model to learn texture-invariant filtering rather than memorizing static patterns. Mixing images with varying partition schemes during training ($4$, $9$, or more quadrants) prevents learning of fixed spatial boundaries, enhancing robustness when applied to real SAR data.
 
 \begin{figure}[htbp]
     \centering
-    \begin{subfigure}[b]{0.3\textwidth}
-        \centering
         \includegraphics[height=3.3cm]{Images/cuadrantes1.png}
-        \caption{4 quadrants}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.3\textwidth}
-        \centering
         \includegraphics[height=3.3cm]{Images/cuadrantes2.png}
-        \caption{9 quadrants}
-    \end{subfigure}
-    \caption{Examples of artifically generated SAR images split into quadrants, with different values of $\alpha$ in each one. All with $L=\gamma=1$.}
+    \caption{Examples of artifically generated SAR images split into quadrants, with different values of $\alpha$ in each one. All with $L=\gamma=1$. Four and Nine quadrants, left and right, respectively}
     \label{fig:synthetic_quadrants_examples}
 \end{figure}
 
@@ -31,14 +23,14 @@ The actual SAR dataset used in this work are provided by \cite{vasquez2024labele
 
 \begin{figure}[htbp]
     \centering
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.2\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Images/noisy_ex.jpg}
         \caption{Noisy SAR image.}
         \label{fig:sar_noisy}
     \end{subfigure}
     \hspace{1cm}
-    \begin{subfigure}[b]{0.3\textwidth}
+    \begin{subfigure}[b]{0.2\textwidth}
         \centering
         \includegraphics[width=\textwidth]{Images/clean_ex.jpg}
         \caption{Clean SAR image.}
@@ -59,7 +51,7 @@ The statistical figures of merit based on the ratio image and the GLCM are used 
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[height=3cm]{Images/red.png}
+    \includegraphics[height=2.7cm]{Images/red.png}
     \caption{Scheme of a convolutional autoencoder. The input image is progressively downsampled by the encoder to a latent representation and then upsampled by the decoder to the original dimensions.}
     	\label{fig:esquema_red}
     \end{figure}
