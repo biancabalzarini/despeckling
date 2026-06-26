@@ -13,6 +13,12 @@
 \usepackage{amsmath}
 \usepackage{subcaption}
 \usepackage{microtype}
+% Disable font expansion to avoid pdfTeX errors with non-scalable fonts
+\microtypesetup{expansion=false}
+
+% Note: removed titlesec due to conflicts with llncs document class
+% (previous attempts to reduce spacing caused package errors).
+% If needed, tune spacing manually with \\vspace or class options.
 
 % Relax float placement rules
 \renewcommand{\topfraction}{0.9}
