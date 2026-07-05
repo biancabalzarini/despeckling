@@ -1,0 +1,169 @@
+\section{Results}
+
+The extensive experimentation, summarized in Table \ref{tab:autoencoder_configs}, allowed for a deep analysis of the different architectural configurations. In this section, we present the quantitative, qualitative, and comparative results of the most relevant models.
+
+\subsection{Performance on Synthetic Data}
+
+The models were initially evaluated based on their Mean Squared Error (MSE) on a synthetic test set of 1000 images, kept separate from the training data. Table \ref{tab:mse_results} summarizes the performance of all the architectures, ranked by the statistical figure of merit $\mathcal{M}$, along with MSE values and other statistical metrics ($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$) for reference.
+
+The results indicate that deeper architectures with three convolutional layers (A13, A15, A16) achieved the best performance regarding MSE, with values around $0.0023$. This suggests that a hierarchical feature extraction is crucial for effectively modeling and removing speckle noise. Notably, the dimensionality of the latent space in these top models ($128$ or $256$) also played a significant role.
+
+Furthermore, we observed that training duration did not linearly correlate with better performance. For instance, model A16, trained for only 70 epochs, achieved a performance nearly identical to A15 (trained for 500 epochs), suggesting that well-designed architectures can converge rapidly. This is a key finding, as it points towards more efficient training strategies. Several models, particularly shallower ones with long training times (e.g., A4), exhibited signs of overfitting, with a test MSE more than 25\% higher than their final training MSE.
+
+In short, although classical bias--variance intuition links more parameters to higher variance, depth changes the effective parametrization and the network's inductive bias. Deep architectures tend to learn hierarchical, compositional representations that favor simpler functions and, together with implicit regularization from the training dynamics (e.g., SGD), initialization and normalization, often generalize better than shallower networks with a similar raw parameter count. In our experiments, shallower architectures required denser parameterizations to cover the same spatial context, increasing memorization and overfitting \cite{zhang2017understanding}.
+
+While MSE primarily measures reconstruction accuracy, the statistical metrics offer insights into the filter's ability to preserve the underlying statistical properties of the SAR image. For instance, configurations A24, A2, and A22 achieved the best statistical performance (lowest $\mathcal{M}$ values of 2.576, 3.206, and 3.414 respectively), even though they did not rank highest in terms of MSE. This highlights that a low reconstruction error does not always guarantee optimal statistical preservation, and vice-versa. Conversely, models exhibiting significant overfitting in MSE (e.g., A6, A4) also generally showed suboptimal statistical performance, reinforcing the correlation between generalization capacity and filtering quality.
+
+\begin{table}[!ht]
+\centering
+\caption{Performance metrics for all autoencoder configurations, ordered by the statistical figure of merit $\mathcal{M}$. Test and final train MSE values are included for reference, along with first and second order statistical metrics
+($r_{\text{ENL},\mu}$, $\delta_h$, and $\mathcal{M}$). The `Test vs. Train' column indicates overfitting (red) or underfitting (green).}
+\label{tab:mse_results}
+\vspace{3mm}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Rank} & \textbf{Config.} & \textbf{Test MSE} & \textbf{Train MSE} & \textbf{Test vs. Train} & $\boldsymbol{r_{\text{ENL},\mu}}$ & $\boldsymbol{\delta_h}$ & $\boldsymbol{\mathcal{M}}$ \\
+\hline
+1  & A24 & 0.002505 & 0.002520 & \textcolor{green}{$\searrow 0.60\%$}  & 0.233 & 2.343 & 2.576 \\
+2  & A2  & 0.002594 & 0.002314 & \textcolor{red}{$\nearrow 12.10\%$}   & 0.218 & 2.988 & 3.206 \\
+3  & A22 & 0.002799 & 0.002245 & \textcolor{red}{$\nearrow 24.68\%$}   & 0.232 & 3.182 & 3.414 \\
+4  & A25 & 0.002586 & 0.002566 & \textcolor{red}{$\nearrow 0.78\%$}    & 0.241 & 3.273 & 3.515 \\
+5  & A16 & 0.002348 & 0.002387 & \textcolor{green}{$\searrow 1.63\%$}  & 0.201 & 3.329 & 3.530 \\
+6  & A10 & 0.002516 & 0.002313 & \textcolor{red}{$\nearrow 8.78\%$}    & 0.207 & 3.340 & 3.548 \\
+7  & A14 & 0.002421 & 0.002380 & \textcolor{red}{$\nearrow 1.72\%$}    & 0.204 & 3.402 & 3.606 \\
+8  & A11 & 0.002643 & 0.002197 & \textcolor{red}{$\nearrow 20.30\%$}   & 0.238 & 3.453 & 3.691 \\
+9  & A15 & 0.002319 & 0.002318 & \textcolor{red}{$\nearrow 0.04\%$}   & 0.194 & 3.574 & 3.768 \\
+10 & A8  & 0.002568 & 0.002383 & \textcolor{red}{$\nearrow 7.76\%$}    & 0.222 & 3.629 & 3.851 \\
+11 & A13 & 0.002346 & 0.002412 & \textcolor{green}{$\searrow 2.74\%$}  & 0.213 & 3.687 & 3.900 \\
+12 & A18 & 0.002485 & 0.002174 & \textcolor{red}{$\nearrow 14.31\%$}   & 0.230 & 3.873 & 4.103 \\
+13 & A4  & 0.002781 & 0.002164 & \textcolor{red}{$\nearrow 28.51\%$}   & 0.273 & 3.838 & 4.111 \\
+14 & A9  & 0.002547 & 0.002283 & \textcolor{red}{$\nearrow 11.56\%$}   & 0.217 & 3.963 & 4.179 \\
+15 & A17 & 0.002528 & 0.002108 & \textcolor{red}{$\nearrow 19.92\%$}   & 0.313 & 3.979 & 4.293 \\
+16 & A7  & 0.002433 & 0.002318 & \textcolor{red}{$\nearrow 4.96\%$}    & 0.208 & 4.291 & 4.499 \\
+17 & A12 & 0.002575 & 0.002216 & \textcolor{red}{$\nearrow 16.20\%$}   & 0.236 & 4.232 & 4.468 \\
+18 & A23 & 0.011212 & 0.011238 & \textcolor{green}{$\searrow 0.23\%$}  & 0.305 & 4.688 & 4.993 \\
+19 & A20 & 0.003691 & 0.003071 & \textcolor{red}{$\nearrow 20.19\%$}   & 0.343 & 4.946 & 5.289 \\
+20 & A6  & 0.003444 & 0.002666 & \textcolor{red}{$\nearrow 29.18\%$}   & 0.643 & 6.863 & 7.506 \\
+21 & A5  & 0.002879 & 0.002774 & \textcolor{red}{$\nearrow 3.79\%$}    & 0.344 & 7.443 & 7.787 \\
+22 & A21 & 0.004343 & 0.004349 & \textcolor{green}{$\searrow 0.14\%$}  & 0.376 & 7.627 & 8.003 \\
+23 & A19 & 0.005331 & 0.005353 & \textcolor{green}{$\searrow 0.41\%$}  & - & - & - \\
+24 & A1  & 0.005695 & 0.005349 & \textcolor{red}{$\nearrow 6.47\%$}    & - & - & - \\
+\hline
+\end{tabular}
+\begin{flushleft}
+\footnotesize
+\textbf{Note:}
+Configuration A3 does not present data because we could not carry out the training as the trainable parameters (weights and biases) were too many and the available computing power was not sufficient. For configurations A1 and A19, statistical metrics could not be calculated due to convergence issues during training.
+\end{flushleft}
+\end{table}
+
+\subsection{Visual Assessment and Architectural Insights}
+
+Quantitative metrics are essential, but a visual assessment is crucial to understand the filter's behavior. Figure \ref{fig:imtest_A15} shows the result of applying the best-performing model, A15, to a sample synthetic test image.
+
+The autoencoder effectively reduces speckle and reconstructs the mean gray levels of homogeneous regions. However, the filtered images exhibit smooth, spatially correlated artifacts, reflecting the difficulty of convolutional networks in distinguishing removable speckle noise from the intrinsic random backscatter texture that should be preserved. This limitation was consistently observed across all high-performing architectures.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Images/imtest_A15.png}
+    \caption{Visual result of the A15 filter on a synthetic test image. From left to right: noisy input, clean target, and filtered output. The model effectively removes noise but introduces artificial smoothness.}
+    \label{fig:imtest_A15}
+\end{figure}
+
+\subsection{Performance on Actual SAR Images}
+To assess the generalization capabilities of models trained on synthetic data, they were applied to actual SAR images. The results, shown in Figure \ref{fig:sar_real_comparison}, reveal a critical difference in performance based on the training data strategy.
+
+Although Model A15 achieved the lowest test MSE on synthetic data, it exposed an important limitation when applied to real images (Figure \ref{fig:sar_real_comparison}a). The model effectively reduced speckle while preserving the overall gray-level distribution, maintaining the darker appearance of the upper quadrants. However, it also reproduced the square partition structure present in the synthetic training data, indicating that it learned the artificial spatial patterns instead of only the underlying noise characteristics. This result shows that, even with a realistic statistical model such as $\mathcal{G}_I^0$, insufficient structural diversity in the training set limits the model's ability to generalize to real SAR images.
+
+In contrast, model A20 was trained on a mixed dataset of synthetic images with different partition granularities. As shown in Figure \ref{fig:sar_real_comparison}b, this strategy yielded significantly better generalization. Although its MSE on synthetic data was higher, the A20 model does not impose a rigid quadrant structure and preserves the natural texture of the actual SAR image more faithfully. This highlights a key insight: a lower error on a narrow synthetic test set does not guarantee superior performance on real-world data, and training data variety is crucial for robust generalization.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/realimages_A15.png}
+        \caption{Model A15 (trained on uniform partitions) fails to generalize.}
+        \label{fig:sar_real_A15}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/realimages_A20.png}
+        \caption{Model A20 (trained on mixed partitions) generalizes better.}
+        \label{fig:sar_real_A20}
+    \end{subfigure}
+    \caption{Comparison of generalization on an actual SAR image. In both (a) and (b), the original actual image is on the left and the filtered output is on the right. Model A15 superimposes an artificial structure, while Model A20 preserves the image's natural texture more faithfully.}
+    \label{fig:sar_real_comparison}
+\end{figure}
+
+\subsection{Performance of Models Trained on Actual SAR Data}
+The limitations of synthetic data motivated a second phase of experiments using paired real SAR images for training. To reduce computational cost and increase the number of training samples, the original $512 \times 512$ images were divided into smaller, non-overlapping patches, with input sizes listed in Table \ref{tab:real_models_summary}. Completely flat patches, where the maximum and minimum pixel intensities were equal, were discarded to avoid training on uninformative regions. Five deeper, fully convolutional architectures (B1-B5) were then developed, with their architectures and performance summarized in Table \ref{tab:real_models_summary}.
+
+\begin{table}[htbp]
+\centering
+\caption{Architectures and performance of models trained with actual SAR images.}
+\label{tab:real_models_summary}
+\vspace{3mm}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\hline
+\textbf{Config.} & \textbf{\begin{tabular}{@{}c@{}}Architecture \\ Type\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Encoding \\ Dim.\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Image \\ Size\end{tabular}} & \textbf{\begin{tabular}{@{}c@{}}Test \\ MSE\end{tabular}} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
+\hline
+B1 & Hybrid (Conv + Dense) & 1600 & $512\times512$ & 0.03217 & 0.159 & 49.346 & 49.505 \\
+B2 & Fully Convolutional (5 layers) & 1500 & $256\times256$ & 0.00905 & 0.487 & 30.591 & 31.078 \\
+B3 & Fully Convolutional (6 layers) & 1500 & $256\times256$ & 0.00907 & 0.298 & 30.721 & 31.019 \\
+B4 & Fully Convolutional (4 layers) & 1500 & $128\times128$ & 0.01014 & 0.778 & 27.388 & 28.166 \\
+\textbf{B5} & Hybrid (Conv + Pooling) & 1500 & $256\times256$ & \textbf{0.00887} & \textbf{0.540} & \textbf{29.319} & \textbf{29.859} \\
+\hline
+\end{tabular}
+\end{table}
+
+Model B5 emerged as the top-performing architecture, achieving the lowest test MSE and a strong statistical figure of merit ($\mathcal{M}$). The visual results, shown in Figure \ref{fig:sar_real_filtered_B5}, confirm a substantial improvement over models trained on synthetic data. The filtered image is significantly cleaner, with well-defined edges and textures that are much more consistent with the clean target image. This demonstrates the clear superiority of training directly on actual data for this task. Furthermore, visual inspection of the ratio images ($I = z / \hat{x}$) for the B5 model corroborated the quantitative statistical metrics. These ratio images lacked evident geometric structures or fine textures, behaving essentially as pure random noise (as illustrated in Figure \ref{fig:ratio_image_B5}). This suggests that the B5 autoencoder largely isolated the speckle component while preserving most underlying physical structures of the scene, although some loss of fine detail is still visible in the filtered output.
+
+\begin{figure}[!tb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{Images/B5_imej_1.png}
+    \caption{Result of the best-performing model (B5), trained on actual SAR data. Left: noisy input. Center: clean target. Right: filtered output. The model achieves excellent noise reduction while preserving structural detail.}
+    \label{fig:sar_real_filtered_B5}
+\end{figure}
+
+\begin{figure}[!tb]
+    \centering
+    \includegraphics[width=0.75\textwidth]{Images/imratio_imreales_config5.png}
+    \caption{Visual inspection of the ratio image for the B5 model. Left: Original noisy SAR image. Center: Filtered output. Right: Ratio image ($I = z / \hat{x}$). The lack of prominent geometric structure in the ratio image indicates successful speckle removal.}
+    \label{fig:ratio_image_B5}
+\end{figure}
+
+\subsection{Statistical Evaluation and Comparative Analysis}
+A final comparative analysis was performed to benchmark our models against established methods. The Lee filter, a classic adaptive filter that uses local image statistics to estimate the clean signal, was used as a baseline. As shown in Table \ref{tab:stat_results_A}, the Lee filter achieved a figure of merit $\mathcal{M}=5.05$ on our synthetic dataset with its optimal window size (3x3). In contrast, our best autoencoder configuration (A24) achieved $\mathcal{M}=2.58$, demonstrating a clear quantitative improvement. It is particularly noteworthy that the A24 model features an atypical architecture: it employs a transposed convolution within the encoder, deviating from traditional symmetric compression principles. The fact that this unconventional design achieved the best statistical preservation of speckle properties opens an interesting avenue for future research beyond standard symmetrical autoencoders. This holds true even for the Lee filter's optimal window size (3x3), confirming the viability and superior performance of the deep learning approach.
+
+\begin{table}[h!]
+\centering
+\caption{Statistical evaluation for a selection of models trained on synthetic data, compared to the Lee filter. Lower values are better.}
+\label{tab:stat_results_A}
+\vspace{3mm}
+\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Filter} & \textbf{$r_{\text{ENL},\mu}$} & \textbf{$\delta_h$} & \textbf{$\mathcal{M}$} \\
+\hline
+\textbf{Autoencoder A24 (Best $\mathcal{M}$)} & \textbf{0.233} & \textbf{2.343} & \textbf{2.576} \\
+Autoencoder A2 & 0.218 & 2.988 & 3.206 \\
+Autoencoder A15 (Best MSE) & 0.194 & 3.574 & 3.768 \\
+Autoencoder A21 (Worst $\mathcal{M}$) & 0.376 & 7.627 & 8.003 \\
+\hline
+Lee Filter (3x3) & 0.399 & 4.654 & 5.053 \\
+Lee Filter (7x7) & 0.509 & 10.837 & 11.346 \\
+\hline
+\end{tabular}
+\end{table}
+
+Furthermore, we compare our statistical results with other state-of-the-art works. In \cite{chan2022entropy}, methods based on Shannon Entropy and Renyi Entropy yield $\delta_h$ values of $0.113$ and $0.173$. Our best value (2.34 for A24) is larger, which reflects differences in dataset characteristics rather than a failure of the method.
+
+The $\delta_h$ metric is based on GLCM homogeneity and therefore depends on the spatial patterns in the image. Changes in SAR resolution, terrain heterogeneity, and image intensity distribution alter the GLCM statistics and shift the absolute homogeneity values. Thus, absolute $\delta_h$ numbers are baseline-dependent: they are tied to the dataset properties and are not directly comparable across different image collections.
+
+Within a single dataset, the relevant comparison is the relative change in $\delta_h$ before and after filtering. A truly fair cross-study comparison would require applying the same reference filter to our dataset, which we leave for future work. Meanwhile, our conclusions are supported by MSE on synthetic test data and the Equivalent Number of Looks (ENL), metrics that are less sensitive to texture-dependent baselines and still show consistent improvement with the proposed autoencoder approach.

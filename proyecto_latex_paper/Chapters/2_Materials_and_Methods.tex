@@ -1,0 +1,139 @@
+\section{Materials and Methods}
+
+\subsection{SAR Images}
+
+For this study, two types of datasets were used: synthetically generated images and actual SAR images. The synthetic dataset was created based on the $\mathcal{G}_I^0$ distribution, which models the statistical properties of speckle noise. 
+A random variable $z$ following the $\mathcal{G}_I^0$ distribution can be expressed as the product of two independent random variables:
+\begin{equation} \label{eq:zxy}
+z = x \cdot y
+\end{equation}
+where $x$ represents the noise-free backscatter, modeled by an inverse Gamma distribution ($x \sim \Gamma^{-1}(-\alpha, 1/\gamma)$), and $y$ represents the speckle noise, modeled by a Gamma distribution ($y \sim \Gamma(L, 1/L)$). The parameter $\alpha$ is related to the texture or roughness of the surface, while $L$ is the number of looks of the SAR system. For instance, $\alpha$ values close to zero (e.g., -1 to -3) correspond to heterogeneous urban areas, while more negative values (e.g., -10 to -20) represent homogeneous surfaces like calm water. This model allowed us to generate pairs of clean ($x$) and noisy ($z$) images for training the proposed models. To create a robust training dataset, we generated synthetic images structured in quadrants, where each quadrant simulated a different surface texture by assigning a randomly chosen value for the $\alpha$ parameter, as shown in Figure \ref{fig:synthetic_quadrants_examples}. %This approach forces the model to learn texture-invariant filtering rather than memorizing static patterns. Mixing images with varying partition schemes during training ($4$, $9$, or more quadrants) prevents learning of fixed spatial boundaries, enhancing robustness when applied to real SAR data.
+
+\begin{figure}[htbp]
+    \centering
+        \includegraphics[height=3.3cm]{Images/cuadrantes1.png}
+        \includegraphics[height=3.3cm]{Images/cuadrantes2.png}
+    \caption{Examples of artifically generated SAR images split into quadrants, with different values of $\alpha$ in each one. All with $L=\gamma=1$. Four and Nine quadrants, left and right, respectively}
+    \label{fig:synthetic_quadrants_examples}
+\end{figure}
+
+A key SAR concept is the \textit{Equivalent Number of Looks} (ENL), which refers to the number of independent images of the same scene that are averaged to reduce speckle noise. It quantifies smoothness in homogeneous regions: higher ENL indicates better noise reduction.
+
+The actual SAR dataset used in this work are provided by \cite{vasquez2024labeled}, and contains paired noisy-clean images via temporal averaging, with diverse textures (urban, vegetation, water) suitable for generalization assessment.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.2\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/noisy_ex.jpg}
+        \caption{Noisy SAR image.}
+        \label{fig:sar_noisy}
+    \end{subfigure}
+    \hspace{1cm}
+    \begin{subfigure}[b]{0.2\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Images/clean_ex.jpg}
+        \caption{Clean SAR image.}
+        \label{fig:sar_clean}
+    \end{subfigure}
+    \caption{Example of an actual SAR image pair (noisy and clean) from the dataset.}
+    \label{fig:sar_images}
+\end{figure}
+
+\subsection{Methods}
+
+\subsubsection{Autoencoder Architecture}
+Our despeckling method uses a convolutional autoencoder: a neural network designed to learn a compressed representation (encoding) of its input and then reconstruct it (decoding). The network is composed of an encoder, which maps the input image to a lower-dimensional latent space, and a decoder, which reconstructs the image from the latent representation. The architecture is symmetric, with the network trained to reconstruct clean images from noisy inputs by minimizing MSE.
+
+Our implementation uses a convolutional architecture. The encoder consists of a series of convolutional layers that apply filters to the input image, extracting hierarchical features and reducing spatial dimensions. The decoder uses transposed convolutional layers (also known as deconvolutions) to upsample the feature maps and reconstruct the image. The general structure of the autoencoder is symmetrical. Figure \ref{fig:esquema_red} shows a scheme of a particular architecture. A key aspect of our training process is that the network takes a noisy image as input and is trained to reconstruct the corresponding clean (noise-free) version, which is provided as the target output.
+
+The statistical figures of merit based on the ratio image and the GLCM are used as complementary evaluation criteria rather than direct loss terms, since they are not differentiable and cannot be straightforwardly optimized by gradient descent.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[height=2.7cm]{Images/red.png}
+    \caption{Scheme of a convolutional autoencoder. The input image is progressively downsampled by the encoder to a latent representation and then upsampled by the decoder to the original dimensions.}
+    	\label{fig:esquema_red}
+    \end{figure}
+    
+    \subsubsection{Tested Architectures}
+    We developed a config-file driven framework to test 25 autoencoder configurations without code modification. It also had the ability to automatically validate the dimensional consistency of the network layers. Key hyperparameters are shown in Table \ref{tab:autoencoder_configs}: \textit{Encoding Dim} (smallest dimension), \textit{Samples} (training images), \textit{LR} (learning rate), \textit{ELR} (exp. decay, $\gamma=0.95$), \textit{RLROP} (Reduce LR on Plateau), \textit{Mixed Data} (whether varied partitions were used). All models use Adam, MSE loss, batch size 64, ReLU for hidden layers, and Sigmoid for the output layer. We explored the impact of depth, latent dimensionality, and training duration.
+    \begin{table}[htbp]
+    \centering
+    \caption{Summary of all tested convolutional autoencoder configurations.}
+    \label{tab:autoencoder_configs}
+    \vspace{3mm}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    \textbf{Config.} & \textbf{Conv Layers} & \textbf{Encoding Dim} & \textbf{Epochs} & \textbf{Samples} & \textbf{LR} & \textbf{Scheduler} & \textbf{Mixed Data} \\
+    \hline
+    \hline
+    \multicolumn{7}{|c|}{\textbf{Base and Reference Architectures}} \\
+    \hline
+    A1 & 1+MaxPool & 32 & 5 & 50K & 0.001 & None & No \\
+    A2 & 1 & 32 & 30 & 50K & 0.001 & ELR & No \\
+    A3 & 2+MaxPool & 512 & 500 & 50K & 0.001 & ELR & No \\
+    \hline
+    \hline
+    \multicolumn{7}{|c|}{\textbf{Depth Variations}} \\
+    \hline
+    \multicolumn{8}{|c|}{\textit{1 Convolutional Layer}} \\
+    \hline
+    A4 & 1 & 32 & 500 & 50K & 0.001 & None & No \\
+    A5 & 1 & 32 & 70 & 50K & 0.001 & None & No \\
+    A6 & 1 & 32 & 500 & 50K & 0.0005 & None & No \\
+    \hline
+    \multicolumn{8}{|c|}{\textit{2 Convolutional Layers}} \\
+    \hline
+    A7 & 2 & 128 & 500 & 50K & 0.001 & ELR & No \\
+    A8 & 2 & 128 & 70 & 50K & 0.001 & ELR & No \\
+    A9 & 2 & 256 & 500 & 50K & 0.001 & ELR & No \\
+    A10 & 2 & 256 & 70 & 50K & 0.001 & ELR & No \\
+    A11 & 2 & 64 & 100 & 100K & 0.001 & RLROP & No \\
+    A12 & 2 & 64 & 40 & 100K & 0.001 & RLROP & No \\
+    \hline
+    \multicolumn{8}{|c|}{\textit{3+ Convolutional Layers}} \\
+    \hline
+    A13 & 3 & 128 & 500 & 50K & 0.001 & ELR & No \\
+    A14 & 3 & 128 & 70 & 50K & 0.001 & ELR & No \\
+    A15 & 3 & 256 & 500 & 50K & 0.001 & ELR & No \\
+    A16 & 3 & 256 & 70 & 50K & 0.001 & ELR & No \\
+    A17 & 3+Dense & 128 & 500 & 50K & 0.001 & None & No \\
+    A18 & 3+Dense & 128 & 70 & 50K & 0.001 & None & No \\
+    A19 & 3 & 64 & 100 & 100K & 0.001 & RLROP & No \\
+    A20 & 4+Dense & 64 & 100 & 100K & 0.001 & RLROP & Yes \\
+    \hline
+    \hline
+    \multicolumn{8}{|c|}{\textbf{Special Training Runs}} \\
+    \hline
+    A21 & 1 & 32 & 15 & 50K & 0.001 & ELR & No \\
+    A22 & 1 & 32 & 500 & 50K & 0.001 & ELR & No \\
+    A23 & 1 & 32 & 500 & 100K & 0.001 & ELR & Yes \\
+    \hline
+    \hline
+    \multicolumn{8}{|c|}{\textbf{Experimental Architectures}} \\
+    \hline
+    A24 & Conv2DT* & 32 & 20 & 50K & 0.001 & None & No \\
+    A25 & Conv2DT* & 32 & 11 & 50K & 0.001 & None & No \\
+    \hline
+    \end{tabular}
+    \end{table}
+    
+    \subsubsection{Evaluation Metrics}
+    To quantitatively evaluate the despeckling filter, we used statistical metrics based on the multiplicative speckle noise model, where the noisy image $z$ is the product of the clean image $x$ and speckle noise $y$ ($z = x \cdot y$). Under this model, the ratio image $I = z / \hat{x}$, where $\hat{x}$ is the filtered image, should contain only speckle noise and no residual structural information. Accordingly, we used two metrics proposed by \cite{gomez2017unassisted}.
+    
+    The first metric, based on first-order statistics ($r_{\textnormal{ENL},\mu}$), assesses mean preservation and smoothness in homogeneous regions. It assumes that the ratio image mean $\mu_I$ should be close to 1 and that filtering should increase smoothness, quantified by the Equivalent Number of Looks ($\text{ENL} = (\mu/\sigma)^2$), where $\mu$ and $\sigma$ are the mean and standard deviation of a homogeneous region. The metric combines these criteria over $N$ selected homogeneous regions:
+    \begin{equation}
+    r_{\text{ENL},\mu} = \frac{1}{2N}\sum_{i=1}^{N} \left( \frac{\left|\text{ENL}_z(i) - \text{ENL}_I(i)\right|}{\text{ENL}_z(i)} + \left|1-\mu_I(i)\right| \right).
+    \end{equation}
+    A lower $r_{\textnormal{ENL},\mu}$ indicates better speckle suppression with brightness preservation.
+    
+    The second metric, based on second-order statistics ($\delta_h$), measures residual structural information in the ratio image through the invariance of its texture to random pixel permutations. Since an ideal ratio image contains only speckle noise, its texture should remain unchanged after shuffling. Using the Gray-Level Co-occurrence Matrix (GLCM) homogeneity descriptor ($h$), $\delta_h$ is defined as the percentage difference between the homogeneity of the original ratio image ($h_0$) and the mean homogeneity of its randomly permuted versions ($\bar{h}_m$):
+    \begin{equation}
+    \delta_h = 100 \cdot \left| 1 - \frac{\bar{h}_m}{h_0} \right|.
+    \end{equation}
+    A value near zero indicates successful filtering, with negligible geometric information remaining in the ratio image.
+
+    Finally, we define the overall metric as $\mathcal{M} = r_{\textnormal{ENL},\mu} + \delta_h$, where lower values indicate better despeckling.

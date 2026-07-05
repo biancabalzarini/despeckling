@@ -1,0 +1,63 @@
+\chapter{Introducción}
+
+Las imágenes de radar de apertura sintética (SAR, por sus siglas en inglés) son una técnica de adquisición remota de datos que utiliza ondas de radio para generar imágenes de alta resolución de la superficie terrestre, y representan una valiosa fuente de información para su análisis. Su principal ventaja radica en su capacidad para adquirir datos de calidad independientemente de las condiciones climáticas o de iluminación, superando así las limitaciones de otras tecnologías de observación remota, como las imágenes ópticas. Gracias a esto, las imágenes SAR son ampliamente utilizadas en aplicaciones que van desde la vigilancia ambiental hasta la detección de cambios en el terreno y el monitoreo de desastres naturales.
+
+Sin embargo, una de las principales desventajas de este tipo de imágenes es la presencia de ruido \emph{speckle}. A diferencia de otros tipos de ruido más convencionales, el \emph{speckle} no es aditivo ni sigue una distribución gaussiana, lo que dificulta significativamente su modelado y eliminación. Este fenómeno surge como consecuencia de la interferencia coherente entre las múltiples señales reflejadas por los objetos en la superficie terrestre, generando patrones granulosos que afectan la calidad visual de las imágenes y dificultan su posterior análisis.
+
+A lo largo de los años, se han propuesto diversas técnicas para la mitigación del ruido \emph{speckle}. En particular, el avance de las técnicas de aprendizaje profundo (\textit{deep learning}) ha abierto nuevas posibilidades en esta área. En la actualidad, muchas de las soluciones más prometedoras se basan en arquitecturas de redes neuronales convolucionales (CNNs) \cite{wang2017sar} y, en menor medida, en modelos de autoencoders \cite{lattari2019deep}. Estas redes se entrenan en un entorno supervisado, donde se requiere disponer de pares de imágenes: una con ruido y su correspondiente versión libre de ruido. El objetivo del modelo es aprender a mapear las imágenes SAR ruidosas hacia representaciones más limpias, preservando al mismo tiempo las características estructurales y texturales de la escena.
+
+No obstante, este enfoque presenta un desafío importante: en la práctica no se dispone de imágenes SAR reales sin ruido, lo que obliga a recurrir a técnicas de simulación para generar versiones artificiales del ruido \emph{speckle} sobre imágenes limpias. Esto a su vez implica la creación de modelos capaces de describir y simular el ruido \emph{speckle} de manera precisa. A partir de estas simulaciones se construyen los conjuntos de datos necesarios para entrenar los modelos de \emph{deep learning}.
+
+Existen múltiples trabajos en la literatura que aplican este enfoque, pero la mayoría se basa en métodos de generación de ruido que resultan limitados. Por un lado, algunos utilizan modelos obsoletos o simplificados que no reflejan adecuadamente la complejidad estadística del ruido \emph{speckle} real. Por otro lado, hay enfoques que están diseñados específicamente para ciertos tipos de superficie (como vegetación, cuerpos de agua o zonas urbanas) y no generalizan bien a otros escenarios.
+
+La distribución \( \mathcal{G}_I^0 \) \cite{originalGI0} es altamente flexible y robusta, y permite representar de manera más realista la variabilidad del ruido \emph{speckle} en distintos tipos de terreno. Incorporarla en los procesos de simulación para el entrenamiento de modelos de \emph{deep learning} es algo que en la literatura aún no se ha explorado. Como ejemplo, el trabajo reciente de Cardona-Mesa et al. \cite{cardona2025optimization} investiga la utilización de autoencoders en la tarea de \emph{despeckling}, pero no aplica esta distribución. Utilizarla podría mejorar significativamente la calidad de los modelos de eliminación de ruido, ampliando su aplicabilidad y capacidad de generalización.
+
+\section{Hipótesis}
+
+Al entrenar modelos de aprendizaje supervisado, en particular autoencoders, con el objetivo de eliminar ruido \emph{speckle} de imágenes SAR, la distribución \( \mathcal{G}_I^0 \) para la generación artificial de ruido en el conjunto de entrenamiento conduce a resultados superiores y que generalizan mejor para todo tipo de superficie comparado con otros métodos de generación artificial de ruido.
+
+\section{Objetivos}
+
+Enumeramos a continuación los objetivos del trabajo, tanto el general como los específicos.
+
+\subsection{Objetivos general}
+
+Desarrollar un modelo de \emph{deep learning} basado en autoencoders que permita eliminar el
+ruido \emph{speckle} de imágenes SAR, y cuyo entrenamiento se realice a partir de un dataset de imágenes con ruido agregado artificialmente utilizando la distribución $\mathcal{G}_I^0$. Además, se
+pretende comparar este modelo con otros cuyo set de entrenamiento haya sido preparado
+con otros métodos.
+
+\subsection{Objetivos específicos}
+
+\begin{itemize}
+	\item Realizar una revisión de la literatura con el fin de identificar todos los métodos ya 	desarrollados de \emph{deep learning} para la eliminación automática de ruido \emph{speckle} en imágenes SAR.
+	\item Entrenar modelos de aprendizaje supervisado para la eliminación de ruido \emph{speckle}, usando un dataset de entrenamiento con ruido generado artificialmente a partir de la distribución \( \mathcal{G}_I^0 \).
+	\item Aplicar los modelos entrenados a imágenes de prueba y a imágenes SAR reales.
+	\item Evaluar los resultados y comparar con otros métodos de preparación del dataset de
+	entrenamiento.
+\end{itemize}
+
+\section{Preguntas de investigación}
+
+El problema del cual partimos sugiere algunas preguntas de investigación que guiarán el trabajo:
+
+\begin{itemize}
+	\item ¿Qué modelos basados en \emph{deep learning} se utilizan actualmente para eliminar el	ruido speckle de imágenes SAR de forma automática? ¿Cómo se obtiene el dataset
+	de entrenamiento en cada caso?
+	\item ¿Para qué tipo de superficies (pastura, mar, zonas urbanas, entre otras) funcionan los modelos de \emph{deep learning} ya desarrollados? ¿Existen modelos que sean generalizables a todo tipo de superficies, o están diseñados para tener un buen rendimiento solo en un tipo particular?
+	\item ¿El método con el cual se agrega artificialmente ruido speckle a una base de datos de imágenes afecta significativamente el rendimiento de modelos de \emph{deep learning} para la eliminación de ruido entrenados con esta base de datos? ¿Qué métodos son	mejores?
+	\item ¿Modelos de aprendizaje supervisado entrenados a base de imágenes con ruido
+	speckle generado artificialmente a través de la distribución  $\mathcal{G}_I^0$ generalizan bien a imágenes SAR reales?
+\end{itemize}
+
+\section{Estructura del trabajo}
+
+Detallamos a continuación cómo se estructuran los capítulos que restan del presente trabajo.
+
+En el \textbf{segundo capítulo}, correspondiente al estado del arte, realizamos una revisión de las técnicas usuales empleadas para la tarea de eliminación de ruido en imágenes, enfocándonos en las imágenes SAR. Analizamos tanto los métodos tradicionales como los contemporáneos utilizados en este campo, proporcionando el marco teórico necesario para comprender los diferentes métodos existentes y sus fundamentos.
+
+En el \textbf{tercer capítulo}, dedicado a materiales y métodos, describimos detalladamente la metodología seguida en el desarrollo de este trabajo. Presentamos cada uno de los pasos planificados y ejecutados, explicando los objetivos específicos que nos propusimos alcanzar y los procedimientos implementados para cumplir con dichas metas.
+
+En el \textbf{cuarto capítulo}, de resultados, exponemos de manera sistemática todos los hallazgos obtenidos durante la investigación. Presentamos un análisis paso a paso de cada resultado, incluyendo las interpretaciones y evaluaciones que realizamos sobre los datos recopilados, proporcionando una visión clara de los logros alcanzados.
+
+Finalmente, en el \textbf{último capítulo} sintetizamos las conclusiones principales derivadas del trabajo que realizamos, junto con una discusión final sobre los conocimientos que adquirimos y las implicaciones de los resultados que obtuvimos. Este apartado ofrece una reflexión sobre el proceso de investigación que llevamos a cabo y sus aportes al campo de estudio.

@@ -1,0 +1,91 @@
+\chapter{Discusión y conclusiones}
+\label{discusion}
+
+En este capítulo sintetizamos los resultados obtenidos en este trabajo, analizamos las implicancias de nuestros hallazgos y presentamos las conclusiones de la investigación sobre eliminación de ruido \emph{speckle} en imágenes SAR mediante el uso de autoencoders.
+
+\section{Síntesis del trabajo realizado}
+
+\subsection{Propuesta original y contribuciones}
+
+Nos propusimos estudiar el uso de autoencoders para la limpieza de imágenes SAR, incorporando un componente particular y original que nunca antes había sido explorado en la literatura: la preparación de imágenes de entrenamiento utilizando la distribución $\mathcal{G}_I^0$ para agregar sintéticamente ruido \emph{speckle} a imágenes limpias. Esta aproximación representa una contribución significativa al campo, ya que permite generar conjuntos de datos de entrenamiento controlados y con características estadísticas que modelan fielmente el comportamiento del ruido \emph{speckle} real, para una amplia variedad de superficies.
+
+El desarrollo de este enfoque nos llevó a diseñar todo un método integral para la generación de imágenes SAR sintéticas. Este método no solo permite crear imágenes con ruido \emph{speckle} modelado mediante la distribución $\mathcal{G}_I^0$, sino que también genera automáticamente sus correspondientes versiones limpias, creando así pares de imágenes ideales para el entrenamiento supervisado de las redes neuronales. Una característica fundamental de nuestro método es su flexibilidad: permite controlar la homogeneidad de las imágenes a través del parámetro de textura $\alpha$, definir diferentes particiones espaciales en las imágenes, e incluso crear datasets con combinaciones variadas de particiones. Esta última capacidad resultó ser especialmente importante, como discutiremos más adelante, para evitar que las redes aprendieran características espurias como los bordes de las particiones en lugar de centrarse en la eliminación del ruido.
+
+\Needspace{5\baselineskip}
+\subsection{Desarrollo metodológico}
+
+Construimos un sistema modular y flexible que, a través de archivos de configuración, permite crear y experimentar con diferentes arquitecturas de autoencoders sin necesidad de modificar el código fuente. Este sistema contempla todos los parámetros variables relevantes en el diseño de redes neuronales: diversos tipos de capas convolucionales y de \emph{pooling}, múltiples funciones de activación, diferentes funciones de pérdida y optimizadores. Implementamos además validaciones automáticas que verifican la coherencia dimensional de las arquitecturas propuestas, asegurando que las dimensiones de las capas convolucionales sean compatibles entre sí y que las imágenes de entrada tengan las dimensiones esperadas por la red. Esta flexibilidad nos permitió explorar sistemáticamente el espacio de posibles arquitecturas y evaluar su desempeño de manera eficiente.
+
+El sistema de configuración también extiende su funcionalidad al proceso de generación de datos, permitiendo especificar qué tipos de particiones deben incluirse en el dataset y en qué proporciones. Esta característica resultó fundamental para nuestros experimentos, ya que nos permitió evaluar cómo la diversidad en los datos de entrenamiento afecta la capacidad de generalización de los modelos.
+
+Desarrollamos además un módulo de evaluación que calcula estadísticos de primer y segundo orden para medir objetivamente la calidad del filtrado. La implementación de estos estadísticos representó un desafío técnico considerable, ya que su cálculo no es directo y requirió un desarrollo cuidadoso para asegurar su correcta aplicación en el contexto de imágenes SAR. Estos estadísticos nos proporcionaron métricas cuantitativas complementarias al error cuadrático medio, permitiéndonos evaluar aspectos específicos de la preservación de características estadísticas de las imágenes filtradas.
+
+\section{Análisis de resultados}
+
+\subsection{Entrenamiento con imágenes sintéticas}
+
+Durante la fase de entrenamiento con imágenes sintéticas, observamos patrones consistentes y reveladores en el comportamiento de las diferentes arquitecturas evaluadas. Las arquitecturas más profundas y con mayor dimensión del espacio latente consistentemente mostraron los mejores resultados en términos del error de test. Un hallazgo significativo fue la ausencia de \emph{overfitting} en estas arquitecturas complejas, lo cual sugiere que el problema de eliminación de ruido \emph{speckle} se beneficia de representaciones profundas y que nuestros conjuntos de datos sintéticos proporcionan suficiente variabilidad para entrenar modelos complejos sin sobreajuste.
+
+Este resultado nos sugiere que arquitecturas aún más profundas podrían obtener mejores resultados, aunque en este trabajo estuvimos limitados por restricciones de tiempo y recursos computacionales para explorar esta dirección más exhaustivamente. También observamos que, pasado cierto número de épocas de entrenamiento, las mejoras en el desempeño se volvían marginales, indicando una convergencia relativamente rápida de los modelos y sugiriendo que no son necesarios entrenamientos excesivamente largos para alcanzar resultados óptimos.
+
+Cuando aplicamos los modelos entrenados a las imágenes del conjunto de test sintético, verificamos que mantienen adecuadamente los niveles de gris de las imágenes originales, preservando así la información fundamental para la interpretación de imágenes SAR. Sin embargo, notamos que en algunos casos se generaban pequeñas estructuras o artefactos que no estaban presentes en las imágenes originales, un fenómeno que merece atención en futuros desarrollos.
+
+\subsection{Aplicación a imágenes reales}
+
+La aplicación de los modelos entrenados con datos sintéticos a imágenes SAR reales reveló limitaciones importantes en la capacidad de generalización. Observamos que los modelos tendían a aplicar las mismas estructuras de particiones que habían visto durante el entrenamiento, generando artefactos visibles en las imágenes filtradas. Este comportamiento era esperable en retrospectiva: los modelos solo habían sido expuestos a patrones sintéticos específicos durante el entrenamiento y no habían visto la complejidad y variabilidad presente en imágenes reales.
+
+Resulta particularmente interesante que las arquitecturas entrenadas con conjuntos de datos que incluían mezclas variadas de particiones mostraron mejor desempeño en imágenes reales, a pesar de no ser necesariamente las mejores en términos del error de test en datos sintéticos. Este resultado subraya la importancia de la diversidad en los datos de entrenamiento y sugiere que métricas tradicionales como el error de test pueden no capturar completamente la capacidad de generalización de los modelos cuando existe una brecha entre los dominios de entrenamiento y aplicación.
+
+\subsection{Evaluación mediante estadísticos}
+
+La evaluación de la calidad del filtrado mediante estadísticos de primer y segundo orden proporcionó validación adicional de nuestros resultados. Observamos una correlación general entre las configuraciones que mostraban mejor desempeño en términos del error de entrenamiento/test y aquellas que obtenían mejores resultados en los estadísticos de calidad. Esta consistencia entre diferentes métricas de evaluación refuerza la validez de nuestro enfoque y sugiere que los modelos efectivamente están aprendiendo a preservar las características estadísticas importantes de las imágenes mientras eliminan el ruido.
+
+Comparamos además nuestros resultados con filtros establecidos en la literatura, como el filtro de Lee y otros desarrollos previos en el campo. Obtuvimos resultados comparables en términos de calidad de filtrado, lo cual valida nuestro trabajo y demuestra que puede competir con métodos tradicionales de filtrado. Esta comparación es particularmente significativa considerando que nuestro enfoque ofrece ventajas adicionales en términos de flexibilidad y potencial de mejora mediante el ajuste de arquitecturas y datos de entrenamiento.
+
+\subsection{Entrenamiento con imágenes reales}
+
+Motivados por las limitaciones observadas en la generalización de modelos entrenados con datos sintéticos, exploramos el entrenamiento directo con imágenes reales. Conseguimos acceso a un dataset que contenía pares de imágenes ruidosas y sus correspondientes versiones limpias, estas últimas obtenidas mediante el promediado temporal de múltiples adquisiciones del mismo sitio. Este enfoque representa una alternativa más directa para el entrenamiento, aunque con la limitación de requerir datos que no siempre están disponibles en aplicaciones prácticas.
+
+Consistente con nuestros hallazgos previos, las arquitecturas más complejas y profundas mostraron el mejor desempeño en el conjunto de test. Sin embargo, la diferencia más notable se observó en la aplicación a nuevas imágenes reales: los modelos entrenados con datos reales produjeron resultados significativamente superiores a aquellos entrenados con datos sintéticos. Las imágenes filtradas mostraron una fidelidad mucho mayor a las características esperadas de imágenes SAR limpias, aunque notamos cierta pérdida de detalle fino que atribuimos a las limitaciones en la profundidad de las arquitecturas evaluadas.
+
+\section{Implicancias y limitaciones}
+
+\subsection{Sobre la generación de datos sintéticos}
+
+Nuestro trabajo demuestra tanto el potencial como las limitaciones del uso de datos sintéticos para el entrenamiento de modelos de \emph{deep learning} en el contexto de procesamiento de imágenes SAR. Por un lado, la capacidad de generar conjuntos de datos controlados, de gran tamaño y estadísticamente consistentes mediante la distribución $\mathcal{G}_I^0$ representa una herramienta valiosa para la investigación y el desarrollo inicial de arquitecturas. Por otro lado, la brecha entre las características de los datos sintéticos y las complejidades presentes en imágenes reales limita la aplicabilidad directa de los modelos así entrenados.
+
+Esta dicotomía sugiere que los datos sintéticos podrían ser más útiles en esquemas de entrenamiento híbridos, donde se utilicen para pre-entrenar modelos que luego se afinan con datos reales, o en situaciones donde se puedan generar datos sintéticos más sofisticados que capturen mejor la variabilidad de las imágenes reales.
+
+\subsection{Sobre las arquitecturas de autoencoders}
+
+La consistente superioridad de las arquitecturas más profundas y con espacios latentes de mayor dimensión sugiere que el problema de eliminación de ruido \emph{speckle} se beneficia de representaciones jerárquicas complejas. El hecho de que no observáramos \emph{overfitting} incluso en las arquitecturas más complejas indica que existe margen para explorar modelos aún más profundos, lo cual podría resultar en mejoras adicionales en la calidad del filtrado y en la preservación de detalles finos.
+
+La pérdida de detalle observada en las imágenes filtradas, en particular aquellas procesadas por modelos entrenados con datos reales, sugiere que las arquitecturas actuales podrían estar encontrando un compromiso subóptimo entre la eliminación de ruido y la preservación de características. Arquitecturas más sofisticadas, posiblemente incorporando mecanismos de atención o conexiones residuales más elaboradas, podrían mejorar este balance.
+
+\section{Conclusiones}
+
+Este trabajo presenta una exploración del uso de autoencoders para la eliminación de ruido \emph{speckle} en imágenes SAR, con contribuciones originales tanto en la metodología de generación de datos de entrenamiento como en el desarrollo de herramientas flexibles para la experimentación con diferentes arquitecturas.
+
+Hemos demostrado que es posible utilizar la distribución $\mathcal{G}_I^0$ para generar datos sintéticos de entrenamiento que permiten entrenar autoencoders capaces de filtrar ruido \emph{speckle}, aunque con limitaciones en su generalización a imágenes reales. Esta aproximación representa una contribución novedosa al campo y abre nuevas líneas de investigación sobre la generación de datos sintéticos más sofisticados.
+
+Nuestros experimentos revelan consistentemente que las arquitecturas más profundas y complejas obtienen mejores resultados, sugiriendo que el problema se beneficia de representaciones profundas y que existe potencial para mejoras mediante el uso de arquitecturas aún más sofisticadas. La ausencia de \emph{overfitting} en estas arquitecturas complejas es un resultado alentador que sugiere que el enfoque tiene margen de mejora significativo.
+
+La comparación con métodos tradicionales de filtrado valida nuestro enfoque, mostrando que los autoencoders pueden alcanzar niveles de desempeño comparables mientras ofrecen ventajas en términos de flexibilidad y potencial de optimización. Sin embargo, el mejor desempeño observado con modelos entrenados directamente con datos reales subraya la importancia de contar con datos de entrenamiento representativos del dominio de aplicación.
+
+\section{Trabajo futuro}
+
+Los resultados de este trabajo sugieren varias direcciones prometedoras para investigación futura:
+
+Explorar arquitecturas más profundas y sofisticadas, incluyendo mecanismos de atención y arquitecturas tipo U-Net más elaboradas, podría mejorar tanto la eliminación de ruido como la preservación de detalles. La ausencia de \emph{overfitting} en nuestros experimentos sugiere que hay margen considerable para aumentar la complejidad de los modelos.
+
+Desarrollar métodos más sofisticados de generación de datos sintéticos que capturen mejor la complejidad de las imágenes SAR reales podría cerrar la brecha de generalización observada. Esto podría incluir la simulación de texturas más complejas, la incorporación de características geométricas realistas, y la modelización de artefactos específicos del proceso de adquisición SAR.
+
+Investigar esquemas de entrenamiento híbridos que combinen pre-entrenamiento con datos sintéticos seguido de ajuste fino con datos reales podría aprovechar las ventajas de ambos enfoques. Esta estrategia podría ser particularmente útil en situaciones donde los datos reales son escasos o costosos de obtener.
+
+Explorar la implementación y aplicación conjunta de la metodología propuesta por Chan et al. \cite{chan2022entropy} y del enfoque desarrollado en este trabajo sobre un mismo conjunto de imágenes. Esto permitirá llevar a cabo una comparación más rigurosa y equitativa entre ambos métodos.
+
+Diseñar formas automáticas y robustas de medir la eficiencia de los modelos entrenados con imágenes reales resulta fundamental para evaluar objetivamente estos filtros. El desarrollo de tales técnicas nos permitiría establecer comparaciones sistemáticas entre diferentes enfoques, facilitando así la selección del modelo más adecuado para aplicaciones específicas.
+
+Finalmente, la extensión de nuestro trabajo a imágenes SAR polarimétricas o multi-temporales representa una dirección natural que podría beneficiarse de la capacidad de los autoencoders para aprender representaciones complejas de datos multidimensionales.
+
+En conclusión, este trabajo establece una base sólida para el uso de autoencoders en la eliminación de ruido \emph{speckle} en imágenes SAR y demuestra el potencial de combinar modelos generativos estadísticos con técnicas de \emph{deep learning} para abordar problemas clásicos en el procesamiento de imágenes de radar.

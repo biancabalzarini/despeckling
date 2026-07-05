@@ -1,0 +1,20 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Synthetic Aperture Radar (SAR) is a highly effective remote sensing technology capable of generating high-resolution
+images of the Earth's surface regardless of weather or lighting conditions. This makes SAR imagery an invaluable
+tool for applications ranging from environmental monitoring to terrain change detection and disaster management.
+However, a significant drawback of SAR images is the inherent presence of speckle noise. Unlike the additive noise
+common in optical imagery, speckle is a multiplicative, non-Gaussian phenomenon resulting from the coherent
+interference of radar waves scattered by surface elements. This granular noise severely degrades the visual quality
+of SAR images and complicates subsequent analysis and interpretation tasks.
+
+Classical speckle mitigation techniques include adaptive filters (Lee, Frost) \parencite{lee1980digital, frost1982model}, wavelets \parencite{zhang2017nonmodel}, and non-local methods like SAR-BM3D \parencite{parrilli2012nonlocal}. These struggle to balance noise reduction with detail preservation. Deep learning, particularly CNNs and Autoencoders, has revolutionized image denoising \parencite{zhang2018dilated,lattari2019deep,vitale2021multiobjective,cardona2025optimization} using supervised learning with large datasets of paired noisy-clean images. Since perfectly noise-free SAR images are hard to aquire, synthetic data generation is essential, either by injecting simulated noise or averaging temporal images \parencite{vasquez2024labeled}, though the latter is scarce.
+
+The efficacy of supervised deep learning depends heavily on simulated noise realism. Existing literature often uses statistical models as Gamma or  Rayleigh, which are computationally convenient but limited. The Rayleigh distribution, for instance, is accurate only for homogeneous areas like pasturelands \parencite{lattari2019deep}, failing to capture complex statistical properties in heterogeneous terrain (urban, vegetation). This lmits generalization capability of the trained networks.
+
+To address this gap, this paper proposes the use of $\mathcal{G}_I^0$ distribution for speckle simulation. The $\mathcal{G}_I^0$ distribution is renowned for accurately modeling speckle across diverse surface roughness and heterogeneous clutter \parencite{originalGI0}. Despite proven accuracy in SAR statistical modeling, its integration into synthetic deep-learning training pipelines remains underexplored. This work investigates how $\mathcal{G}_I^0$-based data preparation enhances autoencoder robustness and generalization, validated on both synthetic and actual SAR images using standard metrics.
+
+Our main contributions are: (i) integrating the $\mathcal{G}_I^0$ model into a synthetic data pipeline for autoencoder training; (ii) a systematic evaluation of 25 autoencoder configurations driven by flexible config files; and (iii) empirical evidence that fine-tuning on actual SAR pairs substantially improves generalization.
+
+This paper is organized as follows: Section 2 describes the methodology (data generation and architecture); Section 3 presents experiments and comparisons; Section 4 provides the conclusions and outlines future work.

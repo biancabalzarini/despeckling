@@ -1,0 +1,157 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.21 of 2022/01/12
+%
+\documentclass{llncs}
+%
+\usepackage[T1]{fontenc}
+% T1 fonts will be used to generate the final print and online PDFs,
+% so please use T1 fonts in your manuscript whenever possible.
+% Other font encondings may result in incorrect characters.
+%
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{microtype}
+% Disable font expansion to avoid pdfTeX errors with non-scalable fonts
+\microtypesetup{expansion=false}
+
+% Note: removed titlesec due to conflicts with llncs document class
+% (previous attempts to reduce spacing caused package errors).
+% If needed, tune spacing manually with \\vspace or class options.
+
+% Relax float placement rules
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.9}
+\renewcommand{\textfraction}{0.1}
+\renewcommand{\floatpagefraction}{0.75}
+\renewcommand{\dblfloatpagefraction}{0.75}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following two lines
+% to display URLs in blue roman font according to Springer's eBook style:
+%\usepackage{color}
+%\renewcommand\UrlFont{\color{blue}\rmfamily}
+%\urlstyle{rm}
+%
+\PassOptionsToPackage{hidelinks}{hyperref}
+\usepackage{orcidlink}
+
+\usepackage[style=apa, backend=biber, sortcites=false]{biblatex}
+
+\setlength{\parskip}{0pt plus 0pt minus 0pt}
+
+% Add the bib resource
+\addbibresource{thebiblio.bib}
+
+% Quitar sangría en bibliografía
+\setlength{\bibhang}{0pt}
+\setlength{\bibitemsep}{6pt}
+
+% URLs en negro
+\usepackage{xcolor}
+\hypersetup{urlcolor=black}
+
+\begin{document}
+%
+% ENGLISH VERSION
+\title{\emph{Speckle} Noise Removal in SAR Images using Autoencoders}
+
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+% For anonymous review, the author section has been commented out.
+\author{Bianca Balzarini\inst{1}\orcidlink{0000-0002-7483-2868} \and
+Juliana Gambini\inst{2,3,1}\orcidlink{0000-0002-4534-1402}}
+%
+\authorrunning{B. Balzarini et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Instituto Tecnológico de Buenos Aires, Buenos Aires, Argentina
+\email{bbalzarini@itba.edu.ar}\\
+ \and
+Universidad Nacional de Hurlingham, LIDEC\\
+\email{juliana.gambini@unahur.edu.ar} \\
+\and
+Universidad Tecnológica Nacional, Regional Buenos Aires, CPSI}
+
+% Add empty author and institute to avoid compilation errors
+%\author{}
+%\institute{}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+Synthetic Aperture Radar (SAR) images are fundamental for Earth observation due to their ability to acquire data
+independently of weather and lighting conditions. However, these images are affected by speckle noise, a
+multiplicative granular pattern that degrades their quality and makes them difficult to automatically interpret.
+This work presents an approach for speckle removal using convolutional autoencoders. The main innovation lies in
+the use of the $\mathcal{G}_I^0$ distribution  to synthetically generate pairs of noisy and clean images for
+supervised training, adequately modeling the statistical characteristics of actual speckle noise.
+In addition, we developed a flexible file-based configuration system that facilitates experimentation with
+different network architectures.
+Experimental outcomes reveal that deeper network architectures achieve better results with no evidence of
+overfitting.
+Models trained on synthetic data showed good performance on synthetic test images, but limitations in generalizing
+to actual SAR images. To address this problem, we explored training with pairs of actual images obtained through time
+averaging, achieving significant improvements and performance comparable to other known models.
+
+% keywords in lowercase
+\keywords{aperture synthetic radar, speckle noise, autoencoders.}
+\end{abstract}
+
+% SPANISH VERSION
+% Clear the previous title info and set Spanish version
+
+% Spanish title and abstract
+\begin{center}
+\vspace{1cm}
+{\Large \bfseries\boldmath Eliminación de Ruido \emph{Speckle} en Imágenes SAR utilizando Autoencoders}
+
+\vspace{0.5cm}
+\end{center}
+
+\begin{abstract}
+Las imágenes de Radar de Apertura Sintética (SAR: Synthetic Aperture Radar) son fundamentales para la observación
+de la Tierra debido a su capacidad de adquisición independiente de las condiciones
+climáticas y de iluminación. Sin embargo, estas imágenes se ven afectadas por el ruido \emph{speckle},
+un patrón granular multiplicativo que degrada su calidad, y dificulta su interpretación.
+Este trabajo presenta un enfoque para la eliminación de ruido \emph{speckle} mediante
+el uso de autoencoders convolucionales. La principal innovación radica en el uso de la distribución
+$\mathcal{G}_I^0$ para generar sintéticamente pares de imágenes ruidosas y limpias destinadas
+al entrenamiento supervisado, modelando adecuadamente las características estadísticas del ruido
+\emph{speckle} real. Complementariamente, desarrollamos un sistema flexible basado en archivos
+de configuración que facilita la experimentación con diferentes arquitecturas de redes.
+Los experimentos revelan que las arquitecturas más profundas obtienen consistentemente
+mejores resultados sin evidencia de overfitting.
+
+ Los modelos entrenados con datos sintéticos
+mostraron buen desempeño en imágenes de prueba sintéticas, pero limitaciones en la generalización a imágenes SAR reales. Para abordar este problema, exploramos el entrenamiento con pares de
+imágenes reales obtenidas mediante promediado temporal, logrando mejoras significativas
+y desempeño comparable a otros ya conocidos.
+%Este trabajo establece las bases para el uso de autoencoders en el filtrado de ruido \emph{speckle} y
+%demuestra tanto el potencial como las limitaciones de los datos sintéticos generados mediante
+%modelos estadísticos.
+
+
+% palabras clave en minúsculas
+\keywords{radar de apertura sintética (SAR), ruido speckle, autoencoders.}
+\end{abstract}
+
+
+\vspace{0.5cm}
+\setcounter{page}{1}
+
+\input{Chapters/1_Introduction}
+\input{Chapters/2_Materials_and_Methods}
+\input{Chapters/3_Results}
+\input{Chapters/4_Conclusions}
+
+\begin{sloppypar}
+\printbibliography
+\end{sloppypar}
+
+\end{document}
